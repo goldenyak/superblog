@@ -10,5 +10,6 @@ import { UsersModule } from '../users/users.module';
 	imports: [UsersModule, MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema }])],
 	controllers: [AuthController],
 	providers: [AuthService, AuthRepository],
+	exports: [AuthService],
 })
 export class AuthModule {}

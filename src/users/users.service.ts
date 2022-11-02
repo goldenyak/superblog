@@ -32,8 +32,8 @@ export class UsersService {
 		const allUsers = await this.usersRepository.getAllUsers(
 			searchLoginTerm,
 			searchEmailTerm,
-			pageNumber=1,
-			pageSize=10 ,
+			(pageNumber = 1),
+			(pageSize = 10),
 			sortBy,
 			sortDirection,
 		);
@@ -52,14 +52,14 @@ export class UsersService {
 	}
 
 	async findUserByLogin(login: string) {
-		return this.usersRepository.findUserByLogin(login)
+		return this.usersRepository.findUserByLogin(login);
 	}
 
 	async deleteUserById(id: string) {
 		return await this.usersRepository.deleteUserById(id);
 	}
 
-	async deleteAllUsers() {
-		return await this.usersRepository.deleteAllUsers();
+	async deleteAll() {
+		return await this.usersRepository.deleteAll();
 	}
 }

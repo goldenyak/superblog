@@ -25,4 +25,8 @@ export class AuthService {
 	async findUser(login: string) {
 		return await this.usersService.findUserByLogin(login);
 	}
+
+	async deleteAll() {
+		return this.authRepository.deleteAll();
+	}
 }

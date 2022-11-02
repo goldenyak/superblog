@@ -63,6 +63,6 @@ export class UsersController {
 
 	@Delete()
 	async deleteAllUsers() {
-		return this.usersService.deleteAllUsers();
+		return this.usersService.deleteAll();
 	}
 }

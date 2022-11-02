@@ -30,7 +30,7 @@ export class UsersRepository {
 			.limit(pageSize)
 			// .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
 			.sort({ [sortByFilter]: sortDirectionFilter });
-			// .sort({createdAt: 1});
+		// .sort({createdAt: 1});
 
 		return users.map((user) => {
 			return {
@@ -47,14 +47,14 @@ export class UsersRepository {
 	}
 
 	async findUserByLogin(login: string) {
-		return this.userModel.findOne({login})
+		return this.userModel.findOne({ login });
 	}
 
 	async deleteUserById(id: string) {
 		return this.userModel.findOneAndDelete({ id: id });
 	}
 
-	async deleteAllUsers() {
+	async deleteAll() {
 		return this.userModel.deleteMany().exec();
 	}
 
@@ -72,8 +72,9 @@ export class UsersRepository {
 	private getFilterForSortDirection(sortDirection: string | null) {
 		if (!sortDirection || sortDirection === 'asc') {
 			return 1;
-		} if (sortDirection === 'desc') {
-			return -1
+		}
+		if (sortDirection === 'desc') {
+			return -1;
 		}
 	}
 
