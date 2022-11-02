@@ -3,15 +3,15 @@ import {
 	Controller,
 	Delete,
 	Get,
-	HttpCode,
+	HttpCode, HttpException, HttpStatus,
 	NotFoundException,
 	Param,
 	Post,
-	Query,
-} from '@nestjs/common';
+	Query
+} from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { NOT_FOUND_USER_ERROR } from './constants/users.constants';
+import { ALREADY_REGISTERED_ERROR, NOT_FOUND_USER_ERROR } from "./constants/users.constants";
 
 @Controller('users')
 export class UsersController {
@@ -40,7 +40,13 @@ export class UsersController {
 	@HttpCode(201)
 	@Post('create')
 	async create(@Body() dto: CreateUserDto) {
-		return await this.usersService.create(dto);
+		const currentUser = await this.usersService.findUserByLogin(dto.login);
+		if (currentUser) {
+			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
+		} else {
+			return await this.usersService.create(dto);
+		}
+		// return await this.usersService.create(dto);
 	}
 
 	@Get(':id')

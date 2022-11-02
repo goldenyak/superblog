@@ -15,7 +15,7 @@ export class DeleteAllController {
 
 	@Delete()
 	async deleteAll() {
-		await this.usersService.deleteAll();
-		await this.authService.deleteAll();
+		return await this.usersService.deleteAll();
+		// await this.authService.deleteAll();
 	}
 }

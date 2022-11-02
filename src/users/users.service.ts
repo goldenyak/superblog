@@ -3,15 +3,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from './schemas/user.schema';
+import { genSalt, hash } from "bcrypt";
 
 @Injectable()
 export class UsersService {
 	constructor(private readonly usersRepository: UsersRepository) {}
 
 	async create(dto: CreateUserDto) {
+		const salt = await genSalt(10);
 		const newUser: User = {
 			login: dto.login,
 			email: dto.email,
+			password: await hash(dto.password, salt),
 			id: uuidv4(),
 			createdAt: new Date(),
 		};

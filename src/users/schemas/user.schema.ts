@@ -15,6 +15,9 @@ export class User {
 	email: string;
 
 	@Prop()
+	password: string
+
+	@Prop()
 	createdAt: Date;
 }
 

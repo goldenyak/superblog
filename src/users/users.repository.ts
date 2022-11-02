@@ -28,9 +28,7 @@ export class UsersRepository {
 			.find(filter)
 			.skip((pageNumber - 1) * pageSize)
 			.limit(pageSize)
-			// .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
 			.sort({ [sortByFilter]: sortDirectionFilter });
-		// .sort({createdAt: 1});
 
 		return users.map((user) => {
 			return {
