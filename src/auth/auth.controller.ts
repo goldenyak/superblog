@@ -1,12 +1,14 @@
 import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post } from "@nestjs/common";
 import { AuthService } from './auth.service';
-
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { ALREADY_REGISTERED_ERROR } from "../users/constants/users.constants";
+import { LoginDto } from "./dto/login.dto";
+import { UsersService } from "../users/users.service";
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly authService: AuthService) {}
+	constructor(private readonly authService: AuthService,
+							private readonly usersService: UsersService, ) {}
 
 	@HttpCode(204)
 	@Post('registration')
@@ -20,7 +22,10 @@ export class AuthController {
 	}
 
 	@Post('login')
-	async login() {}
+	async login(@Body() dto: LoginDto) {
+		const user = await this.usersService.validateUser(dto.login, dto.password);
+		return this.authService.login(user.email)
+	}
 
 	@Post('refresh-token')
 	async refreshToken() {}
