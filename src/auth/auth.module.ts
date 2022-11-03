@@ -5,12 +5,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Auth, AuthSchema } from './schemas/auth.schema';
 import { AuthRepository } from './auth.repository';
 import { UsersModule } from '../users/users.module';
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule } from "@nestjs/jwt";
-import { getJwtConfig } from "../configs/jwt.config";
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { getJwtConfig } from '../configs/jwt.config';
 
 @Module({
-	imports: [UsersModule,
+	imports: [
+		UsersModule,
+		ConfigModule,
 		MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema }]),
 		JwtModule.registerAsync({
 			imports: [ConfigModule],

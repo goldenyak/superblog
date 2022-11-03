@@ -11,6 +11,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getMongoConfig } from "./configs/mongo.config";
 import { UsersController } from "./users/users.controller";
 import { DeleteAllModule } from './delete-all/delete-all.module';
+import { MailerModule } from "@nestjs-modules/mailer";
+import { getMailConfig } from "./configs/mail.config";
 
 @Module({
 	imports: [
@@ -19,6 +21,11 @@ import { DeleteAllModule } from './delete-all/delete-all.module';
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: getMongoConfig,
+		}),
+		MailerModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: getMailConfig,
 		}),
 		AuthModule,
 		BlogsModule,
