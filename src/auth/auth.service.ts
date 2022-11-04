@@ -4,11 +4,8 @@ import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../users/schemas/user.schema';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
-import { doc } from 'prettier';
-import path from 'path';
 
 @Injectable()
 export class AuthService {
@@ -31,8 +28,11 @@ export class AuthService {
 
 	async login(email: string) {
 		const payload = { email };
+		const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '1h' });
+		const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '24h' });
 		return {
-			accessToken: await this.jwtService.signAsync(payload, { expiresIn: '1h' }),
+			accessToken,
+			refreshToken,
 		};
 	}
 

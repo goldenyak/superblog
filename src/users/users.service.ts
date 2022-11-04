@@ -66,11 +66,11 @@ export class UsersService {
 	async validateUser(login: string, password: string) {
 		const user = await this.findUserByLogin(login);
 		if (!user) {
-			throw new HttpException(UNREGISTERED_USER_ERROR, HttpStatus.NOT_FOUND);
+			throw new HttpException(UNREGISTERED_USER_ERROR, HttpStatus.UNAUTHORIZED);
 		}
 		const isPasswordCorrect = await compare(password, user.password);
 		if (!isPasswordCorrect) {
-			throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.BAD_REQUEST);
+			throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.UNAUTHORIZED);
 		}
 		return user;
 	}
