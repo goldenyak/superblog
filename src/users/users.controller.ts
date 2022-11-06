@@ -23,6 +23,19 @@ import { Request } from 'express';
 export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
+	@UseGuards(JwtAuthGuard)
+	@HttpCode(201)
+	@Post('create')
+	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
+		// console.log(req);
+		const currentUser = await this.usersService.findUserByLogin(dto.login);
+		if (currentUser) {
+			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
+		} else {
+			return await this.usersService.create(dto);
+		}
+	}
+
 	@HttpCode(200)
 	@Get()
 	async getAllUsers(
@@ -41,20 +54,6 @@ export class UsersController {
 			sortBy,
 			sortDirection,
 		);
-	}
-
-	@UseGuards(JwtAuthGuard)
-	@HttpCode(201)
-	@Post('create')
-	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
-		// console.log(req);
-		const currentUser = await this.usersService.findUserByLogin(dto.login);
-		if (currentUser) {
-			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
-		} else {
-			return await this.usersService.create(dto);
-		}
-		// return await this.usersService.create(dto);
 	}
 
 	@Get(':id')

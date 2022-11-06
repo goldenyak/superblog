@@ -1,0 +1,1 @@
+export const NOT_FOUND_BLOG_ERROR = 'Блог с таким id не найден!';
