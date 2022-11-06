@@ -41,11 +41,19 @@ export class UsersRepository {
 	}
 
 	async findUserById(id: string) {
-		return this.userModel.findOne({ id: id }, { _id: 0 }).exec();
+		return this.userModel.findOne({ id: id }, { _id: 0 });
 	}
 
 	async findUserByLogin(login: string) {
 		return this.userModel.findOne({ login });
+	}
+
+	async findUserByEmail(email: string) {
+		return this.userModel.findOne({email})
+	}
+
+	async findUserByConfirmationCode(code: string) {
+		return this.userModel.findOneAndUpdate({ confirmationCode: code }, { isConfirmed: true });
 	}
 
 	async deleteUserById(id: string) {

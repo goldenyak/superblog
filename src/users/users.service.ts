@@ -18,6 +18,8 @@ export class UsersService {
 			password: await hash(dto.password, salt),
 			id: uuidv4(),
 			createdAt: new Date(),
+			confirmationCode: uuidv4(),
+			isConfirmed: false
 		};
 		await this.usersRepository.create(newUser);
 		return newUser;
@@ -57,6 +59,14 @@ export class UsersService {
 
 	async findUserByLogin(login: string) {
 		return this.usersRepository.findUserByLogin(login);
+	}
+
+	async findUserByEmail(email: string) {
+		return await this.usersRepository.findUserByEmail(email)
+	}
+
+	async findUserByConfirmationCode(code: string) {
+		return await this.usersRepository.findUserByConfirmationCode(code)
 	}
 
 	async deleteUserById(id: string) {

@@ -8,12 +8,14 @@ import { UsersModule } from '../users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from '../configs/jwt.config';
+import { Jwt, JwtSchema } from './schemas/jwt.schema';
 
 @Module({
 	imports: [
 		UsersModule,
 		ConfigModule,
 		MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema }]),
+		MongooseModule.forFeature([{ name: Jwt.name, schema: JwtSchema }]),
 		JwtModule.registerAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],

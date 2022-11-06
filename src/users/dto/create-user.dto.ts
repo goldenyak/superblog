@@ -1,6 +1,15 @@
-import { IsEmail, IsNotEmpty, IsString, Length, MaxLength, MinLength } from 'class-validator';
+import {
+	IsBoolean,
+	IsEmail,
+	IsNotEmpty,
+	IsString,
+	Length,
+	MaxLength,
+	MinLength,
+} from 'class-validator';
 
 export class CreateUserDto {
+	// @IsString()
 	id: string;
 
 	@IsNotEmpty()
@@ -25,5 +34,11 @@ export class CreateUserDto {
 	@MaxLength(20, {
 		message: 'Password is too long',
 	})
-	password: string
+	password: string;
+
+	// @IsString()
+	confirmationCode: string;
+
+	// @IsBoolean()
+	isConfirmed: boolean;
 }

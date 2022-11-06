@@ -19,6 +19,12 @@ export class User {
 
 	@Prop()
 	createdAt: Date;
+
+	@Prop()
+	confirmationCode: string
+
+	@Prop()
+	isConfirmed: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

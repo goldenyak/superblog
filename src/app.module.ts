@@ -9,7 +9,6 @@ import { CommentsModule } from './comments/comments.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getMongoConfig } from "./configs/mongo.config";
-import { UsersController } from "./users/users.controller";
 import { DeleteAllModule } from './delete-all/delete-all.module';
 import { MailerModule } from "@nestjs-modules/mailer";
 import { getMailConfig } from "./configs/mail.config";
