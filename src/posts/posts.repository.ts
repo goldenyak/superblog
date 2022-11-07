@@ -1,0 +1,71 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Posts, PostsDocument } from './schemas/posts.schemas';
+import { CreatePostsDto } from './dto/create-post.dto';
+
+@Injectable()
+export class PostsRepository {
+	constructor(@InjectModel(Posts.name) private readonly postsModel: Model<PostsDocument>) {}
+
+	async create(newPost: CreatePostsDto) {
+		return this.postsModel.create(newPost);
+	}
+
+	async getAllPosts(pageNumber = 1, pageSize = 10, sortBy: string, sortDirection: string) {
+		const sortByFilter = this.getFilterForSortBy(sortBy);
+		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
+
+		const posts = await this.postsModel
+			.find()
+			.skip((pageNumber - 1) * pageSize)
+			.limit(pageSize)
+			.sort({ [sortByFilter]: sortDirectionFilter });
+
+		return posts.map((post) => {
+			return {
+				id: post.id,
+				title: post.title,
+				shortDescription: post.shortDescription,
+				content: post.content,
+				blogId: post.blogId,
+				blogName: post.blogName,
+				createdAt: post.createdAt,
+			};
+		});
+	}
+
+	async findPostById(id: string) {
+		return this.postsModel.findOne({ id: id }, { _id: 0 });
+	}
+
+	async updatePostById(id: string, title: string, shortDescription: string, content: string) {
+		return this.postsModel.findOneAndUpdate(
+			{ id: id },
+			{ title: title, shortDescription: shortDescription, content: content },
+		);
+	}
+
+	async deletePostById(id: string) {
+		return this.postsModel.findOneAndDelete({ id: id });
+	}
+
+	async countPosts() {
+		return this.postsModel.count({});
+	}
+
+	private getFilterForSortBy(sortBy: string | null) {
+		if (sortBy) {
+			return sortBy;
+		} else return 'createdAt';
+	}
+
+	private getFilterForSortDirection(sortDirection: string | null) {
+		if (!sortDirection || sortDirection === 'asc') {
+			return 1;
+		}
+		if (sortDirection === 'desc') {
+			return -1;
+		}
+	}
+}

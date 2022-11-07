@@ -1,0 +1,1 @@
+export const NOT_FOUND_POST_ERROR = 'Пост с таким id не найден!';

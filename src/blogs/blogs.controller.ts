@@ -34,7 +34,7 @@ export class BlogsController {
 		@Query('sortBy') sortBy: string,
 		@Query('sortDirection') sortDirection: string,
 	) {
-		return this.blogsService.getAllBlogs(
+		return await this.blogsService.getAllBlogs(
 			searchNameTerm,
 			pageNumber,
 			pageSize,
