@@ -1,16 +1,16 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BlogsRepository } from '../blogs/blogs.repository';
 import { PostsRepository } from './posts.repository';
-import { CreateBlogsDto } from '../blogs/dto/create-blogs.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePostsDto } from './dto/create-post.dto';
 import { BlogsService } from '../blogs/blogs.service';
+import { CommentsService } from "../comments/comments.service";
 
 @Injectable()
 export class PostsService {
 	constructor(
 		private readonly postsRepository: PostsRepository,
 		@Inject(forwardRef(() => BlogsService)) private readonly blogsService: BlogsService,
+		@Inject(forwardRef(() => CommentsService)) private readonly commentsService: CommentsService,
 	) {}
 
 	async create(dto: CreatePostsDto) {

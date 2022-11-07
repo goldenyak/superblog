@@ -1,4 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { CommentsRepository } from './comments.repository';
+import { PostsService } from '../posts/posts.service';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { Comments } from "./schemas/comments.schema";
+import { v4 as uuidv4 } from 'uuid';
+import { User } from "../users/schemas/user.schema";
 
 @Injectable()
-export class CommentsService {}
+export class CommentsService {
+	constructor(
+		private readonly commentsRepository: CommentsRepository,
+		@Inject(forwardRef(() => PostsService)) private readonly postsService: PostsService,
+	) {}
+
+	async create(dto: CreateCommentDto, postId: string, user: User) {
+		const newComment: Comments = {
+			id: uuidv4(),
+			content: dto.content,
+			userId: user.id,
+			userLogin: user.login,
+      postId: postId,
+			createdAt: new Date(),
+		};
+		await this.commentsRepository.create(newComment);
+    return {
+      id: uuidv4(),
+      content: dto.content,
+      userId: user.id,
+      userLogin: user.login,
+      createdAt: new Date(),
+    }
+	}
+}

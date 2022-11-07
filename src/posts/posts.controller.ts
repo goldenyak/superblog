@@ -1,46 +1,72 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpException,
-  HttpStatus,
-  Param,
-  Post,
-  Put, Query
-} from "@nestjs/common";
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpException,
+	HttpStatus,
+	Param,
+	Post,
+	Put,
+	Query,
+	Req,
+	UseGuards,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-post.dto';
 import { NOT_FOUND_BLOG_ERROR } from '../blogs/constants/blogs.constants';
 import { UpdateBlogDto } from '../blogs/dto/update-blog.dto';
 import { NOT_FOUND_POST_ERROR } from './constants/posts.constants';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { CreateCommentDto } from '../comments/dto/create-comment.dto';
+import { CommentsService } from '../comments/comments.service';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Request } from 'express';
+import { UsersService } from "../users/users.service";
 
 @Controller('posts')
 export class PostsController {
-	constructor(private readonly postsService: PostsService) {}
+	constructor(
+		private readonly postsService: PostsService,
+		private readonly commentsService: CommentsService,
+		private readonly usersService: UsersService,
+	) {}
 
 	@Post()
 	async create(@Body() dto: CreatePostsDto) {
 		return await this.postsService.create(dto);
 	}
 
-  @HttpCode(200)
-  @Get()
-  async getAllPosts(
-    @Query('pageNumber') pageNumber: number,
-    @Query('pageSize') pageSize: number,
-    @Query('sortBy') sortBy: string,
-    @Query('sortDirection') sortDirection: string,
-  ) {
-    return await this.postsService.getAllPosts(
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-    );
-  }
+	@UseGuards(JwtAuthGuard)
+	@Post(':postId/comments')
+	async createCommentByPostId(
+		@Param('postId') postId: string,
+		@Body() dto: CreateCommentDto,
+		@Req() req: Request,
+	) {
+		const user = await this.usersService.findUserById(req.user.id);
+		if(!user) {
+			throw new HttpException('такого юзера не существует', HttpStatus.NOT_FOUND)
+		}
+		const postById = await this.postsService.findPostById(postId);
+		if (!postById) {
+			throw new HttpException('not found post by ID', HttpStatus.NOT_FOUND);
+		} else {
+			return await this.commentsService.create(dto, postId, user);
+		}
+	}
+
+	@HttpCode(200)
+	@Get()
+	async getAllPosts(
+		@Query('pageNumber') pageNumber: number,
+		@Query('pageSize') pageSize: number,
+		@Query('sortBy') sortBy: string,
+		@Query('sortDirection') sortDirection: string,
+	) {
+		return await this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
+	}
 
 	@Get(':id')
 	async findPostById(@Param('id') id: string) {

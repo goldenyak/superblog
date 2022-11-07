@@ -3,7 +3,6 @@ import { BlogsRepository } from './blogs.repository';
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePostsDto } from '../posts/dto/create-post.dto';
-import { PostsRepository } from '../posts/posts.repository';
 import { PostsService } from '../posts/posts.service';
 import { Blogs } from './schemas/blogs.schema';
 
