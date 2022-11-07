@@ -15,6 +15,7 @@ import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { BlogsService } from './blogs.service';
 import { NOT_FOUND_BLOG_ERROR } from './constants/blogs.constants';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { CreatePostsDto } from '../posts/dto/create-post.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -23,6 +24,15 @@ export class BlogsController {
 	@Post()
 	async create(@Body() dto: CreateBlogsDto) {
 		return await this.blogsService.create(dto);
+	}
+
+	@Post(':blogId/posts')
+	async createPostByBlogId(@Param('blogId') blogId: string, @Body() dto: CreatePostsDto) {
+		const blogById = await this.blogsService.findBlogById(blogId);
+		if (!blogById) {
+			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+		}
+		return await this.blogsService.createPostByBlogId(blogById, dto);
 	}
 
 	@HttpCode(200)
@@ -40,6 +50,29 @@ export class BlogsController {
 			pageSize,
 			sortBy,
 			sortDirection,
+		);
+	}
+
+	@HttpCode(200)
+	@Get(':id/posts')
+	async getAllPostsByBlogId(
+		@Param('id') id: string,
+		@Query('pageNumber') pageNumber: number,
+		@Query('pageSize') pageSize: number,
+		@Query('sortBy') sortBy: string,
+		@Query('sortDirection') sortDirection: string,
+		@Query('blogId') blogId: string,
+	) {
+		const blogById = await this.blogsService.findBlogById(id);
+		if (!blogById) {
+			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+		}
+		return await this.blogsService.getAllPostsByBlogId(
+			pageNumber,
+			pageSize,
+			sortBy,
+			sortDirection,
+			blogId,
 		);
 	}
 

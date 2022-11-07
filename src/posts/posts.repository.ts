@@ -35,6 +35,36 @@ export class PostsRepository {
 		});
 	}
 
+	async getAllPostsByBlogId(
+		pageNumber = 1,
+		pageSize = 10,
+		sortBy: string,
+		sortDirection: string,
+		blogId: string,
+	) {
+		const filter = this.getFilterForQuery(blogId);
+		const sortByFilter = this.getFilterForSortBy(sortBy);
+		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
+
+		const posts = await this.postsModel
+			.find(filter)
+			.skip((pageNumber - 1) * pageSize)
+			.limit(pageSize)
+			.sort({ [sortByFilter]: sortDirectionFilter });
+
+		return posts.map((post) => {
+			return {
+				id: post.id,
+				title: post.title,
+				shortDescription: post.shortDescription,
+				content: post.content,
+				blogId: post.blogId,
+				blogName: post.blogName,
+				createdAt: post.createdAt,
+			};
+		});
+	}
+
 	async findPostById(id: string) {
 		return this.postsModel.findOne({ id: id }, { _id: 0 });
 	}
@@ -50,8 +80,21 @@ export class PostsRepository {
 		return this.postsModel.findOneAndDelete({ id: id });
 	}
 
-	async countPosts() {
+	async countAllPosts() {
 		return this.postsModel.count({});
+	}
+
+	async countPostsByBlogId(blogId: string | null) {
+		const filter = this.getFilterForQuery(blogId);
+		return this.postsModel.count(filter);
+	}
+
+	private getFilterForQuery(blogId: string | null) {
+		if (!blogId) {
+			return {};
+		} else {
+			return { blogId: { $regex: blogId, $options: 'i' } };
+		}
 	}
 
 	private getFilterForSortBy(sortBy: string | null) {

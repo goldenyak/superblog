@@ -22,7 +22,5 @@ export class CreatePostsDto {
   })
   content: string;
 
-  @IsNotEmpty()
-  @IsString()
-  blogId: string;
+  blogId?: string;
 }

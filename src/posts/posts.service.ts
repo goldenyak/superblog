@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BlogsRepository } from '../blogs/blogs.repository';
 import { PostsRepository } from './posts.repository';
 import { CreateBlogsDto } from '../blogs/dto/create-blogs.dto';
@@ -10,12 +10,14 @@ import { BlogsService } from '../blogs/blogs.service';
 export class PostsService {
 	constructor(
 		private readonly postsRepository: PostsRepository,
-		private readonly blogsService: BlogsService,
+		@Inject(forwardRef(() => BlogsService)) private readonly blogsService: BlogsService,
 	) {}
 
 	async create(dto: CreatePostsDto) {
 		const foundedBlog = await this.blogsService.findBlogById(dto.blogId);
-		if (foundedBlog) {
+		if (!foundedBlog) {
+			return false;
+		} else {
 			const newPost = {
 				id: uuidv4(),
 				title: dto.title,
@@ -25,18 +27,12 @@ export class PostsService {
 				blogName: foundedBlog.name,
 				createdAt: new Date(),
 			};
-
 			return await this.postsRepository.create(newPost);
 		}
 	}
 
-	async getAllPosts(
-		pageNumber: number,
-		pageSize: number,
-		sortBy: string,
-		sortDirection: string,
-	) {
-		const countPosts = await this.postsRepository.countPosts();
+	async getAllPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string) {
+		const countedAllPosts = await this.postsRepository.countAllPosts();
 		const allPosts = await this.postsRepository.getAllPosts(
 			(pageNumber = 1),
 			(pageSize = 10),
@@ -47,8 +43,32 @@ export class PostsService {
 			pagesCount: pageNumber,
 			page: pageNumber,
 			pageSize: pageSize,
-			totalCount: countPosts,
+			totalCount: countedAllPosts,
 			items: allPosts,
+		};
+	}
+
+	async getAllPostsByBlogId(
+		pageNumber: number,
+		pageSize: number,
+		sortBy: string,
+		sortDirection: string,
+		blogId: string,
+	) {
+		const countedPostsByBlogId = await this.postsRepository.countPostsByBlogId(blogId);
+		const allPostsByBlogId = await this.postsRepository.getAllPostsByBlogId(
+			(pageNumber = 1),
+			(pageSize = 10),
+			sortBy,
+			sortDirection,
+			blogId,
+		);
+		return {
+			pagesCount: pageNumber,
+			page: pageNumber,
+			pageSize: pageSize,
+			totalCount: countedPostsByBlogId,
+			items: allPostsByBlogId,
 		};
 	}
 
