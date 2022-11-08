@@ -68,6 +68,30 @@ export class PostsController {
 		return await this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
 	}
 
+	@HttpCode(200)
+	@Get(':id/comments')
+	async getAllCommentsByPostId(
+		@Param('id') id: string,
+		@Query('pageNumber') pageNumber: number,
+		@Query('pageSize') pageSize: number,
+		@Query('sortBy') sortBy: string,
+		@Query('sortDirection') sortDirection: string,
+		@Query('postId') postId: string,
+	) {
+		const postById = await this.postsService.findPostById(id);
+		console.log(postById);
+		if (!postById) {
+			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
+		}
+		return await this.postsService.getAllCommentsByPostId(
+			pageNumber,
+			pageSize,
+			sortBy,
+			sortDirection,
+			postId,
+		);
+	}
+
 	@Get(':id')
 	async findPostById(@Param('id') id: string) {
 		const foundedPost = await this.postsService.findPostById(id);

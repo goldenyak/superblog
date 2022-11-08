@@ -32,6 +32,30 @@ export class CommentsService {
 		};
 	}
 
+	async getAllCommentsByPostId(
+		pageNumber: number,
+		pageSize: number,
+		sortBy: string,
+		sortDirection: string,
+		postId: string,
+	) {
+		const countedCommentsByPostId = await this.commentsRepository.countCommentsByPostId(postId);
+		const allCommentsByPostId = await this.commentsRepository.getAllCommentsByPostId(
+			(pageNumber = 1),
+			(pageSize = 10),
+			sortBy,
+			sortDirection,
+			postId,
+		);
+		return {
+			pagesCount: pageNumber,
+			page: pageNumber,
+			pageSize: pageSize,
+			totalCount: countedCommentsByPostId,
+			items: allCommentsByPostId,
+		};
+	}
+
 	async findCommentById(id: string) {
 		return await this.commentsRepository.findCommentById(id);
 	}

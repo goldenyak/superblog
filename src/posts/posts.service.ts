@@ -3,7 +3,7 @@ import { PostsRepository } from './posts.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePostsDto } from './dto/create-post.dto';
 import { BlogsService } from '../blogs/blogs.service';
-import { CommentsService } from "../comments/comments.service";
+import { CommentsService } from '../comments/comments.service';
 
 @Injectable()
 export class PostsService {
@@ -46,6 +46,22 @@ export class PostsService {
 			totalCount: countedAllPosts,
 			items: allPosts,
 		};
+	}
+
+	async getAllCommentsByPostId(
+		pageNumber: number,
+		pageSize: number,
+		sortBy: string,
+		sortDirection: string,
+		postId: string,
+	) {
+		return await this.commentsService.getAllCommentsByPostId(
+			pageNumber,
+			pageSize,
+			sortBy,
+			sortDirection,
+			postId,
+		);
 	}
 
 	async getAllPostsByBlogId(
