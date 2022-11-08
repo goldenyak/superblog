@@ -1,0 +1,1 @@
+export const NOT_FOUND_COMMENT_ERROR = 'Комментарий с таким ID не найден'

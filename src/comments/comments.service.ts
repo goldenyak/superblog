@@ -2,9 +2,9 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CommentsRepository } from './comments.repository';
 import { PostsService } from '../posts/posts.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { Comments } from "./schemas/comments.schema";
+import { Comments } from './schemas/comments.schema';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from "../users/schemas/user.schema";
+import { User } from '../users/schemas/user.schema';
 
 @Injectable()
 export class CommentsService {
@@ -19,16 +19,28 @@ export class CommentsService {
 			content: dto.content,
 			userId: user.id,
 			userLogin: user.login,
-      postId: postId,
+			postId: postId,
 			createdAt: new Date(),
 		};
 		await this.commentsRepository.create(newComment);
-    return {
-      id: uuidv4(),
-      content: dto.content,
-      userId: user.id,
-      userLogin: user.login,
-      createdAt: new Date(),
-    }
+		return {
+			id: uuidv4(),
+			content: dto.content,
+			userId: user.id,
+			userLogin: user.login,
+			createdAt: new Date(),
+		};
+	}
+
+	async findCommentById(id: string) {
+		return await this.commentsRepository.findCommentById(id);
+	}
+
+	async deleteCommentById(id: string) {
+		return await this.commentsRepository.deleteCommentById(id);
+	}
+
+	async updateCommentById(id: string, content: string) {
+		return await this.commentsRepository.updateCommentById(id, content);
 	}
 }
