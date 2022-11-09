@@ -22,7 +22,12 @@ export class UsersService {
 			isConfirmed: false
 		};
 		await this.usersRepository.create(newUser);
-		return newUser;
+		return {
+			id: newUser.id,
+			login: newUser.login,
+			email: newUser.email,
+			createdAt: newUser.createdAt
+		};
 	}
 
 	async getAllUsers(
