@@ -34,14 +34,22 @@ export class SessionsService {
 		return await this.sessionsRepository.create(session);
 	}
 
-	async getAllDevices(userId: string) {
-		const userSessions = await this.sessionsRepository.getAllDevices(userId);
+	async getAllSessions(userId: string) {
+		const userSessions = await this.sessionsRepository.getAllSessions(userId);
 		return userSessions.map((el) => ({
 			ip: el.ip,
 			title: el.title,
 			lastActiveDate: el.lastActiveDate,
 			deviceId: el.deviceId,
 		}));
+	}
+
+	async getSessionsByDeviceId(deviceId: string) {
+		return await this.sessionsRepository.getSessionsByDeviceId(deviceId);
+	}
+
+	async deleteSessionByDeviceId(deviceId: string) {
+		return await this.sessionsRepository.deleteSessionByDeviceId(deviceId)
 	}
 
 	async checkRefreshToken(refreshToken: string) {

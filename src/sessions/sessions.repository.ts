@@ -14,8 +14,16 @@ export class SessionsRepository {
 		return await this.sessionsModel.create(session);
 	}
 
-	async getAllDevices(userId: string) {
-		return this.sessionsModel.find({userId: userId})
+	async getAllSessions(userId: string) {
+		return this.sessionsModel.find({ userId: userId });
+	}
+
+	async getSessionsByDeviceId(deviceId: string) {
+		return this.sessionsModel.findOne({ deviceId: deviceId }, { _id: 0 });
+	}
+
+	async deleteSessionByDeviceId(deviceId: string) {
+		return this.sessionsModel.findOneAndDelete({deviceId: deviceId})
 	}
 
 	async deleteAll() {
