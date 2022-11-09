@@ -21,7 +21,7 @@ export class DeleteAllController {
 		private readonly sessionsService: SessionsService,
 	) {}
 
-	@Delete('delete-all')
+	@Delete('all-data')
 	async deleteAll() {
 		await this.usersService.deleteAll();
 		await this.blogsService.deleteAll();
