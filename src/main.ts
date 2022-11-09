@@ -10,8 +10,7 @@ async function bootstrap() {
 	app.setGlobalPrefix('api');
 	app.useGlobalPipes(new ValidationPipe());
 	app.use(cookieParser());
-	// app.use('trust proxy', true)
 	app.set('trust proxy', 1);
-	await app.listen(3000);
+	await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

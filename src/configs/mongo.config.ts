@@ -9,7 +9,8 @@ export const getMongoConfig = async (
   };
 };
 
-const getMongoString = (configService: ConfigService) => configService.get('MONGO_CLOUD_URI');
+// const getMongoString = (configService: ConfigService) => configService.get('MONGO_CLOUD_URI');
+const getMongoString = (configService: ConfigService) => process.env.MONGO_CLOUD_URI;
 
 const getMongoOptions = () => ({
   useNewUrlParser: true,
