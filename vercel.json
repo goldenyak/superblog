@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "nest",
+  "name": "superblog-incubator",
   "builds": [
     {
       "src": "src/main.ts",
