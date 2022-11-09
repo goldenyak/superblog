@@ -10,7 +10,7 @@ import { CommentsService } from '../comments/comments.service';
 import { PostsService } from '../posts/posts.service';
 import { SessionsService } from '../sessions/sessions.service';
 
-@Controller('delete-all')
+@Controller('testing')
 export class DeleteAllController {
 	constructor(
 		private readonly usersService: UsersService,
@@ -21,7 +21,7 @@ export class DeleteAllController {
 		private readonly sessionsService: SessionsService,
 	) {}
 
-	@Delete()
+	@Delete('delete-all')
 	async deleteAll() {
 		await this.usersService.deleteAll();
 		await this.blogsService.deleteAll();
