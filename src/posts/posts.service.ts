@@ -99,4 +99,8 @@ export class PostsService {
 	async updatePostById(id: string, title: string, shortDescription: string, content: string) {
 		return await this.postsRepository.updatePostById(id, title, shortDescription, content);
 	}
+
+	async deleteAll() {
+		return await this.postsRepository.deleteAll();
+	}
 }

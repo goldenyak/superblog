@@ -119,7 +119,7 @@ export class AuthService {
 		return this.jwtModel.findOneAndUpdate({ token: refreshToken }, { isValid: false });
 	}
 
-	// async deleteAll() {
-	// 	return this.authRepository.deleteAll();
-	// }
+	async deleteAll() {
+		return this.authRepository.deleteAll();
+	}
 }

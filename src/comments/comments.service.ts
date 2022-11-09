@@ -67,4 +67,8 @@ export class CommentsService {
 	async updateCommentById(id: string, content: string) {
 		return await this.commentsRepository.updateCommentById(id, content);
 	}
+
+	async deleteAll() {
+		return await this.commentsRepository.deleteAll();
+	}
 }

@@ -2,12 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
+import { SessionsRepository } from "./sessions.repository";
 
 @Injectable()
 export class SessionsService {
-	constructor(private readonly JwtService: JwtService,
-							private readonly configService: ConfigService) {}
+	constructor(
+		private readonly sessionsRepository: SessionsRepository,
+		private readonly JwtService: JwtService,
+		private readonly configService: ConfigService,
+	) {}
 
 	async createNewSession(
 		userIp: string,
@@ -15,21 +19,25 @@ export class SessionsService {
 		refreshToken: string,
 		sessionTitle: string,
 	) {
-    const newRefreshToken = refreshToken.split('.').splice(0,2).join('.')
-    console.log(newRefreshToken);
+		const newRefreshToken = refreshToken.split('.').splice(0, 2).join('.');
+		console.log(newRefreshToken);
 		const tokenPayload = await this.JwtService.verify(
-			refreshToken
+			refreshToken,
 			// this.configService.get('JWT_SECRET'),
 		);
 		console.log(tokenPayload);
 		const session: CreateSessionDto = {
 			ip: userIp,
-      title: sessionTitle,
-      lastActiveDate: new Date(),
-      deviceId: uuidv4(),
-      tokenExpiredDate: tokenPayload.expiresIn,
-      userId: userId,
+			title: sessionTitle,
+			lastActiveDate: new Date(),
+			deviceId: uuidv4(),
+			tokenExpiredDate: tokenPayload.expiresIn,
+			userId: userId,
 		};
-    console.log(session);
+		console.log(session);
+	}
+
+	async deleteAll() {
+		return await this.sessionsRepository.deleteAll();
 	}
 }

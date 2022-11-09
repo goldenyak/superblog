@@ -111,4 +111,8 @@ export class PostsRepository {
 			return -1;
 		}
 	}
+
+	async deleteAll() {
+		return this.postsModel.deleteMany().exec();
+	}
 }

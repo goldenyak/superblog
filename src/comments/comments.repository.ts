@@ -81,4 +81,9 @@ export class CommentsRepository {
 			return -1;
 		}
 	}
+
+
+	async deleteAll() {
+		return this.commentsModel.deleteMany().exec();
+	}
 }

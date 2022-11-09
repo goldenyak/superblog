@@ -6,8 +6,8 @@ import { Auth, AuthDocument } from './schemas/auth.schema';
 @Injectable()
 export class AuthRepository {
 	constructor(@InjectModel(Auth.name) private readonly authModel: Model<AuthDocument>) {}
-	//
-	// async deleteAll() {
-	// 	return this.authModel.deleteMany();
-	// }
+
+	async deleteAll() {
+		return this.authModel.deleteMany().exec();
+	}
 }

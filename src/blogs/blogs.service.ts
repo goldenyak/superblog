@@ -87,4 +87,8 @@ export class BlogsService {
 	async updateBlogById(id: string, name: string, youtubeUrl: string) {
 		return await this.blogsRepository.updateBlogById(id, name, youtubeUrl);
 	}
+
+	async deleteAll() {
+		return await this.blogsRepository.deleteAll();
+	}
 }

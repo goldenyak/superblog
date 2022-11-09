@@ -5,17 +5,30 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { Model } from 'mongoose';
 import { AuthService } from '../auth/auth.service';
+import { BlogsService } from '../blogs/blogs.service';
+import { CommentsService } from '../comments/comments.service';
+import { PostsService } from '../posts/posts.service';
+import { SessionsService } from '../sessions/sessions.service';
 
 @Controller('delete-all')
 export class DeleteAllController {
 	constructor(
 		private readonly usersService: UsersService,
 		private readonly authService: AuthService,
+		private readonly blogsService: BlogsService,
+		private readonly commentsService: CommentsService,
+		private readonly postsService: PostsService,
+		private readonly sessionsService: SessionsService,
 	) {}
 
 	@Delete()
 	async deleteAll() {
-		return await this.usersService.deleteAll();
-		// await this.authService.deleteAll();
+		await this.usersService.deleteAll();
+		await this.blogsService.deleteAll();
+		await this.commentsService.deleteAll();
+		await this.postsService.deleteAll();
+		await this.sessionsService.deleteAll();
+		await this.authService.deleteAll();
+		return true;
 	}
 }

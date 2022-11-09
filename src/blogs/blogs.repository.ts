@@ -79,4 +79,8 @@ export class BlogsRepository {
 			return { name: { $regex: searchNameTerm, $options: 'i' } };
 		}
 	}
+
+	async deleteAll() {
+		return this.blogsModel.deleteMany().exec();
+	}
 }
