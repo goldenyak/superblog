@@ -14,7 +14,7 @@ export class CreateSessionDto {
 	deviceId: string;
 
 	@IsString()
-	tokenExpiredDate: string;
+	tokenExpiredDate: Date;
 
 	@IsString()
 	userId: string;

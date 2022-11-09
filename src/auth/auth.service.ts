@@ -32,7 +32,8 @@ export class AuthService {
 	}
 
 	async login(email: string, id: string) {
-		const payload = { email, id };
+		const deviceId = uuidv4()
+		const payload = { email, id, deviceId};
 		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '1h' });
 		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '24h' });
 		// const refreshToken = await this.createRefreshToken(email, id);

@@ -3,7 +3,8 @@ import { CreateSessionDto } from './dto/create-session.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { SessionsRepository } from "./sessions.repository";
+import { SessionsRepository } from './sessions.repository';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class SessionsService {
@@ -11,6 +12,7 @@ export class SessionsService {
 		private readonly sessionsRepository: SessionsRepository,
 		private readonly JwtService: JwtService,
 		private readonly configService: ConfigService,
+		private readonly usersService: UsersService,
 	) {}
 
 	async createNewSession(
@@ -19,22 +21,39 @@ export class SessionsService {
 		refreshToken: string,
 		sessionTitle: string,
 	) {
-		const newRefreshToken = refreshToken.split('.').splice(0, 2).join('.');
-		console.log(newRefreshToken);
-		const tokenPayload = await this.JwtService.verify(
-			refreshToken,
-			// this.configService.get('JWT_SECRET'),
-		);
-		console.log(tokenPayload);
+		// const newRefreshToken = refreshToken.split('.').splice(0, 2).join('.');
+		const tokenPayload = await this.JwtService.verify(refreshToken);
 		const session: CreateSessionDto = {
 			ip: userIp,
 			title: sessionTitle,
-			lastActiveDate: new Date(),
-			deviceId: uuidv4(),
-			tokenExpiredDate: tokenPayload.expiresIn,
+			lastActiveDate: new Date(tokenPayload.iat * 1000),
+			deviceId: tokenPayload.deviceId,
+			tokenExpiredDate: new Date(tokenPayload.exp * 1000),
 			userId: userId,
 		};
-		console.log(session);
+		return await this.sessionsRepository.create(session);
+	}
+
+	async getAllDevices(userId: string) {
+		const userSessions = await this.sessionsRepository.getAllDevices(userId);
+		return userSessions.map((el) => ({
+			ip: el.ip,
+			title: el.title,
+			lastActiveDate: el.lastActiveDate,
+			deviceId: el.deviceId,
+		}));
+	}
+
+	async checkRefreshToken(refreshToken: string) {
+		try {
+			return await this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
+			// const currentUser = await this.usersService.findUserById(result.id);
+			// if (!currentUser) {
+			// 	return false;
+			// }
+		} catch (error) {
+			return false;
+		}
 	}
 
 	async deleteAll() {

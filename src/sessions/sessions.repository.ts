@@ -1,14 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Sessions, SessionsDocument } from "./schemas/session.schema";
+import { Sessions, SessionsDocument } from './schemas/session.schema';
+import { CreateSessionDto } from './dto/create-session.dto';
 
 @Injectable()
 export class SessionsRepository {
-  constructor(@InjectModel(Sessions.name) private readonly sessionsModel: Model<SessionsDocument>) {}
+	constructor(
+		@InjectModel(Sessions.name) private readonly sessionsModel: Model<SessionsDocument>,
+	) {}
 
+	async create(session: CreateSessionDto) {
+		return await this.sessionsModel.create(session);
+	}
 
-  async deleteAll() {
-    return this.sessionsModel.deleteMany().exec();
-  }
+	async getAllDevices(userId: string) {
+		return this.sessionsModel.find({userId: userId})
+	}
+
+	async deleteAll() {
+		return this.sessionsModel.deleteMany().exec();
+	}
 }

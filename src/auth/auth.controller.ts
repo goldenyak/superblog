@@ -59,7 +59,7 @@ export class AuthController {
 
 		const user = await this.usersService.validateUser(dto.login, dto.password);
 		const { accessToken, refreshToken } = await this.authService.login(user.email, user.id);
-		res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+		await res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle)
 		return {
 			accessToken,
