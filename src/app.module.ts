@@ -13,6 +13,7 @@ import { DeleteAllModule } from './delete-all/delete-all.module';
 import { MailerModule } from "@nestjs-modules/mailer";
 import { getMailConfig } from "./configs/mail.config";
 import { ThrottlerModule } from "@nestjs/throttler";
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
 	imports: [
@@ -41,6 +42,7 @@ import { ThrottlerModule } from "@nestjs/throttler";
 		PostsModule,
 		CommentsModule,
 		DeleteAllModule,
+		SessionsModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

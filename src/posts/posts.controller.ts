@@ -10,9 +10,9 @@ import {
 	Post,
 	Put,
 	Query,
-	Req,
-	UseGuards,
-} from '@nestjs/common';
+	Req, Res,
+	UseGuards
+} from "@nestjs/common";
 import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-post.dto';
 import { NOT_FOUND_BLOG_ERROR } from '../blogs/constants/blogs.constants';
@@ -33,6 +33,7 @@ export class PostsController {
 		private readonly usersService: UsersService,
 	) {}
 
+	@UseGuards(JwtAuthGuard)
 	@Post()
 	async create(@Body() dto: CreatePostsDto) {
 		return await this.postsService.create(dto);
@@ -57,8 +58,6 @@ export class PostsController {
 		}
 	}
 
-	// @UseGuards(JwtAuthGuard)
-	@UseGuards(ThrottlerIpGuard)
 	@HttpCode(200)
 	@Get()
 	async getAllPosts(
@@ -68,7 +67,12 @@ export class PostsController {
 		@Query('sortDirection') sortDirection: string,
 		@Req() req: Request,
 	) {
-		// console.log(req.socket.remoteAddress);
+		// console.log(req.headers["user-agent"]);
+		// console.log(req.ip);
+		// const deviceId = uuidv4()
+		// const accessToken = req.cookies.accessToken
+		// console.log(req.cookies);
+		// console.log(accessToken);
 
 		// const parseIp = (req) =>
 		// 	req.headers['x-forwarded-for']?.split(',').shift()
@@ -111,6 +115,7 @@ export class PostsController {
 		return foundedPost;
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(204)
 	@Delete(':id')
 	async deletePostById(@Param('id') id: string) {
@@ -121,6 +126,7 @@ export class PostsController {
 		return;
 	}
 
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(204)
 	@Put(':id')
 	async updatePostById(@Body() dto: UpdatePostDto, @Param('id') id: string) {

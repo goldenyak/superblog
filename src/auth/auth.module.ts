@@ -9,11 +9,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from '../configs/jwt.config';
 import { Jwt, JwtSchema } from './schemas/jwt.schema';
+import { SessionsModule } from "../sessions/sessions.module";
 
 @Module({
 	imports: [
 		UsersModule,
 		ConfigModule,
+		SessionsModule,
 		MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema }]),
 		MongooseModule.forFeature([{ name: Jwt.name, schema: JwtSchema }]),
 		JwtModule.registerAsync({

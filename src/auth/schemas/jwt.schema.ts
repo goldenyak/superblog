@@ -16,7 +16,7 @@ export class Jwt {
   isValid: boolean;
 
   @Prop()
-  expiresIn: Date;
+  expiresIn?: Date;
 
   @Prop()
   user: string;

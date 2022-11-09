@@ -27,12 +27,7 @@ import { APP_GUARD } from "@nestjs/core";
 		}),
 	],
 	controllers: [PostsController],
-	providers: [PostsService, PostsRepository,
-		// {
-		// 	provide: APP_GUARD,
-		// 	useClass: ThrottlerGuard
-		// }
-	],
+	providers: [PostsService, PostsRepository,],
 	exports: [PostsService],
 })
 export class PostsModule {}
