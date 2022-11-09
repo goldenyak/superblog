@@ -18,7 +18,7 @@ export class SessionsService {
     const newRefreshToken = refreshToken.split('.').splice(0,2).join('.')
     console.log(newRefreshToken);
 		const tokenPayload = await this.JwtService.verify(
-			refreshToken,
+			refreshToken
 			// this.configService.get('JWT_SECRET'),
 		);
 		console.log(tokenPayload);
