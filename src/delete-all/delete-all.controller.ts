@@ -1,4 +1,4 @@
-import { Controller, Delete } from '@nestjs/common';
+import { Controller, Delete, HttpCode } from "@nestjs/common";
 import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,6 +21,7 @@ export class DeleteAllController {
 		private readonly sessionsService: SessionsService,
 	) {}
 
+	@HttpCode(204)
 	@Delete('all-data')
 	async deleteAll() {
 		await this.usersService.deleteAll();
