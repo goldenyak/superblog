@@ -10,6 +10,8 @@ import { PostsRepository } from './posts.repository';
 import { BlogsModule } from '../blogs/blogs.module';
 import { CommentsModule } from "../comments/comments.module";
 import { UsersModule } from "../users/users.module";
+import { ThrottlerGuard } from "@nestjs/throttler";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
 	imports: [
@@ -25,7 +27,12 @@ import { UsersModule } from "../users/users.module";
 		}),
 	],
 	controllers: [PostsController],
-	providers: [PostsService, PostsRepository],
+	providers: [PostsService, PostsRepository,
+		// {
+		// 	provide: APP_GUARD,
+		// 	useClass: ThrottlerGuard
+		// }
+	],
 	exports: [PostsService],
 })
 export class PostsModule {}

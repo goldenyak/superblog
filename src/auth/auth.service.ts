@@ -90,7 +90,7 @@ export class AuthService {
 
 	async createRefreshToken(email: string, id: string) {
 		const tokenByUserId = await this.getTokenByUserId(id);
-		console.log(tokenByUserId);
+		// console.log(tokenByUserId);
 		// if(tokenByUserId && tokenByUserId.isValid === true) {
 		// 	return false
 		// }

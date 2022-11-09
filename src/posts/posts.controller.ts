@@ -16,7 +16,6 @@ import {
 import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-post.dto';
 import { NOT_FOUND_BLOG_ERROR } from '../blogs/constants/blogs.constants';
-import { UpdateBlogDto } from '../blogs/dto/update-blog.dto';
 import { NOT_FOUND_POST_ERROR } from './constants/posts.constants';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateCommentDto } from '../comments/dto/create-comment.dto';
@@ -24,6 +23,7 @@ import { CommentsService } from '../comments/comments.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Request } from 'express';
 import { UsersService } from "../users/users.service";
+import { ThrottlerIpGuard } from "../guards/throttle-ip.guard";
 
 @Controller('posts')
 export class PostsController {
@@ -57,6 +57,8 @@ export class PostsController {
 		}
 	}
 
+	// @UseGuards(JwtAuthGuard)
+	@UseGuards(ThrottlerIpGuard)
 	@HttpCode(200)
 	@Get()
 	async getAllPosts(
@@ -64,7 +66,15 @@ export class PostsController {
 		@Query('pageSize') pageSize: number,
 		@Query('sortBy') sortBy: string,
 		@Query('sortDirection') sortDirection: string,
+		@Req() req: Request,
 	) {
+		// console.log(req.socket.remoteAddress);
+
+		// const parseIp = (req) =>
+		// 	req.headers['x-forwarded-for']?.split(',').shift()
+		// 	|| req.socket?.remoteAddress
+		//
+		// console.log(parseIp(req))
 		return await this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
 	}
 

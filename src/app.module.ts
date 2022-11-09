@@ -12,6 +12,7 @@ import { getMongoConfig } from "./configs/mongo.config";
 import { DeleteAllModule } from './delete-all/delete-all.module';
 import { MailerModule } from "@nestjs-modules/mailer";
 import { getMailConfig } from "./configs/mail.config";
+import { ThrottlerModule } from "@nestjs/throttler";
 
 @Module({
 	imports: [
@@ -25,6 +26,14 @@ import { getMailConfig } from "./configs/mail.config";
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: getMailConfig,
+		}),
+		ThrottlerModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (config: ConfigService) => ({
+				ttl: config.get('THROTTLE_TTL'),
+				limit: config.get('THROTTLE_LIMIT'),
+			}),
 		}),
 		AuthModule,
 		BlogsModule,
