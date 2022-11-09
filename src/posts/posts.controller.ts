@@ -24,6 +24,7 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Request } from 'express';
 import { UsersService } from "../users/users.service";
 import { ThrottlerIpGuard } from "../guards/throttle-ip.guard";
+import { BasicAuthGuard } from "../guards/basic-auth.guard";
 
 @Controller('posts')
 export class PostsController {
@@ -33,13 +34,13 @@ export class PostsController {
 		private readonly usersService: UsersService,
 	) {}
 
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(BasicAuthGuard)
 	@Post()
 	async create(@Body() dto: CreatePostsDto) {
 		return await this.postsService.create(dto);
 	}
 
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(BasicAuthGuard)
 	@Post(':postId/comments')
 	async createCommentByPostId(
 		@Param('postId') postId: string,
@@ -67,18 +68,6 @@ export class PostsController {
 		@Query('sortDirection') sortDirection: string,
 		@Req() req: Request,
 	) {
-		// console.log(req.headers["user-agent"]);
-		// console.log(req.ip);
-		// const deviceId = uuidv4()
-		// const accessToken = req.cookies.accessToken
-		// console.log(req.cookies);
-		// console.log(accessToken);
-
-		// const parseIp = (req) =>
-		// 	req.headers['x-forwarded-for']?.split(',').shift()
-		// 	|| req.socket?.remoteAddress
-		//
-		// console.log(parseIp(req))
 		return await this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
 	}
 
@@ -115,7 +104,7 @@ export class PostsController {
 		return foundedPost;
 	}
 
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(BasicAuthGuard)
 	@HttpCode(204)
 	@Delete(':id')
 	async deletePostById(@Param('id') id: string) {
@@ -126,7 +115,7 @@ export class PostsController {
 		return;
 	}
 
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(BasicAuthGuard)
 	@HttpCode(204)
 	@Put(':id')
 	async updatePostById(@Body() dto: UpdatePostDto, @Param('id') id: string) {

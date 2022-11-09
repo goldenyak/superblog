@@ -9,23 +9,26 @@ import {
 	Param,
 	Post,
 	Put,
-	Query,
-} from '@nestjs/common';
+	Query, UseGuards
+} from "@nestjs/common";
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { BlogsService } from './blogs.service';
 import { NOT_FOUND_BLOG_ERROR } from './constants/blogs.constants';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { CreatePostsDto } from '../posts/dto/create-post.dto';
+import { BasicAuthGuard } from "../guards/basic-auth.guard";
 
 @Controller('blogs')
 export class BlogsController {
 	constructor(private readonly blogsService: BlogsService) {}
 
+	@UseGuards(BasicAuthGuard)
 	@Post()
 	async create(@Body() dto: CreateBlogsDto) {
 		return await this.blogsService.create(dto);
 	}
 
+	@UseGuards(BasicAuthGuard)
 	@Post(':blogId/posts')
 	async createPostByBlogId(@Param('blogId') blogId: string, @Body() dto: CreatePostsDto) {
 		const blogById = await this.blogsService.findBlogById(blogId);
@@ -85,6 +88,7 @@ export class BlogsController {
 		return foundedBlog;
 	}
 
+	@UseGuards(BasicAuthGuard)
 	@HttpCode(204)
 	@Delete(':id')
 	async deleteBlogById(@Param('id') id: string) {
@@ -95,6 +99,7 @@ export class BlogsController {
 		return;
 	}
 
+	@UseGuards(BasicAuthGuard)
 	@HttpCode(204)
 	@Put(':id')
 	async updateBlogById(@Body() dto: UpdateBlogDto, @Param('id') id: string) {

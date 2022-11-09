@@ -19,6 +19,7 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { BasicAuthGuard } from "../guards/basic-auth.guard";
 
 @Controller('comments')
 export class CommentsController {
@@ -37,7 +38,7 @@ export class CommentsController {
 		return commentById;
 	}
 
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(BasicAuthGuard)
 	@HttpCode(204)
 	@Delete(':id')
 	async deleteCommentById(@Param('id') id: string, @Req() req: Request) {
@@ -54,7 +55,7 @@ export class CommentsController {
 		}
 	}
 
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(BasicAuthGuard)
 	@HttpCode(204)
 	@Put(':id')
 	async updateCommentById(
