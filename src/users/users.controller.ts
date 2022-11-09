@@ -25,7 +25,7 @@ export class UsersController {
 
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(201)
-	@Post('create')
+	@Post()
 	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
 		// console.log(req);
 		const currentUser = await this.usersService.findUserByLogin(dto.login);
