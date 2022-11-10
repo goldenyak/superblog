@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Get,
@@ -69,7 +70,7 @@ export class AuthController {
 
 	@HttpCode(200)
 	@Post('refresh-token')
-	async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response,) {
+	async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
 		const refreshToken = await req.cookies.refreshToken;
 		const result = await this.authService.checkRefreshToken(refreshToken);
 		if (!refreshToken) {
@@ -85,7 +86,7 @@ export class AuthController {
 		);
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
-			accessToken: newAccessToken
+			accessToken: newAccessToken,
 		};
 	}
 
@@ -103,7 +104,11 @@ export class AuthController {
 	@HttpCode(204)
 	@Post('registration-confirmation')
 	async registrationConfirmation(@Body() dto: FindUserByCodeDto) {
-		return await this.usersService.findUserByConfirmationCode(dto.code);
+		const foundedUser = await this.usersService.findUserByConfirmationCode(dto.code);
+		if (!foundedUser || foundedUser.isConfirmed === true) {
+			throw new BadRequestException();
+		}
+		return await this.usersService.updateConfirmationCode(dto.code)
 	}
 
 	@UseGuards(ThrottlerIpGuard)

@@ -53,6 +53,10 @@ export class UsersRepository {
 	}
 
 	async findUserByConfirmationCode(code: string) {
+		return this.userModel.findOne({ confirmationCode: code });
+	}
+
+	async updateConfirmationCode(code: string) {
 		return this.userModel.findOneAndUpdate({ confirmationCode: code }, { isConfirmed: true });
 	}
 

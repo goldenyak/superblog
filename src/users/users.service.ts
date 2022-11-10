@@ -74,6 +74,10 @@ export class UsersService {
 		return await this.usersRepository.findUserByConfirmationCode(code)
 	}
 
+	async updateConfirmationCode(code: string) {
+		return await this.usersRepository.updateConfirmationCode(code)
+	}
+
 	async deleteUserById(id: string) {
 		return await this.usersRepository.deleteUserById(id);
 	}
