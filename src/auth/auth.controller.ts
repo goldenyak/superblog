@@ -37,11 +37,11 @@ export class AuthController {
 	@Post('registration')
 	async register(@Body() dto: CreateUserDto) {
 		const checkUser = await this.authService.findUser(dto.login);
-		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email)
+		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
 		if (checkUser || checkUserByEmail) {
 			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
 		} else {
-			const confirmEmail = await this.authService.sendConfirmEmail(dto);
+			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
 			const emailResponseCode = confirmEmail.response.split(' ')[0];
 			console.log(emailResponseCode);
 			return await this.authService.create(dto);
@@ -113,12 +113,17 @@ export class AuthController {
 	}
 
 	@UseGuards(ThrottlerIpGuard)
+	@HttpCode(204)
 	@Post('registration-email-resending')
 	async registrationEmailFResending(@Body() dto: EmailResendingDto, @Req() req: Request) {
-		const token = await req.cookies;
-		const user = await this.usersService.findUserByEmail(dto.email);
-		// const token = await this.authService.getTokenByUserId(user.id)
-		console.log(token);
+		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
+		if (!checkUserByEmail) {
+			throw new BadRequestException();
+		} else {
+			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
+			const emailResponseCode = confirmEmail.response.split(' ')[0];
+			console.log(emailResponseCode);
+		}
 	}
 
 	@HttpCode(200)
