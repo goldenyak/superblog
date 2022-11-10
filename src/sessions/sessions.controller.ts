@@ -12,9 +12,8 @@ import {
 } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { elementAt } from 'rxjs';
+
 
 @Injectable()
 @Controller('security')
@@ -29,7 +28,6 @@ export class SessionsController {
 	async getAllSessions(@Req() req: Request) {
 		const refreshToken = req.cookies.refreshToken;
 		const tokenPayload = await this.sessionsService.checkRefreshToken(refreshToken);
-		// console.log('tokenPayload', tokenPayload);
 		if (!refreshToken || !tokenPayload) {
 			throw new UnauthorizedException();
 		}

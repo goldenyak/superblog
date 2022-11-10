@@ -32,8 +32,8 @@ export class AuthService {
 	}
 
 	async login(email: string, id: string) {
-		const deviceId = uuidv4()
-		const payload = { email, id, deviceId};
+		const deviceId = uuidv4();
+		const payload = { email, id, deviceId };
 		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '1h' });
 		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '24h' });
 		// const refreshToken = await this.createRefreshToken(email, id);
@@ -43,9 +43,12 @@ export class AuthService {
 		};
 	}
 
-	async createToken({ email, id }) {
+	async createToken(email: string, id: string, deviceId: string) {
 		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '1h' });
-		const newRefreshToken = await this.createRefreshToken(email, id);
+		const newRefreshToken = await this.JwtService.signAsync(
+			{ email, id, deviceId },
+			{ expiresIn: '24h' },
+		);
 		return {
 			newAccessToken,
 			newRefreshToken,
@@ -53,26 +56,26 @@ export class AuthService {
 	}
 
 	async checkRefreshToken(refreshToken: string) {
-		try {
-			const result = await this.JwtService.verify(
-				refreshToken,
-				this.configService.get('JWT_SECRET'),
-			);
-			const currentUser = await this.usersService.findUserById(result.id);
-			if (!currentUser) {
-				return false;
-			}
-			const currentToken = await this.getToken(refreshToken);
-			if (currentToken.isValid) {
-				await this.deactivateToken(refreshToken);
-				return currentUser;
-			} else {
-				return false;
-			}
-		} catch (error) {
-			return false;
-		}
+		return this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
 	}
+
+	// async checkRefreshToken(refreshToken: string) {
+	// 	try {
+	// 		return await this.JwtService.verify(
+	// 			refreshToken,
+	// 			this.configService.get('JWT_SECRET'),
+	// 		);
+	// 		// if (result) {
+	// 		// 	const currentUser = await this.usersService.findUserById(result.id);
+	// 		// 	if (!currentUser) {
+	// 		// 		return false;
+	// 		// 	}
+	// 		// 	return currentUser;
+	// 		// }
+	// 	} catch (error) {
+	// 		return false;
+	// 	}
+	// }
 
 	async sendConfirmEmail(dto: CreateUserDto) {
 		return await this.mailerService
@@ -91,17 +94,11 @@ export class AuthService {
 	}
 
 	async createRefreshToken(email: string, id: string) {
-		const tokenByUserId = await this.getTokenByUserId(id);
-		// console.log(tokenByUserId);
-		// if(tokenByUserId && tokenByUserId.isValid === true) {
-		// 	return false
-		// }
 		const refreshToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '24h' });
 		const newRefreshToken: Jwt = {
 			id: uuidv4(),
 			token: refreshToken,
 			isValid: true,
-			// expiresIn: new Date(),
 			user: id,
 		};
 		await this.jwtModel.create(newRefreshToken);

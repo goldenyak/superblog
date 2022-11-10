@@ -19,10 +19,9 @@ import { Request, Response } from 'express';
 import { NOT_FOUND_TOKEN_ERROR, NOT_FOUND_USER_BY_TOKEN_ERROR } from './constants/auth.constants';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { FindUserByCodeDto } from '../users/dto/find-user-by-code.dto';
-import { EmailResendingDto } from "../users/dto/email-resending.dto";
-import { ThrottlerIpGuard } from "../guards/throttle-ip.guard";
-import { SessionsService } from "../sessions/sessions.service";
-import { CreateSessionDto } from "../sessions/dto/create-session.dto";
+import { EmailResendingDto } from '../users/dto/email-resending.dto';
+import { ThrottlerIpGuard } from '../guards/throttle-ip.guard';
+import { SessionsService } from '../sessions/sessions.service';
 
 @Controller('auth')
 export class AuthController {
@@ -55,34 +54,38 @@ export class AuthController {
 		@Req() req: Request,
 		@Body() dto: LoginDto,
 	) {
-		const userIp = req.ip
-		const sessionTitle = req.headers["user-agent"]
+		const userIp = req.ip;
+		const sessionTitle = req.headers['user-agent'];
 
 		const user = await this.usersService.validateUser(dto.login, dto.password);
 		const { accessToken, refreshToken } = await this.authService.login(user.email, user.id);
 		await res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle)
+		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle);
 		return {
 			accessToken,
-			refreshToken
+			refreshToken,
 		};
 	}
 
 	@HttpCode(200)
 	@Post('refresh-token')
-	async refreshToken(@Req() req: Request, @Res() res: Response) {
+	async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response,) {
 		const refreshToken = await req.cookies.refreshToken;
+		const result = await this.authService.checkRefreshToken(refreshToken);
 		if (!refreshToken) {
 			throw new HttpException(NOT_FOUND_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
-		const currentUser = await this.authService.checkRefreshToken(refreshToken);
-		if (!currentUser) {
+		if (!result) {
 			throw new HttpException(NOT_FOUND_USER_BY_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
-		const { newAccessToken, newRefreshToken } = await this.authService.createToken(currentUser);
-		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
+		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
+			result.email,
+			result.id,
+			result.deviceId,
+		);
+		res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
-			accessToken: newAccessToken,
+			newAccessToken,
 		};
 	}
 
@@ -90,14 +93,11 @@ export class AuthController {
 	@Post('logout')
 	async logout(@Req() req: Request) {
 		const refreshToken = req.cookies.refreshToken;
-		// console.log(refreshToken);
-		// Провалидировать токен
 		if (!refreshToken) {
 			throw new HttpException(NOT_FOUND_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
 		return await this.authService.checkRefreshToken(refreshToken);
 	}
-
 
 	@UseGuards(ThrottlerIpGuard)
 	@HttpCode(204)
@@ -109,7 +109,7 @@ export class AuthController {
 	@UseGuards(ThrottlerIpGuard)
 	@Post('registration-email-resending')
 	async registrationEmailFResending(@Body() dto: EmailResendingDto) {
-		const user = await this.usersService.findUserByEmail(dto.email)
+		const user = await this.usersService.findUserByEmail(dto.email);
 		if (user && user.isConfirmed) {
 			// throw new HttpException({}, 200);
 		}
