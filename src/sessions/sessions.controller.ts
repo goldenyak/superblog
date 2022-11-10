@@ -43,7 +43,18 @@ export class SessionsController {
 	@Delete('devices')
 	async deleteAllSessions(@Req() req: Request) {
 		const refreshToken = req.cookies.refreshToken;
-		console.log(refreshToken);
+		const tokenPayload = await this.sessionsService.checkRefreshToken(refreshToken);
+		const currentUser = await this.usersService.findUserById(tokenPayload.id);
+		if (!refreshToken || !tokenPayload) {
+			throw new UnauthorizedException();
+		}
+		const currentSession = await this.sessionsService.getSessionsByDeviceId(tokenPayload.deviceId)
+		console.log(currentSession);
+		console.log(tokenPayload);
+		console.log(currentUser.id);
+		if (currentSession.deviceId === tokenPayload.deviceId) {
+			return await this.sessionsService.deleteAllSessionsWithExclude(currentSession.deviceId, currentUser.id)
+		}
 	}
 
 	@HttpCode(204)

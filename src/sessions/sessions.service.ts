@@ -48,6 +48,10 @@ export class SessionsService {
 		return await this.sessionsRepository.getSessionsByDeviceId(deviceId);
 	}
 
+	async deleteAllSessionsWithExclude(deviceId: string, userId: string) {
+		return await this.sessionsRepository.deleteAllSessionsWithExclude(deviceId, userId)
+	}
+
 	async deleteSessionByDeviceId(deviceId: string) {
 		return await this.sessionsRepository.deleteSessionByDeviceId(deviceId)
 	}

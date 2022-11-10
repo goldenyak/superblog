@@ -23,7 +23,11 @@ export class SessionsRepository {
 	}
 
 	async deleteSessionByDeviceId(deviceId: string) {
-		return this.sessionsModel.findOneAndDelete({deviceId: deviceId})
+		return this.sessionsModel.findOneAndDelete({ deviceId: deviceId });
+	}
+
+	async deleteAllSessionsWithExclude(deviceId: string, userId: string) {
+		return this.sessionsModel.deleteMany({ deviceId: { $ne: deviceId },  userId: userId} );
 	}
 
 	async deleteAll() {
