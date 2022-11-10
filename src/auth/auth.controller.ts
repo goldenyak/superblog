@@ -83,9 +83,9 @@ export class AuthController {
 			result.id,
 			result.deviceId,
 		);
-		res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
+		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
-			newAccessToken,
+			accessToken: newAccessToken
 		};
 	}
 
