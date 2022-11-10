@@ -32,6 +32,7 @@ export class AuthController {
 		private readonly sessionsService: SessionsService,
 	) {}
 
+	@UseGuards(ThrottlerIpGuard)
 	@HttpCode(204)
 	@Post('registration')
 	async register(@Body() dto: CreateUserDto) {
