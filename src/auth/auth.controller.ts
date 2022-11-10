@@ -36,8 +36,9 @@ export class AuthController {
 	@HttpCode(204)
 	@Post('registration')
 	async register(@Body() dto: CreateUserDto) {
-		const currentUser = await this.authService.findUser(dto.login);
-		if (currentUser) {
+		const checkUser = await this.authService.findUser(dto.login);
+		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email)
+		if (checkUser || checkUserByEmail) {
 			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
 		} else {
 			const confirmEmail = await this.authService.sendConfirmEmail(dto);
@@ -108,16 +109,16 @@ export class AuthController {
 		if (!foundedUser || foundedUser.isConfirmed === true) {
 			throw new BadRequestException();
 		}
-		return await this.usersService.updateConfirmationCode(dto.code)
+		return await this.usersService.updateConfirmationCode(dto.code);
 	}
 
 	@UseGuards(ThrottlerIpGuard)
 	@Post('registration-email-resending')
-	async registrationEmailFResending(@Body() dto: EmailResendingDto) {
+	async registrationEmailFResending(@Body() dto: EmailResendingDto, @Req() req: Request) {
+		const token = await req.cookies;
 		const user = await this.usersService.findUserByEmail(dto.email);
-		if (user && user.isConfirmed) {
-			// throw new HttpException({}, 200);
-		}
+		// const token = await this.authService.getTokenByUserId(user.id)
+		console.log(token);
 	}
 
 	@HttpCode(200)

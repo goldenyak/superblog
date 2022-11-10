@@ -23,7 +23,7 @@ export class CreateUserDto {
 	login: string;
 
 	@IsNotEmpty()
-	@IsEmail()
+	@IsEmail({unique: true})
 	email: string;
 
 	@IsNotEmpty()

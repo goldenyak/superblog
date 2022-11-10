@@ -106,7 +106,7 @@ export class AuthService {
 	}
 
 	getTokenByUserId(id: string) {
-		return this.jwtModel.find({ user: id }).exec();
+		return this.jwtModel.find({ user: id });
 	}
 
 	getToken(token: string) {
