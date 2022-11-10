@@ -9,7 +9,7 @@ export class UsersRepository {
 	constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
 
 	async create(dto: CreateUserDto) {
-		return await this.userModel.create(dto);
+		return this.userModel.create(dto);
 	}
 
 	async getAllUsers(

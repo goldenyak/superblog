@@ -40,6 +40,13 @@ export class SessionsController {
 	}
 
 	@HttpCode(204)
+	@Delete('devices')
+	async deleteAllSessions(@Req() req: Request) {
+		const refreshToken = req.cookies.refreshToken;
+		console.log(refreshToken);
+	}
+
+	@HttpCode(204)
 	@Delete('devices/:deviceId')
 	async deleteSessionByDeviceId(@Param('deviceId') deviceId: string, @Req() req: Request) {
 		const refreshToken = req.cookies.refreshToken;

@@ -89,7 +89,7 @@ export class AuthController {
 	@Post('logout')
 	async logout(@Req() req: Request) {
 		const refreshToken = req.cookies.refreshToken;
-		console.log(refreshToken);
+		// console.log(refreshToken);
 		// Провалидировать токен
 		if (!refreshToken) {
 			throw new HttpException(NOT_FOUND_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
