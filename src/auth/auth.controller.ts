@@ -110,7 +110,7 @@ export class AuthController {
 	async registrationEmailFResending(@Body() dto: EmailResendingDto) {
 		const user = await this.usersService.findUserByEmail(dto.email)
 		if (user && user.isConfirmed) {
-			// throw new HttpException({}, 200);
+			throw new HttpException({}, 200);
 		}
 	}
 
