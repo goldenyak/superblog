@@ -98,7 +98,8 @@ export class AuthController {
 		if (!refreshToken) {
 			throw new HttpException(NOT_FOUND_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
-		return await this.authService.checkRefreshToken(refreshToken);
+		const tokenPayload = await this.authService.checkRefreshToken(refreshToken);
+		return await this.sessionsService.deleteSessionByDeviceId(tokenPayload.deviceId);
 	}
 
 	@UseGuards(ThrottlerIpGuard)
