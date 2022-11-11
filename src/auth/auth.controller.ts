@@ -80,6 +80,7 @@ export class AuthController {
 		if (!result) {
 			throw new HttpException(NOT_FOUND_USER_BY_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
+		await this.sessionsService.deleteSessionByDeviceId(result.deviceId)
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
 			result.email,
 			result.id,
