@@ -56,6 +56,10 @@ export class SessionsService {
 		return await this.sessionsRepository.deleteSessionByDeviceId(deviceId)
 	}
 
+	async updateSessionAfterRefresh(deviceId: string) {
+		return await this.sessionsRepository.updateSessionAfterRefresh(deviceId)
+	}
+
 	async checkRefreshToken(refreshToken: string) {
 		try {
 			return await this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));

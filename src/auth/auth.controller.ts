@@ -65,7 +65,7 @@ export class AuthController {
 		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle);
 		return {
 			accessToken,
-			refreshToken,
+			// refreshToken,
 		};
 	}
 
@@ -80,14 +80,19 @@ export class AuthController {
 		if (!result) {
 			throw new HttpException(NOT_FOUND_USER_BY_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
+		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId)
+		// console.log(foundedDevice);
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
 			result.email,
 			result.id,
 			result.deviceId,
 		);
+		const updatedSession = await this.sessionsService.updateSessionAfterRefresh(foundedDevice.deviceId)
+		console.log(updatedSession);
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken: newAccessToken,
+			// newRefreshToken
 		};
 	}
 
