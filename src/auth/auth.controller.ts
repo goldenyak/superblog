@@ -148,7 +148,6 @@ export class AuthController {
 	@Post('new-password')
 	async newPassword(@Body() dto: NewPasswordDto, @Req() req: Request) {
 		const user = await this.usersService.findUserByRecoveryCode(dto.recoveryCode);
-		console.log(user);
 		if (user.recoveryCode !== dto.recoveryCode) {
 			throw new BadRequestException();
 		}
