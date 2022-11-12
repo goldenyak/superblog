@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Jwt, JwtDocument } from './schemas/jwt.schema';
 import { v4 as uuidv4 } from 'uuid';
+import { compare, genSalt, hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -34,8 +35,8 @@ export class AuthService {
 	async login(email: string, id: string) {
 		const deviceId = uuidv4();
 		const payload = { email, id, deviceId };
-		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '10s' });
-		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '20s' });
+		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '1h' });
+		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '24h' });
 		// const refreshToken = await this.createRefreshToken(email, id);
 		return {
 			accessToken,
@@ -44,10 +45,10 @@ export class AuthService {
 	}
 
 	async createToken(email: string, id: string, deviceId: string) {
-		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '10s' });
+		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '1h' });
 		const newRefreshToken = await this.JwtService.signAsync(
 			{ email, id, deviceId },
-			{ expiresIn: '20s' },
+			{ expiresIn: '24h' },
 		);
 		return {
 			newAccessToken,
@@ -59,38 +60,44 @@ export class AuthService {
 		return this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
 	}
 
-	// async checkRefreshToken(refreshToken: string) {
-	// 	try {
-	// 		return await this.JwtService.verify(
-	// 			refreshToken,
-	// 			this.configService.get('JWT_SECRET'),
-	// 		);
-	// 		// if (result) {
-	// 		// 	const currentUser = await this.usersService.findUserById(result.id);
-	// 		// 	if (!currentUser) {
-	// 		// 		return false;
-	// 		// 	}
-	// 		// 	return currentUser;
-	// 		// }
-	// 	} catch (error) {
-	// 		return false;
-	// 	}
-	// }
-
 	async sendConfirmEmail(email: string) {
+		const user = await this.usersService.findUserByEmail(email);
 		return await this.mailerService
 			.sendMail({
 				to: email,
 				subject: 'Email confirmation code',
 				text: 'welcome',
-				html: '<b>welcome</b>',
+				html: `<a href=\'https://superblog-eight.vercel.app/auth/registration-confirmation?code=${user.confirmationCode}\'>confirm your email</a>`,
 			})
 			.catch((e) => {
 				throw new HttpException(
-					`Ошибка работы почты: ${JSON.stringify(e)}`,
+					`Ошибка работы почты! Потому что что? Потому что ты ввел какую-то хуйню!`,
 					HttpStatus.UNPROCESSABLE_ENTITY,
 				);
 			});
+	}
+
+	async sendRecoveryPasswordEmail(email: string) {
+		const recoveryCode = uuidv4();
+		await this.usersService.addRecoveryCode(email, recoveryCode);
+		return await this.mailerService
+			.sendMail({
+				to: email,
+				subject: 'Email recovery code',
+				text: 'welcome',
+				html: `<a href=\'https://superblog-eight.vercel.app/auth/password-recovery?recoveryCode=${recoveryCode}\'>recovery password</a>`,
+			})
+			.catch(() => {
+				throw new HttpException(
+					`Ошибка работы почты! Потому что что? Потому что ты ввел какую-то хуйню!`,
+					HttpStatus.BAD_REQUEST,
+				);
+			});
+	}
+
+	async setNewPassword(recoveryCode: string, newPassword: string) {
+		const passwordHash = await hash(newPassword, 10)
+		return await this.usersRepository.setNewPassword(recoveryCode, passwordHash);
 	}
 
 	async createRefreshToken(email: string, id: string) {

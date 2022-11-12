@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from './schemas/user.schema';
-import { compare, genSalt, hash } from "bcrypt";
-import { UNREGISTERED_USER_ERROR, WRONG_PASSWORD_ERROR } from "./constants/users.constants";
+import { compare, genSalt, hash } from 'bcrypt';
+import { UNREGISTERED_USER_ERROR, WRONG_PASSWORD_ERROR } from './constants/users.constants';
 
 @Injectable()
 export class UsersService {
@@ -19,14 +19,14 @@ export class UsersService {
 			id: uuidv4(),
 			createdAt: new Date(),
 			confirmationCode: uuidv4(),
-			isConfirmed: false
+			isConfirmed: false,
 		};
 		await this.usersRepository.create(newUser);
 		return {
 			id: newUser.id,
 			login: newUser.login,
 			email: newUser.email,
-			createdAt: newUser.createdAt
+			createdAt: newUser.createdAt,
 		};
 	}
 
@@ -67,15 +67,23 @@ export class UsersService {
 	}
 
 	async findUserByEmail(email: string) {
-		return await this.usersRepository.findUserByEmail(email)
+		return await this.usersRepository.findUserByEmail(email);
 	}
 
 	async findUserByConfirmationCode(code: string) {
-		return await this.usersRepository.findUserByConfirmationCode(code)
+		return await this.usersRepository.findUserByConfirmationCode(code);
+	}
+
+	async findUserByRecoveryCode(recoveryCode: string) {
+		return await this.usersRepository.findUserByRecoveryCode(recoveryCode);
 	}
 
 	async updateConfirmationCode(code: string) {
-		return await this.usersRepository.updateConfirmationCode(code)
+		return await this.usersRepository.updateConfirmationCode(code);
+	}
+
+	async addRecoveryCode(email: string, recoveryCode: string) {
+		return await this.usersRepository.addRecoveryCode(email, recoveryCode);
 	}
 
 	async deleteUserById(id: string) {

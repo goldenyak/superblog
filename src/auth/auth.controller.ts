@@ -23,6 +23,7 @@ import { FindUserByCodeDto } from '../users/dto/find-user-by-code.dto';
 import { EmailResendingDto } from '../users/dto/email-resending.dto';
 import { ThrottlerIpGuard } from '../guards/throttle-ip.guard';
 import { SessionsService } from '../sessions/sessions.service';
+import { NewPasswordDto } from '../users/dto/new-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -41,10 +42,11 @@ export class AuthController {
 		if (checkUser || checkUserByEmail) {
 			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
 		} else {
+			const newUser = await this.authService.create(dto);
 			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
 			const emailResponseCode = confirmEmail.response.split(' ')[0];
 			console.log(emailResponseCode);
-			return await this.authService.create(dto);
+			return newUser;
 		}
 	}
 
@@ -65,7 +67,7 @@ export class AuthController {
 		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle);
 		return {
 			accessToken,
-			// refreshToken,
+			refreshToken,
 		};
 	}
 
@@ -80,19 +82,21 @@ export class AuthController {
 		if (!result) {
 			throw new HttpException(NOT_FOUND_USER_BY_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
-		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId)
+		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
 		// console.log(foundedDevice);
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
 			result.email,
 			result.id,
 			result.deviceId,
 		);
-		const updatedSession = await this.sessionsService.updateSessionAfterRefresh(foundedDevice.deviceId)
+		const updatedSession = await this.sessionsService.updateSessionAfterRefresh(
+			foundedDevice.deviceId,
+		);
 		console.log(updatedSession);
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken: newAccessToken,
-			// newRefreshToken
+			newRefreshToken,
 		};
 	}
 
@@ -130,6 +134,25 @@ export class AuthController {
 			const emailResponseCode = confirmEmail.response.split(' ')[0];
 			console.log(emailResponseCode);
 		}
+	}
+
+	@UseGuards(ThrottlerIpGuard)
+	@HttpCode(204)
+	@Post('password-recovery')
+	async passwordRecovery(@Body() dto: EmailResendingDto, @Req() req: Request) {
+		return await this.authService.sendRecoveryPasswordEmail(dto.email);
+	}
+
+	@UseGuards(ThrottlerIpGuard)
+	@HttpCode(204)
+	@Post('new-password')
+	async newPassword(@Body() dto: NewPasswordDto, @Req() req: Request) {
+		const user = await this.usersService.findUserByRecoveryCode(dto.recoveryCode);
+		console.log(user);
+		if (user.recoveryCode !== dto.recoveryCode) {
+			throw new BadRequestException();
+		}
+		return await this.authService.setNewPassword(dto.recoveryCode, dto.newPassword);
 	}
 
 	@HttpCode(200)

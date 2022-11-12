@@ -49,15 +49,27 @@ export class UsersRepository {
 	}
 
 	async findUserByEmail(email: string) {
-		return this.userModel.findOne({email})
+		return this.userModel.findOne({ email });
 	}
 
 	async findUserByConfirmationCode(code: string) {
 		return this.userModel.findOne({ confirmationCode: code });
 	}
 
+	async findUserByRecoveryCode(recoveryCode: string) {
+		return this.userModel.findOne({ recoveryCode: recoveryCode });
+	}
+
 	async updateConfirmationCode(code: string) {
 		return this.userModel.findOneAndUpdate({ confirmationCode: code }, { isConfirmed: true });
+	}
+
+	async addRecoveryCode(email: string, recoveryCode: string) {
+		return this.userModel.updateOne({ email: email }, { $set: { recoveryCode: recoveryCode } });
+	}
+
+	async setNewPassword(recoveryCode: string, passwordHash: string) {
+		return this.userModel.updateOne({ recoveryCode: recoveryCode }, { password: passwordHash });
 	}
 
 	async deleteUserById(id: string) {
