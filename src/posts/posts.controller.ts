@@ -40,7 +40,7 @@ export class PostsController {
 		return await this.postsService.create(dto);
 	}
 
-	@UseGuards(BasicAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Post(':postId/comments')
 	async createCommentByPostId(
 		@Param('postId') postId: string,

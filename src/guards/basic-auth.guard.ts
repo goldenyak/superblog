@@ -5,10 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BasicAuthGuard implements CanActivate {
-	constructor(
-		private readonly jwtService: JwtService,
-		private readonly configService: ConfigService,
-	) {}
+	constructor() {}
 
 	canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
 		const req = context.switchToHttp().getRequest();

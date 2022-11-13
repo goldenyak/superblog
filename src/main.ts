@@ -15,7 +15,6 @@ async function bootstrap() {
 			exceptionFactory: (errors) => {
 				const errorsForResponse = [];
 				errors.forEach((e) => {
-					// errorsForResponse.push({ field: e.property });
 					const constraintsKeys = Object.keys(e.constraints);
 					constraintsKeys.forEach((key) => {
 						errorsForResponse.push({ message: e.constraints[key], field: e.property });

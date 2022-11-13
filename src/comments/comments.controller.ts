@@ -19,7 +19,8 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { BasicAuthGuard } from "../guards/basic-auth.guard";
+import { BasicAuthGuard } from '../guards/basic-auth.guard';
+import { LikeCommentDto } from './dto/like-comment.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -38,7 +39,7 @@ export class CommentsController {
 		return commentById;
 	}
 
-	@UseGuards(BasicAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(204)
 	@Delete(':id')
 	async deleteCommentById(@Param('id') id: string, @Req() req: Request) {
@@ -55,7 +56,7 @@ export class CommentsController {
 		}
 	}
 
-	@UseGuards(BasicAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(204)
 	@Put(':id')
 	async updateCommentById(
@@ -73,6 +74,27 @@ export class CommentsController {
 		}
 		if (user.id === commentById.userId) {
 			return await this.commentsService.updateCommentById(id, dto.content);
+		}
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@HttpCode(204)
+	@Put(':id/like-status')
+	async addLikeCommentById(
+		@Body() dto: LikeCommentDto,
+		@Param('id') id: string,
+		@Req() req: Request,
+	) {
+		const commentById = await this.commentsService.findCommentById(id);
+		const user = await this.usersService.findUserById(req.user.id);
+		if (!commentById) {
+			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
+		}
+		if (!user) {
+			throw new ForbiddenException();
+		}
+		if (user.id === commentById.userId) {
+			return await this.commentsService.addLikeCommentById(id, user.id,  dto.likeStatus);
 		}
 	}
 }

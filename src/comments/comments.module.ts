@@ -10,12 +10,14 @@ import { Blogs, BlogsSchema } from '../blogs/schemas/blogs.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from '../configs/jwt.config';
 import { Comments, CommentsSchema } from './schemas/comments.schema';
+import { LikesModule } from "../likes/likes.module";
 
 @Module({
 	imports: [
 		forwardRef(() => PostsModule),
 		UsersModule,
 		ConfigModule,
+		LikesModule,
 		MongooseModule.forFeature([{ name: Comments.name, schema: CommentsSchema }]),
 		JwtModule.registerAsync({
 			imports: [ConfigModule],

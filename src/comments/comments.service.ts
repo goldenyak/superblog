@@ -5,11 +5,13 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comments } from './schemas/comments.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../users/schemas/user.schema';
+import { LikesService } from '../likes/likes.service';
 
 @Injectable()
 export class CommentsService {
 	constructor(
 		private readonly commentsRepository: CommentsRepository,
+		private readonly likesService: LikesService,
 		@Inject(forwardRef(() => PostsService)) private readonly postsService: PostsService,
 	) {}
 
@@ -21,10 +23,16 @@ export class CommentsService {
 			userLogin: user.login,
 			postId: postId,
 			createdAt: new Date(),
+			likesInfo: {
+				likesCount: 0,
+				dislikesCount: 0,
+				myStatus: 'none',
+				type: 'comment',
+			},
 		};
 		await this.commentsRepository.create(newComment);
 		return {
-			id: uuidv4(),
+			id: newComment.id,
 			content: dto.content,
 			userId: user.id,
 			userLogin: user.login,
@@ -66,6 +74,10 @@ export class CommentsService {
 
 	async updateCommentById(id: string, content: string) {
 		return await this.commentsRepository.updateCommentById(id, content);
+	}
+
+	async addLikeCommentById(commentId: string, userId: string, likeStatus: string) {
+		return await this.likesService.createLike(commentId, userId, likeStatus);
 	}
 
 	async deleteAll() {

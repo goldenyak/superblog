@@ -14,6 +14,9 @@ import { MailerModule } from "@nestjs-modules/mailer";
 import { getMailConfig } from "./configs/mail.config";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { SessionsModule } from './sessions/sessions.module';
+import { LikesModule } from './likes/likes.module';
+import { LikesService } from "./likes/likes.service";
+
 
 @Module({
 	imports: [
@@ -43,6 +46,7 @@ import { SessionsModule } from './sessions/sessions.module';
 		CommentsModule,
 		DeleteAllModule,
 		SessionsModule,
+		LikesModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
