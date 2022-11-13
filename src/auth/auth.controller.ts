@@ -20,10 +20,10 @@ import { Request, Response } from 'express';
 import { NOT_FOUND_TOKEN_ERROR, NOT_FOUND_USER_BY_TOKEN_ERROR } from './constants/auth.constants';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { FindUserByCodeDto } from '../users/dto/find-user-by-code.dto';
-import { EmailResendingDto } from '../users/dto/email-resending.dto';
+import { EmailResendingDto } from './dto/email-resending.dto';
 import { ThrottlerIpGuard } from '../guards/throttle-ip.guard';
 import { SessionsService } from '../sessions/sessions.service';
-import { NewPasswordDto } from '../users/dto/new-password.dto';
+import { NewPasswordDto } from './dto/new-password.dto';
 
 @Controller('auth')
 export class AuthController {

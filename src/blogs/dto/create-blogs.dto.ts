@@ -1,18 +1,14 @@
-import { IsNotEmpty, IsString, IsUrl, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsUrl, Length, MaxLength } from "class-validator";
 
 export class CreateBlogsDto {
 	@IsNotEmpty()
 	@IsString()
-	@MaxLength(15, {
-		message: 'Name for blog is too long',
-	})
+	@Length(0, 15)
 	name: string;
 
 	@IsNotEmpty()
 	@IsString()
-	@MaxLength(100, {
-		message: 'youtubeUrl is too long',
-	})
+	@Length(0, 100)
 	@IsUrl()
 	youtubeUrl: string;
 }

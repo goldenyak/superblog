@@ -1,13 +1,8 @@
-import { IsNotEmpty, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsUrl, Length, MaxLength, MinLength } from 'class-validator';
 
 export class CreateCommentDto {
 	@IsNotEmpty()
 	@IsString()
-	@MinLength(20, {
-		message: 'Content is too long',
-	})
-	@MaxLength(300, {
-		message: 'Content is too long',
-	})
+	@Length(20, 300)
 	content: string;
 }
