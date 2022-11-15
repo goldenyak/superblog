@@ -13,11 +13,25 @@ export class LikesRepository {
 	}
 
 	async updateLike(userId: string, commentId: string, likeStatus: string) {
-		return this.likesModel.findOneAndUpdate({userId: userId, commentId: commentId}, {status: likeStatus})
+		return this.likesModel.findOneAndUpdate(
+			{ userId: userId, commentId: commentId },
+			{ status: likeStatus },
+		);
 	}
 
 	async findLikeByUserId(userId: string, commentId: string) {
-		return this.likesModel.find({userId: userId, commentId: commentId})
+		return this.likesModel.find({ userId: userId, commentId: commentId });
+	}
+
+	async findLikesByCommentId(id: string) {
+		return this.likesModel.aggregate([
+			{ $match: { commentId: id } },
+			{ $group: { _id: '$status', count: { $sum: 1 } } },
+		]);
+	}
+
+	async getLikeStatusByUserId(commentId: string, userId: string) {
+		return this.likesModel.findOne({commentId: commentId, userId: userId})
 	}
 
 	async deleteAll() {

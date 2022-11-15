@@ -35,8 +35,8 @@ export class AuthService {
 	async login(email: string, id: string) {
 		const deviceId = uuidv4();
 		const payload = { email, id, deviceId };
-		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '1h' });
-		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '24h' });
+		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '24h' });
+		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '25h' });
 		// const refreshToken = await this.createRefreshToken(email, id);
 		return {
 			accessToken,
@@ -45,10 +45,10 @@ export class AuthService {
 	}
 
 	async createToken(email: string, id: string, deviceId: string) {
-		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '1h' });
+		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '24h' });
 		const newRefreshToken = await this.JwtService.signAsync(
 			{ email, id, deviceId },
-			{ expiresIn: '24h' },
+			{ expiresIn: '25h' },
 		);
 		return {
 			newAccessToken,

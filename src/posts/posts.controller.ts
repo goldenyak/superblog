@@ -80,9 +80,10 @@ export class PostsController {
 		@Query('sortBy') sortBy: string,
 		@Query('sortDirection') sortDirection: string,
 		@Query('postId') postId: string,
+		@Req() req: Request
 	) {
+		console.log(req.cookies);
 		const postById = await this.postsService.findPostById(id);
-		console.log(postById);
 		if (!postById) {
 			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
 		}

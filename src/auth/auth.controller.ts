@@ -39,15 +39,15 @@ export class AuthController {
 	async register(@Body() dto: CreateUserDto) {
 		const checkUser = await this.authService.findUser(dto.login);
 		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
-		if (checkUser || checkUserByEmail) {
-			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
-		} else {
+		// if (checkUser || checkUserByEmail) {
+		// 	// throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
+		// } else {
 			const newUser = await this.authService.create(dto);
 			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
 			const emailResponseCode = confirmEmail.response.split(' ')[0];
 			console.log(emailResponseCode);
 			return newUser;
-		}
+		//}
 	}
 
 	@UseGuards(ThrottlerIpGuard)

@@ -21,18 +21,23 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { BasicAuthGuard } from '../guards/basic-auth.guard';
 import { LikeCommentDto } from './dto/like-comment.dto';
+import { log } from 'util';
+import { AuthService } from '../auth/auth.service';
 
 @Controller('comments')
 export class CommentsController {
 	constructor(
 		private readonly commentsService: CommentsService,
 		private readonly usersService: UsersService,
+		private readonly authService: AuthService,
 	) {}
 
 	@HttpCode(200)
 	@Get(':id')
-	async findCommentById(@Param('id') id: string) {
-		const commentById = await this.commentsService.findCommentById(id);
+	async findCommentById(@Param('id') id: string, @Req() req: Request) {
+		const result = await this.authService.checkRefreshToken(req.cookies.refreshToken);
+		console.log(result);
+		const commentById = await this.commentsService.findCommentById(id, result.id);
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
 		}
@@ -93,8 +98,6 @@ export class CommentsController {
 		if (!user) {
 			throw new ForbiddenException();
 		}
-		if (user.id === commentById.userId) {
-			return await this.commentsService.addLikeCommentById(id, user.id,  dto.likeStatus);
-		}
+		return await this.commentsService.addLikeCommentById(id, user.id, dto.likeStatus);
 	}
 }

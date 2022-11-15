@@ -42,8 +42,8 @@ export class CommentsRepository {
 		});
 	}
 
-	async findCommentById(id: string) {
-		return this.commentsModel.findOne({ id: id }, { _id: 0 });
+	async findCommentById(commentId: string) {
+		return this.commentsModel.findOne({ id: commentId }, { _id: 0 });
 	}
 
 	async deleteCommentById(id: string) {

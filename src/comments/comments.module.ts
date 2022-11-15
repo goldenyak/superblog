@@ -11,10 +11,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from '../configs/jwt.config';
 import { Comments, CommentsSchema } from './schemas/comments.schema';
 import { LikesModule } from "../likes/likes.module";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
 	imports: [
 		forwardRef(() => PostsModule),
+		AuthModule,
 		UsersModule,
 		ConfigModule,
 		LikesModule,

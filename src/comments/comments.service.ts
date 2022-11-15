@@ -64,8 +64,28 @@ export class CommentsService {
 		};
 	}
 
-	async findCommentById(id: string) {
-		return await this.commentsRepository.findCommentById(id);
+	async findCommentById(commentId: string, userId?: string) {
+		const foundedComment = await this.commentsRepository.findCommentById(commentId);
+		if (foundedComment) {
+			const likesArray = await this.likesService.findLikesByCommentId(commentId);
+			const likesCount = likesArray.filter((el) => {
+				return el._id === 'like';
+			});
+			const dislikesCount = likesArray.filter((el) => {
+				return el._id === 'dislike';
+			});
+			const myStatus = await this.likesService.getLikeStatusByUserId(
+				commentId,
+				userId,
+			);
+			foundedComment.likesInfo = {
+				likesCount: likesCount[0].count,
+				dislikesCount: dislikesCount[0].count,
+				myStatus: myStatus.status,
+				type: 'comment',
+			};
+		}
+		return foundedComment;
 	}
 
 	async deleteCommentById(id: string) {
