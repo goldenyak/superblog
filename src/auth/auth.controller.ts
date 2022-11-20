@@ -39,15 +39,14 @@ export class AuthController {
 	async register(@Body() dto: CreateUserDto) {
 		const checkUser = await this.authService.findUser(dto.login);
 		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
-		// if (checkUser || checkUserByEmail) {
-		// 	// throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
-		// } else {
+		if (checkUser || checkUserByEmail) {
+			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
+		} else {
 			const newUser = await this.authService.create(dto);
 			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
 			const emailResponseCode = confirmEmail.response.split(' ')[0];
-			console.log(emailResponseCode);
 			return newUser;
-		//}
+		}
 	}
 
 	@UseGuards(ThrottlerIpGuard)
@@ -61,7 +60,7 @@ export class AuthController {
 		const userIp = req.ip;
 		const sessionTitle = req.headers['user-agent'];
 
-		const user = await this.usersService.validateUser(dto.login, dto.password);
+		const user = await this.usersService.validateUser(dto.loginOrEmail, dto.password);
 		const { accessToken, refreshToken } = await this.authService.login(user.email, user.id);
 		await res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle);
@@ -83,7 +82,6 @@ export class AuthController {
 			throw new HttpException(NOT_FOUND_USER_BY_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
 		}
 		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
-		// console.log(foundedDevice);
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
 			result.email,
 			result.id,

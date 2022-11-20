@@ -31,7 +31,14 @@ export class LikesRepository {
 	}
 
 	async getLikeStatusByUserId(commentId: string, userId: string) {
-		return this.likesModel.findOne({commentId: commentId, userId: userId})
+		return this.likesModel.findOne({ commentId: commentId, userId: userId });
+	}
+
+	async getLikesCountByParentId(parentId: string): Promise<number> {
+		return this.likesModel.countDocuments({ commentId: parentId, status: 'like' });
+	}
+	async getDislikesCountByParentId(parentId: string): Promise<number> {
+		return this.likesModel.countDocuments({ commentId: parentId, status: 'dislike' });
 	}
 
 	async deleteAll() {

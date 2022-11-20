@@ -103,7 +103,7 @@ export class BlogsController {
 	@HttpCode(204)
 	@Put(':id')
 	async updateBlogById(@Body() dto: UpdateBlogDto, @Param('id') id: string) {
-		const blog = await this.blogsService.updateBlogById(id, dto.name, dto.youtubeUrl);
+		const blog = await this.blogsService.updateBlogById(id, dto.name, dto.websiteUrl);
 		if (!blog) {
 			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
 		}

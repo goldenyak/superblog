@@ -8,9 +8,8 @@ export class LikesService {
 	constructor(private readonly likesRepository: LikesRepository) {}
 
 	async createLike(commentId: string, userId: string, likeStatus: string) {
-		const like = await this.likesRepository.findLikeByUserId(userId, commentId);
-		console.log(like);
-		if (like.length > 0) {
+		const likes = await this.likesRepository.findLikeByUserId(userId, commentId);
+		if (likes.length > 0) {
 			return await this.likesRepository.updateLike(userId, commentId, likeStatus);
 		} else {
 			const newLike: any = {
@@ -30,5 +29,17 @@ export class LikesService {
 
 	async getLikeStatusByUserId(commentId: string, userId: string) {
 		return await this.likesRepository.getLikeStatusByUserId(commentId, userId);
+	}
+
+	async getLikesCountByParentId(parentId: string): Promise<number> {
+		return this.likesRepository.getLikesCountByParentId(parentId);
+	}
+
+	async getDislikesCountByParentId(parentId: string): Promise<number> {
+		return this.likesRepository.getDislikesCountByParentId(parentId);
+	}
+
+	async deleteAll() {
+		return await this.likesRepository.deleteAll();
 	}
 }

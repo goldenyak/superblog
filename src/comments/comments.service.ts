@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CommentsRepository } from './comments.repository';
 import { PostsService } from '../posts/posts.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -26,18 +26,11 @@ export class CommentsService {
 			likesInfo: {
 				likesCount: 0,
 				dislikesCount: 0,
-				myStatus: 'none',
-				type: 'comment',
+				myStatus: 'None',
 			},
 		};
 		await this.commentsRepository.create(newComment);
-		return {
-			id: newComment.id,
-			content: dto.content,
-			userId: user.id,
-			userLogin: user.login,
-			createdAt: new Date(),
-		};
+		return newComment;
 	}
 
 	async getAllCommentsByPostId(
@@ -46,6 +39,7 @@ export class CommentsService {
 		sortBy: string,
 		sortDirection: string,
 		postId: string,
+		userId: string,
 	) {
 		const countedCommentsByPostId = await this.commentsRepository.countCommentsByPostId(postId);
 		const allCommentsByPostId = await this.commentsRepository.getAllCommentsByPostId(
@@ -55,37 +49,70 @@ export class CommentsService {
 			sortDirection,
 			postId,
 		);
+
+		//
+		// const result = await Promise.all(allCommentsByPostId.map(async comment => {
+		// 	return this.getLikesInfoForComment(comment, userId)
+		// }))
+
+		const result = [];
+		for (const comment of allCommentsByPostId) {
+			const mappedComment = await this.getLikesInfoForComment(comment, userId);
+			result.push(mappedComment);
+		}
+
 		return {
 			pagesCount: pageNumber,
 			page: pageNumber,
 			pageSize: pageSize,
 			totalCount: countedCommentsByPostId,
-			items: allCommentsByPostId,
+			items: result,
 		};
 	}
 
 	async findCommentById(commentId: string, userId?: string) {
 		const foundedComment = await this.commentsRepository.findCommentById(commentId);
+		if (!foundedComment) {
+			throw new NotFoundException();
+		}
+		// return await this.getLikesInfoForComment(foundedComment, userId);
+
 		if (foundedComment) {
 			const likesArray = await this.likesService.findLikesByCommentId(commentId);
+			// console.log(likesArray);
 			const likesCount = likesArray.filter((el) => {
 				return el._id === 'like';
 			});
 			const dislikesCount = likesArray.filter((el) => {
 				return el._id === 'dislike';
 			});
-			const myStatus = await this.likesService.getLikeStatusByUserId(
-				commentId,
-				userId,
-			);
+			const myStatus = await this.likesService.getLikeStatusByUserId(commentId, userId);
 			foundedComment.likesInfo = {
-				likesCount: likesCount[0].count,
-				dislikesCount: dislikesCount[0].count,
-				myStatus: myStatus.status,
-				type: 'comment',
+				likesCount: likesCount.length ? likesCount[0].count : 0,
+				dislikesCount: dislikesCount.length ? dislikesCount[0].count : 0,
+				myStatus: myStatus ? myStatus.status : 'None',
 			};
 		}
 		return foundedComment;
+	}
+
+	async getLikesInfoForComment(comment: any, userId: string) {
+		const likes = await this.likesService.getLikesCountByParentId(comment.id);
+		const dislikes = await this.likesService.getDislikesCountByParentId(comment.id);
+    let myStatus;
+    const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
+		// console.log(comment);
+    // console.log('status', status);
+    if (!userId || !currentUserStatus) {
+      myStatus = 'None';
+    } else {
+      myStatus = currentUserStatus.status;
+    }
+
+		comment.likesInfo.likesCount = likes;
+		comment.likesInfo.dislikesCount = dislikes;
+		comment.likesInfo.myStatus = myStatus;
+		return comment;
 	}
 
 	async deleteCommentById(id: string) {

@@ -25,6 +25,7 @@ import { Request } from 'express';
 import { UsersService } from "../users/users.service";
 import { ThrottlerIpGuard } from "../guards/throttle-ip.guard";
 import { BasicAuthGuard } from "../guards/basic-auth.guard";
+import { AuthService } from "../auth/auth.service";
 
 @Controller('posts')
 export class PostsController {
@@ -32,6 +33,7 @@ export class PostsController {
 		private readonly postsService: PostsService,
 		private readonly commentsService: CommentsService,
 		private readonly usersService: UsersService,
+		private readonly authService: AuthService,
 	) {}
 
 	@UseGuards(BasicAuthGuard)
@@ -48,6 +50,7 @@ export class PostsController {
 		@Req() req: Request,
 	) {
 		const user = await this.usersService.findUserById(req.user.id);
+		// console.log(user);
 		if(!user) {
 			throw new HttpException('такого юзера не существует', HttpStatus.NOT_FOUND)
 		}
@@ -82,7 +85,7 @@ export class PostsController {
 		@Query('postId') postId: string,
 		@Req() req: Request
 	) {
-		console.log(req.cookies);
+		const result = await this.authService.checkRefreshToken(req.cookies.refreshToken);
 		const postById = await this.postsService.findPostById(id);
 		if (!postById) {
 			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
@@ -92,7 +95,8 @@ export class PostsController {
 			pageSize,
 			sortBy,
 			sortDirection,
-			postId,
+			id,
+			result.id
 		);
 	}
 

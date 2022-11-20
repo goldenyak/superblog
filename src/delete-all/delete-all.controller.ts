@@ -1,4 +1,4 @@
-import { Controller, Delete, HttpCode } from "@nestjs/common";
+import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,6 +9,7 @@ import { BlogsService } from '../blogs/blogs.service';
 import { CommentsService } from '../comments/comments.service';
 import { PostsService } from '../posts/posts.service';
 import { SessionsService } from '../sessions/sessions.service';
+import { LikesService } from '../likes/likes.service';
 
 @Controller('testing')
 export class DeleteAllController {
@@ -19,6 +20,7 @@ export class DeleteAllController {
 		private readonly commentsService: CommentsService,
 		private readonly postsService: PostsService,
 		private readonly sessionsService: SessionsService,
+		private readonly likesService: LikesService,
 	) {}
 
 	@HttpCode(204)
@@ -30,6 +32,7 @@ export class DeleteAllController {
 		await this.postsService.deleteAll();
 		await this.sessionsService.deleteAll();
 		await this.authService.deleteAll();
+		await this.likesService.deleteAll();
 		return true;
 	}
 }

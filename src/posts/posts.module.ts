@@ -12,11 +12,13 @@ import { CommentsModule } from "../comments/comments.module";
 import { UsersModule } from "../users/users.module";
 import { ThrottlerGuard } from "@nestjs/throttler";
 import { APP_GUARD } from "@nestjs/core";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
 	imports: [
 		forwardRef(() => BlogsModule),
 		forwardRef(() => CommentsModule),
+		AuthModule,
 		UsersModule,
 		ConfigModule,
 		MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }]),

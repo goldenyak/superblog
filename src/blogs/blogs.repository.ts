@@ -34,7 +34,8 @@ export class BlogsRepository {
 			return {
 				id: blogs.id,
 				name: blogs.name,
-				youtubeUrl: blogs.youtubeUrl,
+				description: blogs.description,
+				websiteUrl: blogs.websiteUrl,
 				createdAt: blogs.createdAt,
 			};
 		});

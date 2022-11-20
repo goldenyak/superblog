@@ -18,7 +18,7 @@ export class Likes {
   createdAt: Date;
 
   @Prop()
-  status: 'like' | 'dislike' | 'none';
+  status: 'Like' | 'Dislike' | 'None';
 }
 
 export const LikesSchema = SchemaFactory.createForClass(Likes);

@@ -54,6 +54,7 @@ export class PostsService {
 		sortBy: string,
 		sortDirection: string,
 		postId: string,
+		userId: string
 	) {
 		return await this.commentsService.getAllCommentsByPostId(
 			pageNumber,
@@ -61,6 +62,7 @@ export class PostsService {
 			sortBy,
 			sortDirection,
 			postId,
+			userId,
 		);
 	}
 

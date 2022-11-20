@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Comments, CommentsDocument } from './schemas/comments.schema';
-import { CreateCommentDto } from './dto/create-comment.dto';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Comments, CommentsDocument } from "./schemas/comments.schema";
 
 @Injectable()
 export class CommentsRepository {
@@ -29,7 +28,8 @@ export class CommentsRepository {
 			.find(filter)
 			.skip((pageNumber - 1) * pageSize)
 			.limit(pageSize)
-			.sort({ [sortByFilter]: sortDirectionFilter });
+			.sort({ [sortByFilter]: sortDirectionFilter })
+			.lean();
 
 		return comments.map((comment) => {
 			return {
@@ -38,12 +38,17 @@ export class CommentsRepository {
 				userId: comment.userId,
 				userLogin: comment.userLogin,
 				createdAt: comment.createdAt,
+				likesInfo: {
+					likesCount: 0,
+					dislikesCount: 0,
+					myStatus: 'None',
+				},
 			};
 		});
 	}
 
 	async findCommentById(commentId: string) {
-		return this.commentsModel.findOne({ id: commentId }, { _id: 0 });
+		return this.commentsModel.findOne({ id: commentId }, { _id: 0, postId: 0 });
 	}
 
 	async deleteCommentById(id: string) {
@@ -51,7 +56,7 @@ export class CommentsRepository {
 	}
 
 	async updateCommentById(id: string, content: string) {
-		return this.commentsModel.findOneAndUpdate({id: id}, {content: content})
+		return this.commentsModel.findOneAndUpdate({ id: id }, { content: content });
 	}
 
 	async countCommentsByPostId(postId: string | null) {
@@ -81,7 +86,6 @@ export class CommentsRepository {
 			return -1;
 		}
 	}
-
 
 	async deleteAll() {
 		return this.commentsModel.deleteMany().exec();

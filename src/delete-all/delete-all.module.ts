@@ -6,9 +6,10 @@ import { BlogsModule } from "../blogs/blogs.module";
 import { CommentsModule } from "../comments/comments.module";
 import { PostsModule } from "../posts/posts.module";
 import { SessionsModule } from "../sessions/sessions.module";
+import { LikesModule } from "../likes/likes.module";
 
 @Module({
-  imports: [UsersModule, AuthModule, BlogsModule, CommentsModule, PostsModule, SessionsModule],
+  imports: [UsersModule, AuthModule, BlogsModule, CommentsModule, PostsModule, SessionsModule, LikesModule],
   controllers: [DeleteAllController],
 })
 export class DeleteAllModule {}

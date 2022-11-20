@@ -22,10 +22,7 @@ export class LikesInfoAdvantage {
 	dislikesCount: number;
 
 	@Prop()
-	myStatus: 'like' | 'dislike' | 'none';
-
-	@Prop()
-	type: 'comment'
+	myStatus: 'Like' | 'Dislike' | 'None';
 }
 
 @Schema({ versionKey: false })

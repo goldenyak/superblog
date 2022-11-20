@@ -6,9 +6,13 @@ export class CreateBlogsDto {
 	@Length(0, 15)
 	name: string;
 
+	@IsString()
+	@Length(0, 500)
+	description: string
+
 	@IsNotEmpty()
 	@IsString()
 	@Length(0, 100)
 	@IsUrl()
-	youtubeUrl: string;
+	websiteUrl: string;
 }

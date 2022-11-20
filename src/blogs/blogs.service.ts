@@ -17,7 +17,8 @@ export class BlogsService {
 		const newBlog = {
 			id: uuidv4(),
 			name: dto.name,
-			youtubeUrl: dto.youtubeUrl,
+			description: dto.description,
+			websiteUrl: dto.websiteUrl,
 			createdAt: new Date(),
 		};
 		return await this.blogsRepository.create(newBlog);

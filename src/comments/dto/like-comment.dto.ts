@@ -1,7 +1,14 @@
-import { IsNotEmpty, IsString, IsUrl, Length, MaxLength, MinLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+
+enum  LikeStatusEnum {
+  Like= 'Like',
+  Dislike = 'Dislike',
+  None = 'None'
+}
 
 export class LikeCommentDto {
   @IsNotEmpty()
   @IsString()
-  likeStatus: 'like' | 'dislike' | 'none';
+  @IsEnum(LikeStatusEnum)
+  likeStatus: string
 }
