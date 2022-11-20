@@ -111,7 +111,7 @@ export class CommentsService {
 		const dislikes = await this.likesService.getDislikesCountByParentId(comment.id);
     let myStatus;
     const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
-    if (!userId || !currentUserStatus) {
+    if (!currentUserStatus) {
       myStatus = 'None';
     } else {
       myStatus = currentUserStatus.status;

@@ -35,10 +35,10 @@ export class LikesRepository {
 	}
 
 	async getLikesCountByParentId(parentId: string): Promise<number> {
-		return this.likesModel.countDocuments({ commentId: parentId, status: 'like' });
+		return this.likesModel.countDocuments({ commentId: parentId, status: 'Like' });
 	}
 	async getDislikesCountByParentId(parentId: string): Promise<number> {
-		return this.likesModel.countDocuments({ commentId: parentId, status: 'dislike' });
+		return this.likesModel.countDocuments({ commentId: parentId, status: 'Dislike' });
 	}
 
 	async deleteAll() {
