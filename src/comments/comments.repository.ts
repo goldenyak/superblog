@@ -59,8 +59,8 @@ export class CommentsRepository {
 		return this.commentsModel.findOneAndUpdate({ id: id }, { content: content });
 	}
 
-	async  updateLikesInfoByComment(commentId: string, status: string) {
-		// return this.commentsModel.findOneAndUpdate({id: commentId}, {likesInfo.status: status})
+	async  updateLikesInfoByComment(commentId: string, updatedComment: any) {
+		return this.commentsModel.replaceOne({id: commentId}, {updatedComment})
 	}
 
 	async countCommentsByPostId(postId: string | null) {
