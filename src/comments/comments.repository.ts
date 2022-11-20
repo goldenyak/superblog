@@ -60,7 +60,8 @@ export class CommentsRepository {
 	}
 
 	async  updateLikesInfoByComment(commentId: string, updatedComment: any) {
-		return this.commentsModel.replaceOne({id: commentId}, {updatedComment})
+		console.log(updatedComment);
+		return this.commentsModel.updateOne({id: commentId}, {$set: {likesInfo: updatedComment.likesInfo}})
 	}
 
 	async countCommentsByPostId(postId: string | null) {

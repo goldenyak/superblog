@@ -32,12 +32,13 @@ export class CommentsController {
 		private readonly authService: AuthService,
 	) {}
 
+	// @UseGuards(JwtAuthGuard)
 	@HttpCode(200)
 	@Get(':id')
 	async findCommentById(@Param('id') id: string, @Req() req: Request) {
 		let currentUserId;
 		if (req.user) {
-			currentUserId = req.user.id
+			currentUserId = req.user.id;
 		}
 		const commentById = await this.commentsService.findCommentById(id, currentUserId);
 		if (!commentById) {
