@@ -81,12 +81,12 @@ export class CommentsService {
 		};
 	}
 
-	async findCommentById(commentId: string) {
+	async findCommentById(commentId: string, userId?: string) {
 		const foundedComment = await this.commentsRepository.findCommentById(commentId);
 		if (!foundedComment) {
 			throw new NotFoundException();
 		}
-		return await this.getLikesInfoForComment(foundedComment, foundedComment.userId);
+		return await this.getLikesInfoForComment(foundedComment, userId);
 
 		// if (foundedComment) {
 		// 	const likesArray = await this.likesService.findLikesByCommentId(commentId);
