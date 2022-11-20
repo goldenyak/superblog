@@ -86,24 +86,24 @@ export class CommentsService {
 		if (!foundedComment) {
 			throw new NotFoundException();
 		}
-		// return await this.getLikesInfoForComment(foundedComment, userId);
+		return await this.getLikesInfoForComment(foundedComment, foundedComment.userId);
 
-		if (foundedComment) {
-			const likesArray = await this.likesService.findLikesByCommentId(commentId);
-			const likesCount = likesArray.filter((el) => {
-				return el._id === 'like';
-			});
-			const dislikesCount = likesArray.filter((el) => {
-				return el._id === 'dislike';
-			});
-			const myStatus = await this.likesService.getLikeStatusByUserId(commentId, foundedComment.userId);
-			foundedComment.likesInfo = {
-				likesCount: likesCount.length ? likesCount[0].count : 0,
-				dislikesCount: dislikesCount.length ? dislikesCount[0].count : 0,
-				myStatus: myStatus ? myStatus.status : 'None',
-			};
-		}
-		return foundedComment;
+		// if (foundedComment) {
+		// 	const likesArray = await this.likesService.findLikesByCommentId(commentId);
+		// 	const likesCount = likesArray.filter((el) => {
+		// 		return el._id === 'like';
+		// 	});
+		// 	const dislikesCount = likesArray.filter((el) => {
+		// 		return el._id === 'dislike';
+		// 	});
+		// 	const myStatus = await this.likesService.getLikeStatusByUserId(commentId, foundedComment.userId);
+		// 	foundedComment.likesInfo = {
+		// 		likesCount: likesCount.length ? likesCount[0].count : 0,
+		// 		dislikesCount: dislikesCount.length ? dislikesCount[0].count : 0,
+		// 		myStatus: myStatus ? myStatus.status : 'None',
+		// 	};
+		// }
+		// return foundedComment;
 	}
 
 	async getLikesInfoForComment(comment: any, userId: string) {
@@ -111,8 +111,6 @@ export class CommentsService {
 		const dislikes = await this.likesService.getDislikesCountByParentId(comment.id);
     let myStatus;
     const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
-		// console.log(comment);
-    // console.log('status', status);
     if (!userId || !currentUserStatus) {
       myStatus = 'None';
     } else {
