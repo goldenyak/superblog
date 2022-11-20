@@ -81,7 +81,7 @@ export class CommentsService {
 		};
 	}
 
-	async findCommentById(commentId: string, userId?: string) {
+	async findCommentById(commentId: string) {
 		const foundedComment = await this.commentsRepository.findCommentById(commentId);
 		if (!foundedComment) {
 			throw new NotFoundException();
@@ -97,7 +97,7 @@ export class CommentsService {
 			const dislikesCount = likesArray.filter((el) => {
 				return el._id === 'dislike';
 			});
-			const myStatus = await this.likesService.getLikeStatusByUserId(commentId, userId);
+			const myStatus = await this.likesService.getLikeStatusByUserId(commentId, foundedComment.userId);
 			foundedComment.likesInfo = {
 				likesCount: likesCount.length ? likesCount[0].count : 0,
 				dislikesCount: dislikesCount.length ? dislikesCount[0].count : 0,

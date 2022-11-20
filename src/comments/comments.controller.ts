@@ -35,8 +35,7 @@ export class CommentsController {
 	@HttpCode(200)
 	@Get(':id')
 	async findCommentById(@Param('id') id: string, @Req() req: Request) {
-		const result = await this.authService.checkRefreshToken(req.cookies.refreshToken);
-		const commentById = await this.commentsService.findCommentById(id, result.id);
+		const commentById = await this.commentsService.findCommentById(id);
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
 		}
