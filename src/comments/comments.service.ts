@@ -133,9 +133,9 @@ export class CommentsService {
 
 	async addLikeCommentById(commentId: string, userId: string, likeStatus: string) {
 		await this.likesService.createLike(commentId, userId, likeStatus);
-		const foundedComment = await this.findCommentById(commentId, userId);
-		const updatedComment = await this.getLikesInfoForComment(foundedComment, userId)
-		return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment)
+		// const foundedComment = await this.findCommentById(commentId, userId);
+		// const updatedComment = await this.getLikesInfoForComment(foundedComment, userId)
+		// return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment)
 	}
 
 	async deleteAll() {
