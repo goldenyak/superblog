@@ -31,15 +31,15 @@ export class CommentsService {
 		};
 		await this.commentsRepository.create(newComment);
 		return {
-			id: uuidv4(),
-			content: dto.content,
-			userId: user.id,
-			userLogin: user.login,
-			createdAt: new Date(),
+			id: newComment.id,
+			content: newComment.content,
+			userId: newComment.userId,
+			userLogin: newComment.userLogin,
+			createdAt: newComment.createdAt,
 			likesInfo: {
-				likesCount: 0,
-				dislikesCount: 0,
-				myStatus: 'None',
+				likesCount: newComment.likesInfo.likesCount,
+				dislikesCount: newComment.likesInfo.dislikesCount,
+				myStatus: newComment.likesInfo.myStatus,
 			},
 		};
 	}
@@ -90,7 +90,6 @@ export class CommentsService {
 
 		if (foundedComment) {
 			const likesArray = await this.likesService.findLikesByCommentId(commentId);
-			// console.log(likesArray);
 			const likesCount = likesArray.filter((el) => {
 				return el._id === 'like';
 			});
