@@ -30,7 +30,18 @@ export class CommentsService {
 			},
 		};
 		await this.commentsRepository.create(newComment);
-		return newComment;
+		return {
+			id: uuidv4(),
+			content: dto.content,
+			userId: user.id,
+			userLogin: user.login,
+			createdAt: new Date(),
+			likesInfo: {
+				likesCount: 0,
+				dislikesCount: 0,
+				myStatus: 'None',
+			},
+		};
 	}
 
 	async getAllCommentsByPostId(

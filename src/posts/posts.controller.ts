@@ -50,7 +50,6 @@ export class PostsController {
 		@Req() req: Request,
 	) {
 		const user = await this.usersService.findUserById(req.user.id);
-		// console.log(user);
 		if(!user) {
 			throw new HttpException('такого юзера не существует', HttpStatus.NOT_FOUND)
 		}
