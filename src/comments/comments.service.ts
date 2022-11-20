@@ -109,13 +109,13 @@ export class CommentsService {
 	async getLikesInfoForComment(comment: any, userId: string) {
 		const likes = await this.likesService.getLikesCountByParentId(comment.id);
 		const dislikes = await this.likesService.getDislikesCountByParentId(comment.id);
-    let myStatus;
-    const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
-    if (!currentUserStatus) {
-      myStatus = 'None';
-    } else {
-      myStatus = currentUserStatus.status;
-    }
+		let myStatus;
+		const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
+		if (!currentUserStatus) {
+			myStatus = 'None';
+		} else {
+			myStatus = currentUserStatus.status;
+		}
 
 		comment.likesInfo.likesCount = likes;
 		comment.likesInfo.dislikesCount = dislikes;
@@ -132,7 +132,9 @@ export class CommentsService {
 	}
 
 	async addLikeCommentById(commentId: string, userId: string, likeStatus: string) {
-		return await this.likesService.createLike(commentId, userId, likeStatus);
+		await this.likesService.createLike(commentId, userId, likeStatus);
+		const updatedComment = await this.findCommentById(commentId, userId);
+		return await this.getLikesInfoForComment(updatedComment, userId)
 	}
 
 	async deleteAll() {
