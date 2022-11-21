@@ -81,7 +81,7 @@ export class CommentsService {
 		};
 	}
 
-	async findCommentById(commentId: string, userId?: string) {
+	async findCommentById(commentId: string, userId?: string | undefined) {
 		const foundedComment = await this.commentsRepository.findCommentById(commentId);
 		if (!foundedComment) {
 			throw new NotFoundException();
@@ -116,7 +116,7 @@ export class CommentsService {
 		} else {
 			myStatus = currentUserStatus.status;
 		}
-
+		console.log(myStatus);
 		comment.likesInfo.likesCount = likes;
 		comment.likesInfo.dislikesCount = dislikes;
 		comment.likesInfo.myStatus = myStatus;
@@ -133,9 +133,9 @@ export class CommentsService {
 
 	async addLikeCommentById(commentId: string, userId: string, likeStatus: string) {
 		await this.likesService.createLike(commentId, userId, likeStatus);
-		const foundedComment = await this.findCommentById(commentId, userId);
-		const updatedComment = await this.getLikesInfoForComment(foundedComment, userId);
-		return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment);
+		// const foundedComment = await this.findCommentById(commentId, userId);
+		// const updatedComment = await this.getLikesInfoForComment(foundedComment, userId);
+		// return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment);
 	}
 
 	async addReactionByParentId(parentId: string, userId: string, likeStatus: string) {

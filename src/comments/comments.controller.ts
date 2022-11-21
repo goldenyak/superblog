@@ -37,11 +37,12 @@ export class CommentsController {
 	@Get(':id')
 	async findCommentById(@Param('id') id: string, @Req() req: Request) {
 		let currentUserId;
-		const refreshToken = await req.cookies.refreshToken;
+		const refreshToken = req.cookies.refreshToken;
 		if (refreshToken) {
 			const result = await this.authService.checkRefreshToken(refreshToken);
 			currentUserId = result.id;
 		}
+		console.log(currentUserId);
 		const commentById = await this.commentsService.findCommentById(id, currentUserId);
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
