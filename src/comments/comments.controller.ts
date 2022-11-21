@@ -103,6 +103,7 @@ export class CommentsController {
 		if (!user) {
 			throw new ForbiddenException();
 		}
-		return await this.commentsService.addReactionByParentId(id, user.id, dto.likeStatus);
+		return await this.commentsService.addLikeCommentById(commentById.id, user.id, dto.likeStatus )
+		// return await this.commentsService.addReactionByParentId(id, user.id, dto.likeStatus);
 	}
 }
