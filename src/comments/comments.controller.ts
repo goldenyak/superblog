@@ -37,9 +37,10 @@ export class CommentsController {
 	@Get(':id')
 	async findCommentById(@Param('id') id: string, @Req() req: Request) {
 		let currentUserId;
-		console.log(req.user);
-		if (req.user) {
-			currentUserId = req.user.id;
+		const refreshToken = await req.cookies.refreshToken;
+		if (refreshToken) {
+			const result = await this.authService.checkRefreshToken(refreshToken);
+			currentUserId = result.id;
 		}
 		const commentById = await this.commentsService.findCommentById(id, currentUserId);
 		if (!commentById) {
