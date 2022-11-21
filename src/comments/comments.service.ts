@@ -110,10 +110,10 @@ export class CommentsService {
 		const likes = await this.likesService.getLikesCountByParentId(comment.id);
 		const dislikes = await this.likesService.getDislikesCountByParentId(comment.id);
 		let myStatus;
-		const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
-		if (!currentUserStatus) {
+		if (!userId) {
 			myStatus = 'None';
 		} else {
+			const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
 			myStatus = currentUserStatus.status;
 		}
 
@@ -136,6 +136,10 @@ export class CommentsService {
 		const foundedComment = await this.findCommentById(commentId, userId);
 		const updatedComment = await this.getLikesInfoForComment(foundedComment, userId);
 		return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment);
+	}
+
+	async addReactionByParentId(parentId: string, userId: string, likeStatus: string) {
+		return this.likesService.addReactionByParentId(parentId, userId, likeStatus);
 	}
 
 	async deleteAll() {

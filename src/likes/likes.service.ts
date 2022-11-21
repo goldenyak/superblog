@@ -42,4 +42,8 @@ export class LikesService {
 	async deleteAll() {
 		return await this.likesRepository.deleteAll();
 	}
+
+	addReactionByParentId(parentId: string, userId: string, likeStatus: string) {
+		return this.likesRepository.addReactionByParentId(parentId, userId, likeStatus)
+	}
 }

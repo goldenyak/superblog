@@ -44,4 +44,8 @@ export class LikesRepository {
 	async deleteAll() {
 		return this.likesModel.deleteMany().exec();
 	}
+
+	addReactionByParentId(parentId: string, userId: string, likeStatus: string) {
+		return this.likesModel.updateOne({commentId: parentId, userId}, {$set: { likeStatus }}, {upsert: true})
+	}
 }

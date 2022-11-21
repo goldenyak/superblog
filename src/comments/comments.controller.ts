@@ -32,11 +32,12 @@ export class CommentsController {
 		private readonly authService: AuthService,
 	) {}
 
-	// @UseGuards(JwtAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(200)
 	@Get(':id')
 	async findCommentById(@Param('id') id: string, @Req() req: Request) {
 		let currentUserId;
+		console.log(req.user);
 		if (req.user) {
 			currentUserId = req.user.id;
 		}
@@ -74,6 +75,7 @@ export class CommentsController {
 	) {
 		const commentById = await this.commentsService.findCommentById(id);
 		const user = await this.usersService.findUserById(req.user.id);
+
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
 		}
@@ -101,6 +103,6 @@ export class CommentsController {
 		if (!user) {
 			throw new ForbiddenException();
 		}
-		return await this.commentsService.addLikeCommentById(id, user.id, dto.likeStatus);
+		return await this.commentsService.addReactionByParentId(id, user.id, dto.likeStatus);
 	}
 }

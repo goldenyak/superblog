@@ -95,4 +95,6 @@ export class CommentsRepository {
 	async deleteAll() {
 		return this.commentsModel.deleteMany().exec();
 	}
+
+
 }
