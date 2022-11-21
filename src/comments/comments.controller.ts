@@ -32,7 +32,7 @@ export class CommentsController {
 		private readonly authService: AuthService,
 	) {}
 
-	@UseGuards(JwtAuthGuard)
+	// @UseGuards(JwtAuthGuard)
 	@HttpCode(200)
 	@Get(':id')
 	async findCommentById(@Param('id') id: string, @Req() req: Request) {
