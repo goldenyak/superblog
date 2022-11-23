@@ -4,6 +4,7 @@ import {
 	Delete,
 	ForbiddenException,
 	Get,
+	Headers,
 	HttpCode,
 	HttpException,
 	HttpStatus,
@@ -35,14 +36,27 @@ export class CommentsController {
 	// @UseGuards(JwtAuthGuard)
 	@HttpCode(200)
 	@Get(':id')
-	async findCommentById(@Param('id') id: string, @Req() req: Request) {
+	async findCommentById(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Headers('authorization') header: string,
+	) {
+		// let currentUserId;
+		// const refreshToken = req.cookies.refreshToken;
+		// if (refreshToken) {
+		// 	const result = await this.authService.checkRefreshToken(refreshToken);
+		// 	currentUserId = result.id;
+		// }
+		// console.log(currentUserId);
 		let currentUserId;
-		const refreshToken = req.cookies.refreshToken;
-		if (refreshToken) {
-			const result = await this.authService.checkRefreshToken(refreshToken);
-			currentUserId = result.id;
+		if (req.headers.authorization) {
+			console.log(req.headers.authorization);
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
 		}
-		console.log(currentUserId);
 		const commentById = await this.commentsService.findCommentById(id, currentUserId);
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
@@ -105,7 +119,7 @@ export class CommentsController {
 		if (!user) {
 			throw new ForbiddenException();
 		}
-		return await this.commentsService.addLikeCommentById(commentById.id, user.id, dto.likeStatus )
+		return await this.commentsService.addLikeCommentById(commentById.id, user.id, dto.likeStatus);
 		// return await this.commentsService.addReactionByParentId(id, user.id, dto.likeStatus);
 	}
 }
