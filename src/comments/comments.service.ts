@@ -116,7 +116,6 @@ export class CommentsService {
 		} else {
 			myStatus = currentUserStatus.status;
 		}
-		console.log(myStatus);
 		comment.likesInfo.likesCount = likes;
 		comment.likesInfo.dislikesCount = dislikes;
 		comment.likesInfo.myStatus = myStatus;
