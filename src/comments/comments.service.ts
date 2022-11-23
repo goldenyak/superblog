@@ -73,7 +73,7 @@ export class CommentsService {
 		}
 
 		return {
-			pagesCount: pageNumber,
+			pagesCount: Math.ceil(countedCommentsByPostId / pageSize),
 			page: pageNumber,
 			pageSize: pageSize,
 			totalCount: countedCommentsByPostId,
