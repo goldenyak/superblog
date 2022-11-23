@@ -2,6 +2,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	ForbiddenException,
 	Get,
 	Headers,
 	HttpCode,
@@ -83,7 +84,6 @@ export class PostsController {
 		@Query('pageSize') pageSize: number,
 		@Query('sortBy') sortBy: string,
 		@Query('sortDirection') sortDirection: string,
-		@Query('postId') postId: string,
 		@Req() req: Request,
 		@Headers('authorization') header: string,
 	) {
@@ -96,7 +96,6 @@ export class PostsController {
 				currentUserId = result.id;
 			}
 		}
-		// const result = await this.authService.checkRefreshToken(req.cookies.refreshToken);
 		const postById = await this.postsService.findPostById(id);
 		if (!postById) {
 			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
