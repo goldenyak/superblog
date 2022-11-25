@@ -43,14 +43,14 @@ export class PostsService {
 	async getAllPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string) {
 		const countedAllPosts = await this.postsRepository.countAllPosts();
 		const allPosts = await this.postsRepository.getAllPosts(
-			(pageNumber = 2),
+			(pageNumber = 1),
 			(pageSize = 10),
 			sortBy,
 			sortDirection,
 		);
 		const result = [];
 		for (const post of allPosts) {
-			const mappedComment = await this.getLikesInfoForPost(post, userId);
+			const mappedComment = await this.likesService.getLikesInfoForPost(post, userId);
 			result.push(mappedComment);
 		}
 
@@ -110,7 +110,7 @@ export class PostsService {
 		if (!foundedPost) {
 			throw new NotFoundException();
 		}
-		return await this.getLikesInfoForPost(foundedPost, userId);
+		return await this.likesService.getLikesInfoForPost(foundedPost, userId);
 	}
 
 	async deletePostById(id: string) {
@@ -128,23 +128,9 @@ export class PostsService {
 	async addLikePostById(postId: string, userId: string, likeStatus: string) {
 		await this.likesService.createLike(postId, userId, likeStatus);
 		const foundedPost = await this.findPostById(postId, userId);
-		const updatedPost = await this.getLikesInfoForPost(foundedPost, userId);
+		const updatedPost = await this.likesService.getLikesInfoForPost(foundedPost, userId);
 		return await this.postsRepository.updateLikesInfoByPost(postId, updatedPost);
 	}
 
-	async getLikesInfoForPost(post: any, userId: string) {
-		const likes = await this.likesService.getLikesCountByParentId(post.id);
-		const dislikes = await this.likesService.getDislikesCountByParentId(post.id);
-		const currentUserStatus = await this.likesService.getLikeStatusByUserId(post.id, userId);
-		let myStatus;
-		if (!userId || !currentUserStatus) {
-			myStatus = 'None';
-		} else {
-			myStatus = currentUserStatus.status;
-		}
-		post.extendedLikesInfo.likesCount = likes;
-		post.extendedLikesInfo.dislikesCount = dislikes;
-		post.extendedLikesInfo.myStatus = myStatus;
-		return post;
-	}
+
 }

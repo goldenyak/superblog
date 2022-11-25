@@ -30,6 +30,13 @@ export class LikesRepository {
 		]);
 	}
 
+	async findNewestLikesByPostId(id: string) {
+		return this.likesModel
+			.find({status: 'Like'})
+			.sort({createdAt: -1})
+			.limit(3)
+	}
+
 	async getLikeStatusByUserId(parentId: string, userId: string) {
 		return this.likesModel.findOne({ parentId: parentId, userId: userId });
 	}

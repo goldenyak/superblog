@@ -68,7 +68,7 @@ export class CommentsService {
 
 		const result = [];
 		for (const comment of allCommentsByPostId) {
-			const mappedComment = await this.getLikesInfoForComment(comment, userId);
+			const mappedComment = await this.likesService.getLikesInfoForComment(comment, userId);
 			result.push(mappedComment);
 		}
 
@@ -86,41 +86,9 @@ export class CommentsService {
 		if (!foundedComment) {
 			throw new NotFoundException();
 		}
-		return await this.getLikesInfoForComment(foundedComment, userId);
-
-		// if (foundedComment) {
-		// 	const likesArray = await this.likesService.findLikesByCommentId(commentId);
-		// 	const likesCount = likesArray.filter((el) => {
-		// 		return el._id === 'like';
-		// 	});
-		// 	const dislikesCount = likesArray.filter((el) => {
-		// 		return el._id === 'dislike';
-		// 	});
-		// 	const myStatus = await this.likesService.getLikeStatusByUserId(commentId, foundedComment.userId);
-		// 	foundedComment.likesInfo = {
-		// 		likesCount: likesCount.length ? likesCount[0].count : 0,
-		// 		dislikesCount: dislikesCount.length ? dislikesCount[0].count : 0,
-		// 		myStatus: myStatus ? myStatus.status : 'None',
-		// 	};
-		// }
-		// return foundedComment;
+		return await this.likesService.getLikesInfoForComment(foundedComment, userId);
 	}
 
-	async getLikesInfoForComment(comment: any, userId: string) {
-		const likes = await this.likesService.getLikesCountByParentId(comment.id);
-		const dislikes = await this.likesService.getDislikesCountByParentId(comment.id);
-		const currentUserStatus = await this.likesService.getLikeStatusByUserId(comment.id, userId);
-		let myStatus;
-		if (!userId || !currentUserStatus) {
-			myStatus = 'None';
-		} else {
-			myStatus = currentUserStatus.status;
-		}
-		comment.likesInfo.likesCount = likes;
-		comment.likesInfo.dislikesCount = dislikes;
-		comment.likesInfo.myStatus = myStatus;
-		return comment;
-	}
 
 	async deleteCommentById(id: string) {
 		return await this.commentsRepository.deleteCommentById(id);
@@ -133,7 +101,7 @@ export class CommentsService {
 	async addLikeCommentById(commentId: string, userId: string, likeStatus: string) {
 		await this.likesService.createLike(commentId, userId, likeStatus);
 		const foundedComment = await this.findCommentById(commentId, userId);
-		const updatedComment = await this.getLikesInfoForComment(foundedComment, userId);
+		const updatedComment = await this.likesService.getLikesInfoForComment(foundedComment, userId);
 		return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment);
 	}
 

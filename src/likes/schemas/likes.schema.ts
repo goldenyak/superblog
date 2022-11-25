@@ -12,6 +12,9 @@ export class Likes {
   userId: string;
 
   @Prop()
+  login: string;
+
+  @Prop()
   parentId: string;
 
   @Prop()

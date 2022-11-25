@@ -13,7 +13,6 @@ import {
 	Put,
 	Query,
 	Req,
-	Res,
 	UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
@@ -82,7 +81,7 @@ export class PostsController {
 				currentUserId = result.id;
 			}
 		}
-		return await this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection, currentUserId);
+		return this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection, currentUserId);
 	}
 
 	@HttpCode(200)
