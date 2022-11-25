@@ -13,6 +13,7 @@ import { UsersModule } from "../users/users.module";
 import { ThrottlerGuard } from "@nestjs/throttler";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthModule } from "../auth/auth.module";
+import { LikesModule } from "../likes/likes.module";
 
 @Module({
 	imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from "../auth/auth.module";
 		forwardRef(() => CommentsModule),
 		AuthModule,
 		UsersModule,
+		LikesModule,
 		ConfigModule,
 		MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }]),
 		JwtModule.registerAsync({

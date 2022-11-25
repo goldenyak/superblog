@@ -26,9 +26,9 @@ import { CommentsService } from '../comments/comments.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
-import { ThrottlerIpGuard } from '../guards/throttle-ip.guard';
 import { BasicAuthGuard } from '../guards/basic-auth.guard';
 import { AuthService } from '../auth/auth.service';
+import { LikePostDto } from './dto/like-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -72,8 +72,17 @@ export class PostsController {
 		@Query('sortBy') sortBy: string,
 		@Query('sortDirection') sortDirection: string,
 		@Req() req: Request,
+		@Headers('authorization') header: string,
 	) {
-		return await this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection);
+		let currentUserId;
+		if (req.headers.authorization) {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		}
+		return await this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection, currentUserId);
 	}
 
 	@HttpCode(200)
@@ -89,7 +98,6 @@ export class PostsController {
 	) {
 		let currentUserId;
 		if (req.headers.authorization) {
-			console.log(req.headers.authorization);
 			const token = req.headers.authorization.split(' ')[1];
 			const result = await this.authService.checkRefreshToken(token);
 			if (result) {
@@ -111,8 +119,20 @@ export class PostsController {
 	}
 
 	@Get(':id')
-	async findPostById(@Param('id') id: string) {
-		const foundedPost = await this.postsService.findPostById(id);
+	async findPostById(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Headers('authorization') header: string,
+	) {
+		let currentUserId;
+		if (req.headers.authorization) {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		}
+		const foundedPost = await this.postsService.findPostById(id, currentUserId);
 		if (!foundedPost) {
 			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
 		}
@@ -144,5 +164,20 @@ export class PostsController {
 			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
 		}
 		return;
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@HttpCode(204)
+	@Put(':id/like-status')
+	async addLikePostById(@Body() dto: LikePostDto, @Param('id') id: string, @Req() req: Request) {
+		const postById = await this.postsService.findPostById(id);
+		const user = await this.usersService.findUserById(req.user.id);
+		if (!postById) {
+			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
+		}
+		if (!user) {
+			throw new ForbiddenException();
+		}
+		return await this.postsService.addLikePostById(postById.id, user.id, dto.likeStatus);
 	}
 }

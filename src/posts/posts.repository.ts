@@ -20,7 +20,8 @@ export class PostsRepository {
 			.find()
 			.skip((pageNumber - 1) * pageSize)
 			.limit(pageSize)
-			.sort({ [sortByFilter]: sortDirectionFilter });
+			.sort({ [sortByFilter]: sortDirectionFilter })
+			.lean();
 
 		return posts.map((post) => {
 			return {
@@ -50,7 +51,8 @@ export class PostsRepository {
 			.find(filter)
 			.skip((pageNumber - 1) * pageSize)
 			.limit(pageSize)
-			.sort({ [sortByFilter]: sortDirectionFilter });
+			.sort({ [sortByFilter]: sortDirectionFilter })
+			.lean();
 
 		return posts.map((post) => {
 			return {
@@ -73,6 +75,13 @@ export class PostsRepository {
 		return this.postsModel.findOneAndUpdate(
 			{ id: id },
 			{ title: title, shortDescription: shortDescription, content: content },
+		);
+	}
+
+	async updateLikesInfoByPost(postId: string, updatedPost: any) {
+		return this.postsModel.updateOne(
+			{ id: postId },
+			{ $set: { extendedLikesInfo: updatedPost.extendedLikesInfo } },
 		);
 	}
 

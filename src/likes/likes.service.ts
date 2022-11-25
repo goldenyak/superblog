@@ -7,15 +7,15 @@ import { Likes } from './schemas/likes.schema';
 export class LikesService {
 	constructor(private readonly likesRepository: LikesRepository) {}
 
-	async createLike(commentId: string, userId: string, likeStatus: string) {
-		const likes = await this.likesRepository.findLikeByUserId(userId, commentId);
+	async createLike(parentId: string, userId: string, likeStatus: string) {
+		const likes = await this.likesRepository.findLikeByUserId(userId, parentId);
 		if (likes.length > 0) {
-			return await this.likesRepository.updateLike(userId, commentId, likeStatus);
+			return await this.likesRepository.updateLike(userId, parentId, likeStatus);
 		} else {
-			const newLike: any = {
+			const newLike = {
 				id: uuidv4(),
 				userId: userId,
-				commentId: commentId,
+				parentId: parentId,
 				createdAt: new Date(),
 				status: likeStatus,
 			};
@@ -27,8 +27,8 @@ export class LikesService {
 		return await this.likesRepository.findLikesByCommentId(id);
 	}
 
-	async getLikeStatusByUserId(commentId: string, userId: string) {
-		return await this.likesRepository.getLikeStatusByUserId(commentId, userId);
+	async getLikeStatusByUserId(parenId: string, userId: string) {
+		return await this.likesRepository.getLikeStatusByUserId(parenId, userId);
 	}
 
 	async getLikesCountByParentId(parentId: string): Promise<number> {
@@ -41,9 +41,5 @@ export class LikesService {
 
 	async deleteAll() {
 		return await this.likesRepository.deleteAll();
-	}
-
-	addReactionByParentId(parentId: string, userId: string, likeStatus: string) {
-		return this.likesRepository.addReactionByParentId(parentId, userId, likeStatus)
 	}
 }

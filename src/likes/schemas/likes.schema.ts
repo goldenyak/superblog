@@ -12,7 +12,7 @@ export class Likes {
   userId: string;
 
   @Prop()
-  commentId: string;
+  parentId: string;
 
   @Prop()
   createdAt: Date;

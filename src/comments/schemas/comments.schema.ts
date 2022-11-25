@@ -3,18 +3,7 @@ import { Document } from 'mongoose';
 
 export type CommentsDocument = Comments & Document;
 
-export class MyStatus {
-	@Prop()
-	like: string;
-
-	@Prop()
-	dislike: string;
-
-	@Prop()
-	none: string;
-}
-
-export class LikesInfoAdvantage {
+class CommentLikesInfoAdvantage {
 	@Prop()
 	likesCount: number;
 
@@ -45,8 +34,8 @@ export class Comments {
 	@Prop()
 	createdAt: Date;
 
-	@Prop({ type: LikesInfoAdvantage })
-	likesInfo?: LikesInfoAdvantage;
+	@Prop({ type: CommentLikesInfoAdvantage })
+	likesInfo?: CommentLikesInfoAdvantage;
 }
 
 export const CommentsSchema = SchemaFactory.createForClass(Comments);

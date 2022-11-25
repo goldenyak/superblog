@@ -12,15 +12,15 @@ export class LikesRepository {
 		return await this.likesModel.create(newLike);
 	}
 
-	async updateLike(userId: string, commentId: string, likeStatus: string) {
+	async updateLike(userId: string, parentId: string, likeStatus: string) {
 		return this.likesModel.findOneAndUpdate(
-			{ userId: userId, commentId: commentId },
+			{ userId: userId, parentId: parentId },
 			{ status: likeStatus },
 		);
 	}
 
-	async findLikeByUserId(userId: string, commentId: string) {
-		return this.likesModel.find({ userId: userId, commentId: commentId });
+	async findLikeByUserId(userId: string, parentId: string) {
+		return this.likesModel.find({ userId: userId, parentId: parentId });
 	}
 
 	async findLikesByCommentId(id: string) {
@@ -30,8 +30,8 @@ export class LikesRepository {
 		]);
 	}
 
-	async getLikeStatusByUserId(commentId: string, userId: string) {
-		return this.likesModel.findOne({ commentId: commentId, userId: userId });
+	async getLikeStatusByUserId(parentId: string, userId: string) {
+		return this.likesModel.findOne({ parentId: parentId, userId: userId });
 	}
 
 	async getLikesCountByParentId(parentId: string): Promise<number> {
@@ -43,9 +43,5 @@ export class LikesRepository {
 
 	async deleteAll() {
 		return this.likesModel.deleteMany().exec();
-	}
-
-	addReactionByParentId(parentId: string, userId: string, likeStatus: string) {
-		return this.likesModel.updateOne({commentId: parentId, userId: userId}, {$set: { likeStatus }}, {upsert: true})
 	}
 }

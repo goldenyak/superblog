@@ -137,10 +137,6 @@ export class CommentsService {
 		return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment);
 	}
 
-	async addReactionByParentId(parentId: string, userId: string, likeStatus: string) {
-		return this.likesService.addReactionByParentId(parentId, userId, likeStatus);
-	}
-
 	async deleteAll() {
 		return await this.commentsRepository.deleteAll();
 	}

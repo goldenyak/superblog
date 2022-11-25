@@ -1,14 +1,17 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePostsDto } from './dto/create-post.dto';
 import { BlogsService } from '../blogs/blogs.service';
 import { CommentsService } from '../comments/comments.service';
+import { Posts } from './schemas/posts.schemas';
+import { LikesService } from '../likes/likes.service';
 
 @Injectable()
 export class PostsService {
 	constructor(
 		private readonly postsRepository: PostsRepository,
+		private readonly likesService: LikesService,
 		@Inject(forwardRef(() => BlogsService)) private readonly blogsService: BlogsService,
 		@Inject(forwardRef(() => CommentsService)) private readonly commentsService: CommentsService,
 	) {}
@@ -18,7 +21,7 @@ export class PostsService {
 		if (!foundedBlog) {
 			return false;
 		} else {
-			const newPost = {
+			const newPost: Posts = {
 				id: uuidv4(),
 				title: dto.title,
 				shortDescription: dto.shortDescription,
@@ -26,25 +29,37 @@ export class PostsService {
 				blogId: foundedBlog.id,
 				blogName: foundedBlog.name,
 				createdAt: new Date(),
+				extendedLikesInfo: {
+					likesCount: 0,
+					dislikesCount: 0,
+					myStatus: 'None',
+					newestLikes: [],
+				},
 			};
 			return await this.postsRepository.create(newPost);
 		}
 	}
 
-	async getAllPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string) {
+	async getAllPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string) {
 		const countedAllPosts = await this.postsRepository.countAllPosts();
 		const allPosts = await this.postsRepository.getAllPosts(
-			(pageNumber = 1),
+			(pageNumber = 2),
 			(pageSize = 10),
 			sortBy,
 			sortDirection,
 		);
+		const result = [];
+		for (const post of allPosts) {
+			const mappedComment = await this.getLikesInfoForPost(post, userId);
+			result.push(mappedComment);
+		}
+
 		return {
-			pagesCount: pageNumber,
+			pagesCount: Math.ceil(countedAllPosts / pageSize),
 			page: pageNumber,
 			pageSize: pageSize,
 			totalCount: countedAllPosts,
-			items: allPosts,
+			items: result,
 		};
 	}
 
@@ -54,7 +69,7 @@ export class PostsService {
 		sortBy: string,
 		sortDirection: string,
 		postId: string,
-		userId: string
+		userId: string,
 	) {
 		return await this.commentsService.getAllCommentsByPostId(
 			pageNumber,
@@ -90,8 +105,12 @@ export class PostsService {
 		};
 	}
 
-	async findPostById(id: string) {
-		return await this.postsRepository.findPostById(id);
+	async findPostById(id: string, userId?: string | undefined) {
+		const foundedPost = await this.postsRepository.findPostById(id);
+		if (!foundedPost) {
+			throw new NotFoundException();
+		}
+		return await this.getLikesInfoForPost(foundedPost, userId);
 	}
 
 	async deletePostById(id: string) {
@@ -104,5 +123,28 @@ export class PostsService {
 
 	async deleteAll() {
 		return await this.postsRepository.deleteAll();
+	}
+
+	async addLikePostById(postId: string, userId: string, likeStatus: string) {
+		await this.likesService.createLike(postId, userId, likeStatus);
+		const foundedPost = await this.findPostById(postId, userId);
+		const updatedPost = await this.getLikesInfoForPost(foundedPost, userId);
+		return await this.postsRepository.updateLikesInfoByPost(postId, updatedPost);
+	}
+
+	async getLikesInfoForPost(post: any, userId: string) {
+		const likes = await this.likesService.getLikesCountByParentId(post.id);
+		const dislikes = await this.likesService.getDislikesCountByParentId(post.id);
+		const currentUserStatus = await this.likesService.getLikeStatusByUserId(post.id, userId);
+		let myStatus;
+		if (!userId || !currentUserStatus) {
+			myStatus = 'None';
+		} else {
+			myStatus = currentUserStatus.status;
+		}
+		post.extendedLikesInfo.likesCount = likes;
+		post.extendedLikesInfo.dislikesCount = dislikes;
+		post.extendedLikesInfo.myStatus = myStatus;
+		return post;
 	}
 }
