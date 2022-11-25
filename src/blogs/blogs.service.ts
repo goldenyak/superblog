@@ -78,7 +78,7 @@ export class BlogsService {
 	}
 
 	async findBlogById(id: string) {
-		return await this.blogsRepository.findBlogById(id);
+		return this.blogsRepository.findBlogById(id);
 	}
 
 	async deleteBlogById(id: string) {
