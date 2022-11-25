@@ -24,7 +24,7 @@ class PostLikesInfoAdvantage {
 	newestLikes: NewestLikes[];
 }
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false})
 export class Posts {
 	@Prop()
 	id: string;

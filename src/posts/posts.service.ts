@@ -36,7 +36,22 @@ export class PostsService {
 					newestLikes: [],
 				},
 			};
-			return await this.postsRepository.create(newPost);
+			await this.postsRepository.create(newPost);
+			return {
+				id: uuidv4(),
+				title: dto.title,
+				shortDescription: dto.shortDescription,
+				content: dto.content,
+				blogId: foundedBlog.id,
+				blogName: foundedBlog.name,
+				createdAt: new Date(),
+				extendedLikesInfo: {
+					likesCount: 0,
+					dislikesCount: 0,
+					myStatus: 'None',
+					newestLikes: [],
+				},
+			}
 		}
 	}
 
