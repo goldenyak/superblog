@@ -19,7 +19,7 @@ export class PostsService {
 	async create(dto: CreatePostsDto) {
 		const foundedBlog = await this.blogsService.findBlogById(dto.blogId);
 		if (!foundedBlog) {
-			return false;
+			throw new NotFoundException();
 		} else {
 			const newPost: Posts = {
 				id: uuidv4(),
@@ -51,11 +51,17 @@ export class PostsService {
 					myStatus: 'None',
 					newestLikes: [],
 				},
-			}
+			};
 		}
 	}
 
-	async getAllPosts(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, userId: string) {
+	async getAllPosts(
+		pageNumber: number,
+		pageSize: number,
+		sortBy: string,
+		sortDirection: string,
+		userId: string,
+	) {
 		const countedAllPosts = await this.postsRepository.countAllPosts();
 		const allPosts = await this.postsRepository.getAllPosts(
 			(pageNumber = 1),
@@ -146,6 +152,4 @@ export class PostsService {
 		const updatedPost = await this.likesService.getLikesInfoForPost(foundedPost, userId);
 		return await this.postsRepository.updateLikesInfoByPost(postId, updatedPost);
 	}
-
-
 }
