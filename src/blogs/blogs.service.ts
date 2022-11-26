@@ -24,17 +24,17 @@ export class BlogsService {
 		return await this.blogsRepository.create(newBlog);
 	}
 
-	async createPostByBlogId(blogById: Blogs, dto: CreatePostsDto) {
-		const newPost = {
-			id: uuidv4(),
-			title: dto.title,
-			shortDescription: dto.shortDescription,
-			content: dto.content,
-			blogId: blogById.id,
-			blogName: blogById.name,
-			createdAt: new Date(),
-		};
-		return await this.postsService.create(newPost);
+	async createPostByBlogId(blogId: string, dto: CreatePostsDto) {
+		// const newPost = {
+		// 	id: uuidv4(),
+		// 	title: dto.title,
+		// 	shortDescription: dto.shortDescription,
+		// 	content: dto.content,
+		// 	blogId: blogById.id,
+		// 	blogName: blogById.name,
+		// 	createdAt: new Date(),
+		// };
+		return await this.postsService.create(dto, blogId);
 	}
 
 	async getAllBlogs(

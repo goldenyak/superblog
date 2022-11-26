@@ -35,7 +35,7 @@ export class BlogsController {
 		if (!blogById) {
 			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
 		}
-		return await this.blogsService.createPostByBlogId(blogById, dto);
+		return await this.blogsService.createPostByBlogId(blogById.id, dto);
 	}
 
 	@HttpCode(200)

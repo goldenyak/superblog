@@ -16,8 +16,8 @@ export class PostsService {
 		@Inject(forwardRef(() => CommentsService)) private readonly commentsService: CommentsService,
 	) {}
 
-	async create(dto: CreatePostsDto) {
-		const foundedBlog = await this.blogsService.findBlogById(dto.blogId);
+	async create(dto: CreatePostsDto, blogId?: string) {
+		const foundedBlog = await this.blogsService.findBlogById(dto.blogId ? dto.blogId : blogId);
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		} else {
@@ -26,7 +26,7 @@ export class PostsService {
 				title: dto.title,
 				shortDescription: dto.shortDescription,
 				content: dto.content,
-				blogId: foundedBlog.id,
+				blogId: blogId ? blogId : foundedBlog.id,
 				blogName: foundedBlog.name,
 				createdAt: new Date(),
 				extendedLikesInfo: {
@@ -42,7 +42,7 @@ export class PostsService {
 				title: dto.title,
 				shortDescription: dto.shortDescription,
 				content: dto.content,
-				blogId: foundedBlog.id,
+				blogId: blogId ? blogId : foundedBlog.id,
 				blogName: foundedBlog.name,
 				createdAt: new Date(),
 				extendedLikesInfo: {
