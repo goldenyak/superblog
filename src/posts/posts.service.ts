@@ -38,13 +38,13 @@ export class PostsService {
 			};
 			await this.postsRepository.create(newPost);
 			return {
-				id: uuidv4(),
+				id: newPost.id,
 				title: dto.title,
 				shortDescription: dto.shortDescription,
 				content: dto.content,
-				blogId: blogId ? blogId : foundedBlog.id,
-				blogName: foundedBlog.name,
-				createdAt: new Date(),
+				blogId: newPost.blogId,
+				blogName: newPost.blogName,
+				createdAt: newPost.createdAt,
 				extendedLikesInfo: {
 					likesCount: 0,
 					dislikesCount: 0,

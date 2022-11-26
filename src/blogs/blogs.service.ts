@@ -24,7 +24,7 @@ export class BlogsService {
 		return await this.blogsRepository.create(newBlog);
 	}
 
-	async createPostByBlogId(blogId: string, dto: CreatePostsDto) {
+	async createPostByBlogId(dto: CreatePostsDto, blogId: string ) {
 		// const newPost = {
 		// 	id: uuidv4(),
 		// 	title: dto.title,
