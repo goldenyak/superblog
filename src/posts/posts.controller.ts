@@ -105,7 +105,7 @@ export class PostsController {
 		}
 		const postById = await this.postsService.findPostById(id);
 		if (!postById) {
-			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
+			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND)
 		}
 		return await this.postsService.getAllCommentsByPostId(
 			pageNumber,
