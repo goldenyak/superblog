@@ -118,11 +118,11 @@ export class PostsRepository {
 	}
 
 	private getFilterForSortDirection(sortDirection: string | null) {
-		if (!sortDirection || sortDirection === 'asc') {
-			return 1;
-		}
-		if (sortDirection === 'desc') {
+		if (!sortDirection || sortDirection === 'desc') {
 			return -1;
+		}
+		if (sortDirection === 'asc') {
+			return 1;
 		}
 	}
 

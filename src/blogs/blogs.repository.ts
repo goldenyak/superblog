@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blogs, BlogsDocument } from './schemas/blogs.schema';
-import { AuthDocument } from '../auth/schemas/auth.schema';
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 
 @Injectable()
@@ -28,7 +27,8 @@ export class BlogsRepository {
 			.find(filter)
 			.skip((pageNumber - 1) * pageSize)
 			.limit(pageSize)
-			.sort({ [sortByFilter]: sortDirectionFilter });
+			.sort({ [sortByFilter]: sortDirectionFilter })
+			.lean();
 
 		return blogs.map((blogs) => {
 			return {
@@ -46,7 +46,7 @@ export class BlogsRepository {
 	}
 
 	async updateBlogById(id: string, name: string, youtubeUrl: string) {
-		return this.blogsModel.findOneAndUpdate({ id: id }, { name: name,  youtubeUrl: youtubeUrl});
+		return this.blogsModel.findOneAndUpdate({ id: id }, { name: name, youtubeUrl: youtubeUrl });
 	}
 
 	async deleteBlogById(id: string) {
@@ -65,11 +65,11 @@ export class BlogsRepository {
 	}
 
 	private getFilterForSortDirection(sortDirection: string | null) {
-		if (!sortDirection || sortDirection === 'asc') {
-			return 1;
-		}
-		if (sortDirection === 'desc') {
+		if (!sortDirection || sortDirection === 'desc') {
 			return -1;
+		}
+		if (sortDirection === 'asc') {
+			return 1;
 		}
 	}
 
