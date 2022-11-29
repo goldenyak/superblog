@@ -62,7 +62,6 @@ export class LikesService {
 
 	async getLikesInfoForPost(post: any, userId: string) {
 		const likes = await this.getLikesCountByParentId(post.id);
-		console.log(likes);
 		const dislikes = await this.getDislikesCountByParentId(post.id);
 		const newestLikes = await this.getNewestLikesByPostId(post.id);
 		const currentUserStatus = await this.getLikeStatusByUserId(post.id, userId);

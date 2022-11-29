@@ -40,7 +40,7 @@ export class AuthController {
 		const checkUser = await this.authService.findUser(dto.login);
 		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
 		if (checkUser || checkUserByEmail) {
-			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
+			throw new BadRequestException();
 		} else {
 			const newUser = await this.authService.create(dto);
 			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
