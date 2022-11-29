@@ -28,6 +28,10 @@ export class LikesService {
 		}
 	}
 
+	async findLikesByCommentId(id: string) {
+		return await this.likesRepository.findLikesByCommentId(id);
+	}
+
 	async getLikeStatusByUserId(parenId: string, userId: string) {
 		return await this.likesRepository.getLikeStatusByUserId(parenId, userId);
 	}

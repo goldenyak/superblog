@@ -2,14 +2,14 @@ import {
 	Body,
 	Controller,
 	Delete,
-	Get,
+	Get, Headers,
 	HttpCode,
 	HttpException,
 	HttpStatus,
 	Param,
 	Post,
 	Put,
-	Query, UseGuards
+	Query, Req, UseGuards
 } from "@nestjs/common";
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { BlogsService } from './blogs.service';
@@ -17,10 +17,14 @@ import { NOT_FOUND_BLOG_ERROR } from './constants/blogs.constants';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { CreatePostsDto } from '../posts/dto/create-post.dto';
 import { BasicAuthGuard } from "../guards/basic-auth.guard";
+import { NOT_FOUND_POST_ERROR } from "../posts/constants/posts.constants";
+import { Request } from "express";
+import { AuthService } from "../auth/auth.service";
 
 @Controller('blogs')
 export class BlogsController {
-	constructor(private readonly blogsService: BlogsService) {}
+	constructor(private readonly blogsService: BlogsService,
+							private readonly authService: AuthService) {}
 
 	@UseGuards(BasicAuthGuard)
 	@Post()
@@ -57,16 +61,25 @@ export class BlogsController {
 	}
 
 	@HttpCode(200)
-	@Get(':id/posts')
+	@Get(':blogId/posts')
 	async getAllPostsByBlogId(
-		@Param('id') id: string,
+		@Param('blogId') blogId: string,
 		@Query('pageNumber') pageNumber: number,
 		@Query('pageSize') pageSize: number,
 		@Query('sortBy') sortBy: string,
 		@Query('sortDirection') sortDirection: string,
-		@Query('blogId') blogId: string,
+		@Req() req: Request,
+		@Headers('authorization') header: string,
 	) {
-		const blogById = await this.blogsService.findBlogById(id);
+		let currentUserId;
+		if (req.headers.authorization) {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		}
+		const blogById = await this.blogsService.findBlogById(blogId);
 		if (!blogById) {
 			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
 		}
@@ -76,6 +89,7 @@ export class BlogsController {
 			sortBy,
 			sortDirection,
 			blogId,
+			currentUserId
 		);
 	}
 

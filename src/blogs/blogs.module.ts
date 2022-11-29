@@ -11,10 +11,12 @@ import { getJwtConfig } from '../configs/jwt.config';
 import { Blogs, BlogsSchema } from './schemas/blogs.schema';
 import { BlogsRepository } from './blogs.repository';
 import { PostsModule } from "../posts/posts.module";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
 	imports: [
 		forwardRef(() => PostsModule),
+		AuthModule,
 		UsersModule,
 		ConfigModule,
 		MongooseModule.forFeature([{ name: Blogs.name, schema: BlogsSchema }]),

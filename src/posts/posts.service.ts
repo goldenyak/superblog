@@ -108,6 +108,7 @@ export class PostsService {
 		sortBy: string,
 		sortDirection: string,
 		blogId: string,
+		currentUserId: string
 	) {
 		const countedPostsByBlogId = await this.postsRepository.countPostsByBlogId(blogId);
 		const allPostsByBlogId = await this.postsRepository.getAllPostsByBlogId(
@@ -117,12 +118,18 @@ export class PostsService {
 			sortDirection,
 			blogId,
 		);
+		const result = [];
+		for (const post of allPostsByBlogId) {
+			const mappedPost = await this.likesService.getLikesInfoForPost(post, currentUserId);
+			result.push(mappedPost);
+		}
+
 		return {
-			pagesCount: pageNumber,
+			pagesCount: Math.ceil(countedPostsByBlogId / pageSize),
 			page: pageNumber,
 			pageSize: pageSize,
 			totalCount: countedPostsByBlogId,
-			items: allPostsByBlogId,
+			items: result,
 		};
 	}
 
