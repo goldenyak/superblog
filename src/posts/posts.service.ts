@@ -69,11 +69,16 @@ export class PostsService {
 			sortBy,
 			sortDirection,
 		);
-		const result = [];
-		for (const post of allPosts) {
-			const mappedComment = await this.likesService.getLikesInfoForPost(post, userId);
-			result.push(mappedComment);
-		}
+
+
+		const result = await Promise.all(allPosts.map(async post => {
+			return await this.likesService.getLikesInfoForPost(post, userId);
+		}))
+		// const result = [];
+		// for (const post of allPosts) {
+		// 	const mappedComment = await this.likesService.getLikesInfoForPost(post, userId);
+		// 	result.push(mappedComment);
+		// }
 
 		return {
 			pagesCount: Math.ceil(countedAllPosts / pageSize),
