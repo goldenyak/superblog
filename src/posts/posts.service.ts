@@ -108,7 +108,7 @@ export class PostsService {
 		sortBy: string,
 		sortDirection: string,
 		blogId: string,
-		currentUserId: string
+		userId: string
 	) {
 		const countedPostsByBlogId = await this.postsRepository.countPostsByBlogId(blogId);
 		const allPostsByBlogId = await this.postsRepository.getAllPostsByBlogId(
@@ -120,7 +120,7 @@ export class PostsService {
 		);
 		const result = [];
 		for (const post of allPostsByBlogId) {
-			const mappedPost = await this.likesService.getLikesInfoForPost(post, currentUserId);
+			const mappedPost = await this.likesService.getLikesInfoForPost(post, userId);
 			result.push(mappedPost);
 		}
 

@@ -67,7 +67,7 @@ export class BlogsService {
 		sortBy: string,
 		sortDirection: string,
 		blogId: string,
-		currentUserId: string
+		userId: string
 	) {
 		return await this.postsService.getAllPostsByBlogId(
 			pageNumber,
@@ -75,7 +75,7 @@ export class BlogsService {
 			sortBy,
 			sortDirection,
 			blogId,
-			currentUserId
+			userId
 		);
 	}
 
