@@ -67,7 +67,7 @@ export class CommentsService {
 		// }))
 
 		const result = [];
-		for (const comment of allCommentsByPostId) {
+		for await (const comment of allCommentsByPostId) {
 			const mappedComment = await this.likesService.getLikesInfoForComment(comment, userId);
 			result.push(mappedComment);
 		}
