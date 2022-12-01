@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -11,8 +12,8 @@ import {
 	Post,
 	Query,
 	Req,
-	UseGuards,
-} from '@nestjs/common';
+	UseGuards
+} from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ALREADY_REGISTERED_ERROR, NOT_FOUND_USER_ERROR } from './constants/users.constants';
@@ -29,7 +30,7 @@ export class UsersController {
 	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
 		const currentUser = await this.usersService.findUserByLogin(dto.login);
 		if (currentUser) {
-			throw new HttpException(ALREADY_REGISTERED_ERROR, HttpStatus.BAD_REQUEST);
+			throw new BadRequestException();
 		} else {
 			return await this.usersService.create(dto);
 		}
