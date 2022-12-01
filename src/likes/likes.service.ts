@@ -11,10 +11,10 @@ export class LikesService {
 	) {}
 
 	async createLike(parentId: string, userId: string, likeStatus: string) {
-		const likes = await this.likesRepository.findLikeByUserId(userId, parentId);
 		const user = await this.usersService.findUserById(userId);
-		if (likes.length > 0) {
-			return await this.likesRepository.updateLike(userId, parentId, likeStatus);
+		const updatedLike = await this.likesRepository.updateLike(userId, parentId, likeStatus);
+		if (updatedLike) {
+			return updatedLike;
 		} else {
 			const newLike = {
 				id: uuidv4(),
@@ -26,10 +26,22 @@ export class LikesService {
 			};
 			return await this.likesRepository.createLike(newLike);
 		}
-	}
 
-	async findLikesByCommentId(id: string) {
-		return await this.likesRepository.findLikesByCommentId(id);
+		// const likes = await this.likesRepository.findLikeByUserId(userId, parentId);
+		// const user = await this.usersService.findUserById(userId);
+		// if (likes.length > 0) {
+		// 	return await this.likesRepository.updateLike(userId, parentId, likeStatus);
+		// } else {
+		// 	const newLike = {
+		// 		id: uuidv4(),
+		// 		userId: userId,
+		// 		login: user.login,
+		// 		parentId: parentId,
+		// 		createdAt: new Date(),
+		// 		status: likeStatus,
+		// 	};
+		// 	return await this.likesRepository.createLike(newLike);
+		// }
 	}
 
 	async getLikeStatusByUserId(parenId: string, userId: string) {

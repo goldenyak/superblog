@@ -19,13 +19,9 @@ export class LikesRepository {
 		);
 	}
 
-	async findLikeByUserId(userId: string, parentId: string) {
-		return this.likesModel.find({ userId: userId, parentId: parentId });
-	}
-
-	async findLikesByCommentId(id: string) {
+	async findLikesInfoByParentId(parentId: string) {
 		return this.likesModel.aggregate([
-			{ $match: { commentId: id } },
+			{ $match: { parentId: parentId } },
 			{ $group: { _id: '$status', count: { $sum: 1 } } },
 		]);
 	}

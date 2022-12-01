@@ -70,10 +70,11 @@ export class PostsService {
 			sortDirection,
 		);
 
-
-		const result = await Promise.all(allPosts.map(async post => {
-			return await this.likesService.getLikesInfoForPost(post, userId);
-		}))
+		const result = await Promise.all(
+			allPosts.map(async (post) => {
+				return await this.likesService.getLikesInfoForPost(post, userId);
+			}),
+		);
 		// const result = [];
 		// for (const post of allPosts) {
 		// 	const mappedComment = await this.likesService.getLikesInfoForPost(post, userId);
@@ -113,7 +114,7 @@ export class PostsService {
 		sortBy: string,
 		sortDirection: string,
 		blogId: string,
-		userId: string
+		userId: string,
 	) {
 		const countedPostsByBlogId = await this.postsRepository.countPostsByBlogId(blogId);
 		const allPostsByBlogId = await this.postsRepository.getAllPostsByBlogId(
@@ -123,7 +124,7 @@ export class PostsService {
 			sortDirection,
 			blogId,
 		);
-
+		console.log(allPostsByBlogId);
 
 		const result = [];
 		for await (let post of allPostsByBlogId) {
@@ -161,9 +162,10 @@ export class PostsService {
 	}
 
 	async addLikePostById(postId: string, userId: string, likeStatus: string) {
-		await this.likesService.createLike(postId, userId, likeStatus);
-		const foundedPost = await this.findPostById(postId, userId);
-		const updatedPost = await this.likesService.getLikesInfoForPost(foundedPost, userId);
-		return await this.postsRepository.updateLikesInfoByPost(postId, updatedPost);
+		return this.likesService.createLike(postId, userId, likeStatus);
+		// await this.likesService.createLike(postId, userId, likeStatus);
+		// const foundedPost = await this.findPostById(postId, userId);
+		// const updatedPost = await this.likesService.getLikesInfoForPost(foundedPost, userId);
+		// return await this.postsRepository.updateLikesInfoByPost(postId, updatedPost);
 	}
 }
