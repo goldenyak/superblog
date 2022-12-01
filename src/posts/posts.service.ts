@@ -123,8 +123,10 @@ export class PostsService {
 			sortDirection,
 			blogId,
 		);
+
+
 		const result = [];
-		for (const post of allPostsByBlogId) {
+		for await (let post of allPostsByBlogId) {
 			const mappedPost = await this.likesService.getLikesInfoForPost(post, userId);
 			result.push(mappedPost);
 		}
