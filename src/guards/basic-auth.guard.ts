@@ -13,7 +13,7 @@ export class BasicAuthGuard implements CanActivate {
 			const authHeader = req.headers.authorization;
       const authType = req.headers.authorization.split(" ")[0].toString()
 			const authPhrase = authHeader.split(' ')[1];
-      if (authType === 'Bearer') {
+      if (authType === 'Basic') {
         if (authPhrase === 'YWRtaW46cXdlcnR5') {
           return true
         } else {
