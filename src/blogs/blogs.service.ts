@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreatePostsDto } from '../posts/dto/create-post.dto';
 import { PostsService } from '../posts/posts.service';
 import { Blogs } from './schemas/blogs.schema';
+import { BlogsQueryParams } from './dto/blogs-query.dto';
 
 @Injectable()
 export class BlogsService {
@@ -24,7 +25,7 @@ export class BlogsService {
 		return await this.blogsRepository.create(newBlog);
 	}
 
-	async createPostByBlogId(dto: CreatePostsDto, blogId: string ) {
+	async createPostByBlogId(dto: CreatePostsDto, blogId: string) {
 		// const newPost = {
 		// 	id: uuidv4(),
 		// 	title: dto.title,
@@ -37,23 +38,23 @@ export class BlogsService {
 		return await this.postsService.create(dto, blogId);
 	}
 
-	async getAllBlogs(
-		searchNameTerm: string,
-		pageNumber: number,
-		pageSize: number,
-		sortBy: string,
-		sortDirection: string,
-	) {
+	async getAllBlogs({
+		searchNameTerm,
+		pageNumber,
+		pageSize,
+		sortBy,
+		sortDirection,
+	}: BlogsQueryParams) {
 		const countBlogs = await this.blogsRepository.countBlogs(searchNameTerm);
 		const allBlogs = await this.blogsRepository.getAllBlogs(
 			searchNameTerm,
-			(pageNumber = 1),
-			(pageSize = 10),
+			pageNumber,
+			pageSize,
 			sortBy,
 			sortDirection,
 		);
 		return {
-			pagesCount: pageNumber,
+			pagesCount: Math.ceil(countBlogs / pageSize),
 			page: pageNumber,
 			pageSize: pageSize,
 			totalCount: countBlogs,
@@ -67,7 +68,7 @@ export class BlogsService {
 		sortBy: string,
 		sortDirection: string,
 		blogId: string,
-		userId: string
+		userId: string,
 	) {
 		return await this.postsService.getAllPostsByBlogId(
 			pageNumber,
@@ -75,7 +76,7 @@ export class BlogsService {
 			sortBy,
 			sortDirection,
 			blogId,
-			userId
+			userId,
 		);
 	}
 

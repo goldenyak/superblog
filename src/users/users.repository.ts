@@ -15,8 +15,8 @@ export class UsersRepository {
 	async getAllUsers(
 		searchLoginTerm: string,
 		searchEmailTerm: string,
-		pageNumber = 1,
-		pageSize = 10,
+		pageNumber: number,
+		pageSize: number,
 		sortBy: string,
 		sortDirection: string,
 	) {

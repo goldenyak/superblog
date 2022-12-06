@@ -28,6 +28,7 @@ import { UsersService } from '../users/users.service';
 import { BasicAuthGuard } from '../guards/basic-auth.guard';
 import { AuthService } from '../auth/auth.service';
 import { LikePostDto } from './dto/like-post.dto';
+import { PostsQueryParams } from "./dto/posts-query.dto";
 
 @Controller('posts')
 export class PostsController {
@@ -66,10 +67,7 @@ export class PostsController {
 	@HttpCode(200)
 	@Get()
 	async getAllPosts(
-		@Query('pageNumber') pageNumber: number,
-		@Query('pageSize') pageSize: number,
-		@Query('sortBy') sortBy: string,
-		@Query('sortDirection') sortDirection: string,
+		@Query() queryParams: PostsQueryParams,
 		@Req() req: Request,
 		@Headers('authorization') header: string,
 	) {
@@ -81,7 +79,7 @@ export class PostsController {
 				currentUserId = result.id;
 			}
 		}
-		return this.postsService.getAllPosts(pageNumber, pageSize, sortBy, sortDirection, currentUserId);
+		return this.postsService.getAllPosts(queryParams, currentUserId);
 	}
 
 	@HttpCode(200)

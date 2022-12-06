@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from './schemas/user.schema';
 import { compare, genSalt, hash } from 'bcrypt';
 import { UNREGISTERED_USER_ERROR, WRONG_PASSWORD_ERROR } from './constants/users.constants';
+import { UsersQueryDto } from './dto/users-query.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,27 +31,27 @@ export class UsersService {
 		};
 	}
 
-	async getAllUsers(
-		searchLoginTerm: string,
-		searchEmailTerm: string,
-		pageNumber: number,
-		pageSize: number,
-		sortBy: string,
-		sortDirection: string,
-	) {
+	async getAllUsers({
+		searchLoginTerm,
+		searchEmailTerm,
+		pageNumber,
+		pageSize,
+		sortBy,
+		sortDirection,
+	}: UsersQueryDto) {
 		const countUsers = await this.usersRepository.countUsers(searchLoginTerm, searchEmailTerm);
 
 		const allUsers = await this.usersRepository.getAllUsers(
 			searchLoginTerm,
 			searchEmailTerm,
-			(pageNumber = 1),
-			(pageSize = 10),
+			pageNumber,
+			pageSize,
 			sortBy,
 			sortDirection,
 		);
 
 		return {
-			pagesCount: pageNumber,
+			pagesCount: Math.ceil(countUsers / pageSize),
 			page: pageNumber,
 			pageSize: pageSize,
 			totalCount: countUsers,

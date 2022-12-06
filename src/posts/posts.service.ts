@@ -6,6 +6,7 @@ import { BlogsService } from '../blogs/blogs.service';
 import { CommentsService } from '../comments/comments.service';
 import { Posts } from './schemas/posts.schemas';
 import { LikesService } from '../likes/likes.service';
+import { PostsQueryParams } from './dto/posts-query.dto';
 
 @Injectable()
 export class PostsService {
@@ -56,16 +57,13 @@ export class PostsService {
 	}
 
 	async getAllPosts(
-		pageNumber: number,
-		pageSize: number,
-		sortBy: string,
-		sortDirection: string,
+		{ pageNumber, pageSize, sortBy, sortDirection }: PostsQueryParams,
 		userId: string,
 	) {
 		const countedAllPosts = await this.postsRepository.countAllPosts();
 		const allPosts = await this.postsRepository.getAllPosts(
-			(pageNumber = 1),
-			(pageSize = 10),
+			pageNumber,
+			pageSize,
 			sortBy,
 			sortDirection,
 		);

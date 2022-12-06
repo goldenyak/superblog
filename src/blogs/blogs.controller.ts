@@ -2,29 +2,35 @@ import {
 	Body,
 	Controller,
 	Delete,
-	Get, Headers,
+	Get,
+	Headers,
 	HttpCode,
 	HttpException,
 	HttpStatus,
 	Param,
 	Post,
 	Put,
-	Query, Req, UseGuards
-} from "@nestjs/common";
+	Query,
+	Req,
+	UseGuards,
+} from '@nestjs/common';
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { BlogsService } from './blogs.service';
 import { NOT_FOUND_BLOG_ERROR } from './constants/blogs.constants';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { CreatePostsDto } from '../posts/dto/create-post.dto';
-import { BasicAuthGuard } from "../guards/basic-auth.guard";
-import { NOT_FOUND_POST_ERROR } from "../posts/constants/posts.constants";
-import { Request } from "express";
-import { AuthService } from "../auth/auth.service";
+import { BasicAuthGuard } from '../guards/basic-auth.guard';
+import { NOT_FOUND_POST_ERROR } from '../posts/constants/posts.constants';
+import { Request } from 'express';
+import { AuthService } from '../auth/auth.service';
+import { BlogsQueryParams } from './dto/blogs-query.dto';
 
 @Controller('blogs')
 export class BlogsController {
-	constructor(private readonly blogsService: BlogsService,
-							private readonly authService: AuthService) {}
+	constructor(
+		private readonly blogsService: BlogsService,
+		private readonly authService: AuthService,
+	) {}
 
 	@UseGuards(BasicAuthGuard)
 	@Post()
@@ -39,25 +45,13 @@ export class BlogsController {
 		if (!blogById) {
 			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
 		}
-		return await this.blogsService.createPostByBlogId(dto, blogById.id );
+		return await this.blogsService.createPostByBlogId(dto, blogById.id);
 	}
 
 	@HttpCode(200)
 	@Get()
-	async getAllBlogs(
-		@Query('searchNameTerm') searchNameTerm: string,
-		@Query('pageNumber') pageNumber: number,
-		@Query('pageSize') pageSize: number,
-		@Query('sortBy') sortBy: string,
-		@Query('sortDirection') sortDirection: string,
-	) {
-		return await this.blogsService.getAllBlogs(
-			searchNameTerm,
-			pageNumber,
-			pageSize,
-			sortBy,
-			sortDirection,
-		);
+	async getAllBlogs(@Query() queryParams: BlogsQueryParams) {
+		return await this.blogsService.getAllBlogs(queryParams);
 	}
 
 	@HttpCode(200)
@@ -89,7 +83,7 @@ export class BlogsController {
 			sortBy,
 			sortDirection,
 			blogId,
-			currentUserId
+			currentUserId,
 		);
 	}
 
