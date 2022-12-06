@@ -29,12 +29,13 @@ export class UsersController {
 	@HttpCode(201)
 	@Post()
 	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
-		const currentUser = await this.usersService.findUserByLogin(dto.login);
-		if (currentUser) {
-			throw new BadRequestException();
-		} else {
-			return await this.usersService.create(dto);
-		}
+		// const currentUser = await this.usersService.findUserByLogin(dto.login);
+		// if (currentUser) {
+		// 	throw new BadRequestException();
+		// } else {
+		// 	return await this.usersService.create(dto);
+		// }
+		return await this.usersService.create(dto);
 	}
 
 	@HttpCode(200)
