@@ -135,9 +135,9 @@ export class AuthController {
 	@UseGuards(ThrottlerIpGuard)
 	@HttpCode(204)
 	@Post('registration-email-resending')
-	async registrationEmailFResending(@Body() dto: EmailResendingDto, @Req() req: Request) {
+	async registrationEmailResending(@Body() dto: EmailResendingDto, @Req() req: Request) {
 		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
-		if (!checkUserByEmail) {
+		if (!checkUserByEmail || checkUserByEmail.isConfirmed === true) {
 			throw new BadRequestException();
 		} else {
 			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);

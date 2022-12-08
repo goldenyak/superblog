@@ -62,6 +62,12 @@ export class AuthService {
 
 	async sendConfirmEmail(email: string) {
 		const user = await this.usersService.findUserByEmail(email);
+		if (!user) {
+			return false;
+		}
+		if (user.isConfirmed === true) {
+			return false;
+		}
 		return await this.mailerService
 			.sendMail({
 				to: email,
@@ -96,7 +102,7 @@ export class AuthService {
 	}
 
 	async setNewPassword(recoveryCode: string, newPassword: string) {
-		const passwordHash = await hash(newPassword, 10)
+		const passwordHash = await hash(newPassword, 10);
 		return await this.usersRepository.setNewPassword(recoveryCode, passwordHash);
 	}
 
