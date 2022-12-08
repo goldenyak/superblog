@@ -10,12 +10,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
 		const status = exception.getStatus();
 
 		if (status === 400) {
-			const errorResponse = {
-				errorsMessages: [],
-			};
+			const errorsMessages = [];
+
 			const responseBody: any = exception.getResponse();
-			typeof responseBody.message !== 'string' && responseBody.message.forEach((m) => errorResponse.errorsMessages.push({message: m.message, field: m.field}));
-			response.status(status).json(errorResponse);
+			if (typeof responseBody.message !== 'string') {
+				responseBody.message.forEach((item) => errorsMessages.push(item));
+				response.status(status).json({ errorsMessages: errorsMessages });
+			}
 		} else {
 			response.status(status).json({
 				statusCode: status,
@@ -23,5 +24,21 @@ export class HttpExceptionFilter implements ExceptionFilter {
 				path: request.url,
 			});
 		}
+
+		// if (status === 400) {
+		// 	const errorResponse = {
+		// 		errorsMessages: [],
+		// 	};
+		// 	const responseBody: any = exception.getResponse();
+		// 	console.log(responseBody);
+		// 	typeof responseBody.message !== 'string' && responseBody.message.forEach((m) => errorResponse.errorsMessages.push({message: m.message, field: m.field}));
+		// 	response.status(status).json(errorResponse);
+		// } else {
+		// 	response.status(status).json({
+		// 		statusCode: status,
+		// 		timestamp: new Date().toISOString(),
+		// 		path: request.url,
+		// 	});
+		// }
 	}
 }

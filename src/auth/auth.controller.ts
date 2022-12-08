@@ -39,14 +39,26 @@ export class AuthController {
 	async register(@Body() dto: CreateUserDto) {
 		const checkUser = await this.authService.findUser(dto.login);
 		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
-		if (checkUser || checkUserByEmail) {
-			throw new BadRequestException();
-		} else {
-			const newUser = await this.authService.create(dto);
-			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
-			const emailResponseCode = confirmEmail.response.split(' ')[0];
-			return newUser;
+		const existsErrors = [];
+		if (checkUser) {
+			existsErrors.push({
+				message: 'Такой login уже существует',
+				field: 'login',
+			});
 		}
+		if (checkUserByEmail) {
+			existsErrors.push({
+				message: 'Такой email уже существует',
+				field: 'email',
+			});
+		}
+		if (existsErrors.length > 0) {
+			throw new BadRequestException(existsErrors)
+		}
+		const newUser = await this.authService.create(dto);
+		const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
+		const emailResponseCode = confirmEmail.response.split(' ')[0];
+		return newUser;
 	}
 
 	@UseGuards(ThrottlerIpGuard)
