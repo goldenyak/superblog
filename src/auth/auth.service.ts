@@ -74,6 +74,9 @@ export class AuthService {
 				subject: 'Email confirmation code',
 				text: 'welcome',
 				html: `<a href=\'https://superblog-eight.vercel.app/auth/registration-confirmation?code=${user.confirmationCode}\'>confirm your email</a>`,
+				context: {
+					code: user.confirmationCode,
+				},
 			})
 			.catch((e) => {
 				throw new HttpException(

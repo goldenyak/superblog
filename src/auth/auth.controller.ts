@@ -127,7 +127,12 @@ export class AuthController {
 	async registrationConfirmation(@Body() dto: FindUserByCodeDto) {
 		const foundedUser = await this.usersService.findUserByConfirmationCode(dto.code);
 		if (!foundedUser || foundedUser.isConfirmed === true) {
-			throw new BadRequestException();
+			throw new BadRequestException([
+				{
+					message: 'wrong code',
+					field: 'code',
+				},
+			]);
 		}
 		return await this.usersService.updateConfirmationCode(dto.code);
 	}
@@ -138,24 +143,25 @@ export class AuthController {
 	async registrationEmailResending(@Body() dto: EmailResendingDto, @Req() req: Request) {
 		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
 		if (!checkUserByEmail) {
-			throw new BadRequestException([{
-				message: 'email it does not exist',
-				field: 'email'
-			}]);
+			throw new BadRequestException([
+				{
+					message: 'email it does not exist',
+					field: 'email',
+				},
+			]);
 		}
 		if (checkUserByEmail.isConfirmed === true) {
-			throw new BadRequestException(
-				[{
+			throw new BadRequestException([
+				{
 					message: 'user has already verified',
-					field: 'isConfirmed'
-				}]
-			);
+					field: 'email',
+				},
+			]);
 		} else {
 			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
 			const emailResponseCode = confirmEmail.response.split(' ')[0];
 			// console.log(emailResponseCode);
 			return confirmEmail;
-
 		}
 	}
 
