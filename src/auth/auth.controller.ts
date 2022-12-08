@@ -53,7 +53,7 @@ export class AuthController {
 			});
 		}
 		if (existsErrors.length > 0) {
-			throw new BadRequestException(existsErrors)
+			throw new BadRequestException(existsErrors);
 		}
 		const newUser = await this.authService.create(dto);
 		const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
@@ -137,12 +137,25 @@ export class AuthController {
 	@Post('registration-email-resending')
 	async registrationEmailResending(@Body() dto: EmailResendingDto, @Req() req: Request) {
 		const checkUserByEmail = await this.usersService.findUserByEmail(dto.email);
-		if (!checkUserByEmail || checkUserByEmail.isConfirmed === true) {
-			throw new BadRequestException();
+		if (!checkUserByEmail) {
+			throw new BadRequestException([{
+				message: 'email it does not exist',
+				field: 'email'
+			}]);
+		}
+		if (checkUserByEmail.isConfirmed === true) {
+			throw new BadRequestException(
+				[{
+					message: 'user has already verified',
+					field: 'isConfirmed'
+				}]
+			);
 		} else {
 			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
 			const emailResponseCode = confirmEmail.response.split(' ')[0];
-			console.log(emailResponseCode);
+			// console.log(emailResponseCode);
+			return confirmEmail;
+
 		}
 	}
 

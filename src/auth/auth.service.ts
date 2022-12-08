@@ -62,12 +62,12 @@ export class AuthService {
 
 	async sendConfirmEmail(email: string) {
 		const user = await this.usersService.findUserByEmail(email);
-		if (!user) {
-			return false;
-		}
-		if (user.isConfirmed === true) {
-			return false;
-		}
+		// if (!user) {
+		// 	return false;
+		// }
+		// if (user.isConfirmed === true) {
+		// 	return false;
+		// }
 		return await this.mailerService
 			.sendMail({
 				to: email,
