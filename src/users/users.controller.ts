@@ -63,6 +63,7 @@ export class UsersController {
 		return;
 	}
 
+	@UseGuards(BasicAuthGuard)
 	@Delete()
 	async deleteAllUsers() {
 		return this.usersService.deleteAll();
