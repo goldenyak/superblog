@@ -53,6 +53,7 @@ export class UsersController {
 		return foundedUser;
 	}
 
+	@UseGuards(BasicAuthGuard)
 	@HttpCode(204)
 	@Delete('/:id')
 	async deleteUserById(@Param('id') id: string) {
@@ -63,7 +64,7 @@ export class UsersController {
 		return;
 	}
 
-	@UseGuards(BasicAuthGuard)
+
 	@Delete()
 	async deleteAllUsers() {
 		return this.usersService.deleteAll();
