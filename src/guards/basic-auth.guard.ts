@@ -13,15 +13,24 @@ export class BasicAuthGuard implements CanActivate {
 			const authHeader = req.headers.authorization;
       const authType = req.headers.authorization.split(" ")[0].toString()
 			const authPhrase = authHeader.split(' ')[1];
-      if (authType === 'Basic') {
-        if (authPhrase === 'YWRtaW46cXdlcnR5') {
-          return true
-        } else {
-          throw new UnauthorizedException({ message: 'Вы не авторизованы' });
-        }
-      } else {
+			if (authType !== 'Basic' || !authType) {
 				throw new UnauthorizedException()
+			} else if (authType === 'Basic') {
+				if (authPhrase === 'YWRtaW46cXdlcnR5') {
+					return true
+				} else {
+					throw new UnauthorizedException({ message: 'Вы не авторизованы' });
+				}
 			}
+			// if (authType === 'Basic') {
+      //   if (authPhrase === 'YWRtaW46cXdlcnR5') {
+      //     return true
+      //   } else {
+      //     throw new UnauthorizedException({ message: 'Вы не авторизованы' });
+      //   }
+      // } else {
+			// 	throw new UnauthorizedException()
+			// }
 		} catch (error) {
 			throw new UnauthorizedException({ message: 'Вы не авторизованы' });
 		}
