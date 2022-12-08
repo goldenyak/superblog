@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -19,7 +19,9 @@ export class BasicAuthGuard implements CanActivate {
         } else {
           throw new UnauthorizedException({ message: 'Вы не авторизованы' });
         }
-      }
+      } else {
+				throw new UnauthorizedException()
+			}
 		} catch (error) {
 			throw new UnauthorizedException({ message: 'Вы не авторизованы' });
 		}
