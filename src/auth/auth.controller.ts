@@ -150,19 +150,19 @@ export class AuthController {
 				},
 			]);
 		}
-		if (checkUserByEmail.isConfirmed === true) {
+		if (checkUserByEmail.isConfirmed) {
 			throw new BadRequestException([
 				{
 					message: 'user has already verified',
 					field: 'email',
 				},
 			]);
-		} else {
-			const confirmEmail = await this.authService.sendConfirmEmail(dto.email);
-			const emailResponseCode = confirmEmail.response.split(' ')[0];
-			// console.log(emailResponseCode);
-			return confirmEmail;
 		}
+			return this.authService.sendNewConfirmEmail(dto.email);
+			// const emailResponseCode = confirmEmail.response.split(' ')[0];
+			// console.log(emailResponseCode);
+			// return confirmEmail;
+
 	}
 
 	@UseGuards(ThrottlerIpGuard)

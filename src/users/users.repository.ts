@@ -64,6 +64,10 @@ export class UsersRepository {
 		return this.userModel.findOneAndUpdate({ confirmationCode: code }, { isConfirmed: true });
 	}
 
+	async addNewConfirmationCodeByEmail(email: string, newConfirmationCode: string) {
+		return this.userModel.findOneAndUpdate({ email}, { confirmationCode: newConfirmationCode });
+	}
+
 	async addRecoveryCode(email: string, recoveryCode: string) {
 		return this.userModel.updateOne({ email: email }, { $set: { recoveryCode: recoveryCode } });
 	}

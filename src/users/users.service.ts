@@ -82,6 +82,11 @@ export class UsersService {
 	async updateConfirmationCode(code: string) {
 		return await this.usersRepository.updateConfirmationCode(code);
 	}
+	async addNewConfirmationCodeByEmail(email: string) {
+		const newConfirmationCode = uuidv4();
+		await this.usersRepository.addNewConfirmationCodeByEmail(email, newConfirmationCode);
+		return newConfirmationCode
+	}
 
 	async addRecoveryCode(email: string, recoveryCode: string) {
 		return await this.usersRepository.addRecoveryCode(email, recoveryCode);

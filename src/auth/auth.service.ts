@@ -11,6 +11,7 @@ import { Model } from 'mongoose';
 import { Jwt, JwtDocument } from './schemas/jwt.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { compare, genSalt, hash } from 'bcrypt';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
 		private readonly usersRepository: UsersRepository,
 		private readonly JwtService: JwtService,
 		private readonly configService: ConfigService,
-		private readonly mailerService: MailerService,
+		private readonly emailService: EmailService,
 	) {}
 
 	async create(dto: CreateUserDto) {
@@ -62,46 +63,18 @@ export class AuthService {
 
 	async sendConfirmEmail(email: string) {
 		const user = await this.usersService.findUserByEmail(email);
-		// if (!user) {
-		// 	return false;
-		// }
-		// if (user.isConfirmed === true) {
-		// 	return false;
-		// }
-		return await this.mailerService
-			.sendMail({
-				to: email,
-				subject: 'Email confirmation code',
-				text: 'welcome',
-				html: `<a href=\'https://superblog-eight.vercel.app/auth/registration-confirmation?code=${user.confirmationCode}\'>confirm your email</a>`,
-				context: {
-					code: user.confirmationCode,
-				},
-			})
-			.catch((e) => {
-				throw new HttpException(
-					`Ошибка работы почты! Потому что что? Потому что ты ввел какую-то хуйню!`,
-					HttpStatus.UNPROCESSABLE_ENTITY,
-				);
-			});
+		return this.emailService.sendConfirmEmail(email, user.confirmationCode);
+	}
+
+	async sendNewConfirmEmail(email: string) {
+		const newCode = await this.usersService.addNewConfirmationCodeByEmail(email);
+		return await this.emailService.sendNewConfirmEmail(email, newCode);
 	}
 
 	async sendRecoveryPasswordEmail(email: string) {
 		const recoveryCode = uuidv4();
 		await this.usersService.addRecoveryCode(email, recoveryCode);
-		return await this.mailerService
-			.sendMail({
-				to: email,
-				subject: 'Email recovery code',
-				text: 'welcome',
-				html: `<a href=\'https://superblog-eight.vercel.app/auth/password-recovery?recoveryCode=${recoveryCode}\'>recovery password</a>`,
-			})
-			.catch(() => {
-				throw new HttpException(
-					`Ошибка работы почты! Потому что что? Потому что ты ввел какую-то хуйню!`,
-					HttpStatus.BAD_REQUEST,
-				);
-			});
+		return this.emailService.sendRecoveryPasswordEmail(email, recoveryCode);
 	}
 
 	async setNewPassword(recoveryCode: string, newPassword: string) {

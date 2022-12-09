@@ -16,20 +16,16 @@ import { ThrottlerModule } from "@nestjs/throttler";
 import { SessionsModule } from './sessions/sessions.module';
 import { LikesModule } from './likes/likes.module';
 import { LikesService } from "./likes/likes.service";
+import { EmailModule } from './email/email.module';
 
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(),
+		ConfigModule.forRoot({isGlobal: true}),
 		MongooseModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: getMongoConfig,
-		}),
-		MailerModule.forRootAsync({
-			imports: [ConfigModule],
-			inject: [ConfigService],
-			useFactory: getMailConfig,
 		}),
 		ThrottlerModule.forRootAsync({
 			imports: [ConfigModule],
@@ -47,6 +43,7 @@ import { LikesService } from "./likes/likes.service";
 		DeleteAllModule,
 		SessionsModule,
 		LikesModule,
+		EmailModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
