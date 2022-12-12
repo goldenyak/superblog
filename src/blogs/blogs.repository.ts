@@ -45,8 +45,8 @@ export class BlogsRepository {
 		return this.blogsModel.findOne({ id: id }, { _id: 0 });
 	}
 
-	async updateBlogById(id: string, name: string, youtubeUrl: string) {
-		return this.blogsModel.findOneAndUpdate({ id: id }, { name: name, youtubeUrl: youtubeUrl });
+	async updateBlogById(id: string, name: string, description: string, websiteUrl: string) {
+		return this.blogsModel.findOneAndUpdate({ id: id }, { name: name, description: description, websiteUrl: websiteUrl });
 	}
 
 	async deleteBlogById(id: string) {

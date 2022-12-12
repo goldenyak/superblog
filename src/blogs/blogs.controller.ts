@@ -7,6 +7,7 @@ import {
 	HttpCode,
 	HttpException,
 	HttpStatus,
+	NotFoundException,
 	Param,
 	Post,
 	Put,
@@ -43,7 +44,7 @@ export class BlogsController {
 	async createPostByBlogId(@Param('blogId') blogId: string, @Body() dto: CreatePostsDto) {
 		const blogById = await this.blogsService.findBlogById(blogId);
 		if (!blogById) {
-			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return await this.blogsService.createPostByBlogId(dto, blogById.id);
 	}
@@ -66,16 +67,18 @@ export class BlogsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		if (req.headers.authorization) {
-			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
-			}
-		}
+		// if (req.headers.authorization && req.headers.authorization !== 'Basic') {
+		// 	const token = req.headers.authorization.split(' ')[1];
+		// 	const result = await this.authService.checkRefreshToken(token);
+		// 	if (result) {
+		// 		currentUserId = result.id;
+		// 	}
+		// } else {
+		// 	throw new NotFoundException();
+		// }
 		const blogById = await this.blogsService.findBlogById(blogId);
 		if (!blogById) {
-			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return await this.blogsService.getAllPostsByBlogId(
 			pageNumber,
@@ -91,7 +94,7 @@ export class BlogsController {
 	async findBlogById(@Param('id') id: string) {
 		const foundedBlog = await this.blogsService.findBlogById(id);
 		if (!foundedBlog) {
-			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return foundedBlog;
 	}
@@ -102,7 +105,7 @@ export class BlogsController {
 	async deleteBlogById(@Param('id') id: string) {
 		const deletedBlog = await this.blogsService.deleteBlogById(id);
 		if (!deletedBlog) {
-			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return;
 	}
@@ -111,9 +114,14 @@ export class BlogsController {
 	@HttpCode(204)
 	@Put(':id')
 	async updateBlogById(@Body() dto: UpdateBlogDto, @Param('id') id: string) {
-		const blog = await this.blogsService.updateBlogById(id, dto.name, dto.websiteUrl);
+		const blog = await this.blogsService.updateBlogById(
+			id,
+			dto.name,
+			dto.description,
+			dto.websiteUrl,
+		);
 		if (!blog) {
-			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return;
 	}
