@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { PostsRepository } from './posts.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePostsDto } from './dto/create-post.dto';
@@ -20,7 +20,10 @@ export class PostsService {
 	async create(dto: CreatePostsDto, blogId?: string) {
 		const foundedBlog = await this.blogsService.findBlogById(dto.blogId ? dto.blogId : blogId);
 		if (!foundedBlog) {
-			throw new NotFoundException();
+			throw new BadRequestException([{
+				message: 'blogId',
+				field: 'blogId'
+			}]);
 		} else {
 			const newPost: Posts = {
 				id: uuidv4(),

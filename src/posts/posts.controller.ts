@@ -7,14 +7,14 @@ import {
 	Headers,
 	HttpCode,
 	HttpException,
-	HttpStatus,
+	HttpStatus, NotFoundException,
 	Param,
 	Post,
 	Put,
 	Query,
 	Req,
-	UseGuards,
-} from '@nestjs/common';
+	UseGuards
+} from "@nestjs/common";
 import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-post.dto';
 import { NOT_FOUND_BLOG_ERROR } from '../blogs/constants/blogs.constants';
@@ -54,11 +54,11 @@ export class PostsController {
 	) {
 		const user = await this.usersService.findUserById(req.user.id);
 		if (!user) {
-			throw new HttpException('такого юзера не существует', HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		const postById = await this.postsService.findPostById(postId);
 		if (!postById) {
-			throw new HttpException('not found post by ID', HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		} else {
 			return await this.commentsService.create(dto, postId, user);
 		}
@@ -72,13 +72,13 @@ export class PostsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		if (req.headers.authorization) {
-			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
-			}
-		}
+		// if (req.headers.authorization) {
+		// 	const token = req.headers.authorization.split(' ')[1];
+		// 	const result = await this.authService.checkRefreshToken(token);
+		// 	if (result) {
+		// 		currentUserId = result.id;
+		// 	}
+		// }
 		return this.postsService.getAllPosts(queryParams, currentUserId);
 	}
 
@@ -94,16 +94,16 @@ export class PostsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		if (req.headers.authorization) {
-			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
-			}
-		}
+		// if (req.headers.authorization) {
+		// 	const token = req.headers.authorization.split(' ')[1];
+		// 	const result = await this.authService.checkRefreshToken(token);
+		// 	if (result) {
+		// 		currentUserId = result.id;
+		// 	}
+		// }
 		const postById = await this.postsService.findPostById(id);
 		if (!postById) {
-			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND)
+			throw new NotFoundException()
 		}
 		return await this.postsService.getAllCommentsByPostId(
 			pageNumber,
@@ -122,16 +122,16 @@ export class PostsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		if (req.headers.authorization) {
-			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
-			}
-		}
+		// if (req.headers.authorization) {
+		// 	const token = req.headers.authorization.split(' ')[1];
+		// 	const result = await this.authService.checkRefreshToken(token);
+		// 	if (result) {
+		// 		currentUserId = result.id;
+		// 	}
+		// }
 		const foundedPost = await this.postsService.findPostById(id, currentUserId);
 		if (!foundedPost) {
-			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return foundedPost;
 	}
@@ -142,7 +142,7 @@ export class PostsController {
 	async deletePostById(@Param('id') id: string) {
 		const deletedPost = await this.postsService.deletePostById(id);
 		if (!deletedPost) {
-			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return;
 	}
@@ -158,7 +158,7 @@ export class PostsController {
 			dto.content,
 		);
 		if (!post) {
-			throw new HttpException(NOT_FOUND_BLOG_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return;
 	}
@@ -170,7 +170,7 @@ export class PostsController {
 		const postById = await this.postsService.findPostById(id);
 		const user = await this.usersService.findUserById(req.user.id);
 		if (!postById) {
-			throw new HttpException(NOT_FOUND_POST_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		if (!user) {
 			throw new ForbiddenException();
