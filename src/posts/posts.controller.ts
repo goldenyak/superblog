@@ -72,13 +72,13 @@ export class PostsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		// if (req.headers.authorization) {
-		// 	const token = req.headers.authorization.split(' ')[1];
-		// 	const result = await this.authService.checkRefreshToken(token);
-		// 	if (result) {
-		// 		currentUserId = result.id;
-		// 	}
-		// }
+		if (req.headers.authorization) {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		}
 		return this.postsService.getAllPosts(queryParams, currentUserId);
 	}
 
@@ -94,13 +94,13 @@ export class PostsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		// if (req.headers.authorization) {
-		// 	const token = req.headers.authorization.split(' ')[1];
-		// 	const result = await this.authService.checkRefreshToken(token);
-		// 	if (result) {
-		// 		currentUserId = result.id;
-		// 	}
-		// }
+		if (req.headers.authorization) {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		}
 		const postById = await this.postsService.findPostById(id);
 		if (!postById) {
 			throw new NotFoundException()
@@ -122,13 +122,14 @@ export class PostsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		// if (req.headers.authorization) {
-		// 	const token = req.headers.authorization.split(' ')[1];
-		// 	const result = await this.authService.checkRefreshToken(token);
-		// 	if (result) {
-		// 		currentUserId = result.id;
-		// 	}
-		// }
+		console.log(req.headers.authorization);
+		if (req.headers.authorization) {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		}
 		const foundedPost = await this.postsService.findPostById(id, currentUserId);
 		if (!foundedPost) {
 			throw new NotFoundException();
