@@ -42,8 +42,8 @@ export class PostsRepository {
 	}
 
 	async getAllPostsByBlogId(
-		pageNumber = 1,
-		pageSize = 10,
+		pageNumber,
+		pageSize,
 		sortBy: string,
 		sortDirection: string,
 		blogId: string,

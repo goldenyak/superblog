@@ -5,8 +5,6 @@ import {
 	Get,
 	Headers,
 	HttpCode,
-	HttpException,
-	HttpStatus,
 	NotFoundException,
 	Param,
 	Post,
@@ -17,11 +15,9 @@ import {
 } from '@nestjs/common';
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { BlogsService } from './blogs.service';
-import { NOT_FOUND_BLOG_ERROR } from './constants/blogs.constants';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { CreatePostsDto } from '../posts/dto/create-post.dto';
 import { BasicAuthGuard } from '../guards/basic-auth.guard';
-import { NOT_FOUND_POST_ERROR } from '../posts/constants/posts.constants';
 import { Request } from 'express';
 import { AuthService } from '../auth/auth.service';
 import { BlogsQueryParams } from './dto/blogs-query.dto';
@@ -59,35 +55,25 @@ export class BlogsController {
 	@Get(':blogId/posts')
 	async getAllPostsByBlogId(
 		@Param('blogId') blogId: string,
-		@Query('pageNumber') pageNumber: number,
-		@Query('pageSize') pageSize: number,
-		@Query('sortBy') sortBy: string,
-		@Query('sortDirection') sortDirection: string,
+		@Query() queryParams: BlogsQueryParams,
 		@Req() req: Request,
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		// if (req.headers.authorization && req.headers.authorization !== 'Basic') {
-		// 	const token = req.headers.authorization.split(' ')[1];
-		// 	const result = await this.authService.checkRefreshToken(token);
-		// 	if (result) {
-		// 		currentUserId = result.id;
-		// 	}
-		// } else {
-		// 	throw new NotFoundException();
-		// }
+		if (req.headers.authorization && req.headers.authorization !== 'Basic') {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		} else {
+			throw new NotFoundException();
+		}
 		const blogById = await this.blogsService.findBlogById(blogId);
 		if (!blogById) {
 			throw new NotFoundException();
 		}
-		return await this.blogsService.getAllPostsByBlogId(
-			pageNumber,
-			pageSize,
-			sortBy,
-			sortDirection,
-			blogId,
-			currentUserId,
-		);
+		return await this.blogsService.getAllPostsByBlogId(queryParams, blogId, currentUserId);
 	}
 
 	@Get(':id')

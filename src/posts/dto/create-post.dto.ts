@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Length, Validate } from "class-validator";
 import { Transform } from "class-transformer";
+import { BlogIdValidation } from "../../validation/blog-id.validation";
 
 export class CreatePostsDto {
 	@IsNotEmpty()
@@ -22,5 +23,6 @@ export class CreatePostsDto {
 
 	@IsString()
 	@IsOptional()
+	@Validate(BlogIdValidation)
 	blogId: string;
 }

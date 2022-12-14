@@ -29,7 +29,7 @@ export class BlogsService {
 			description: newBlog.description,
 			websiteUrl: newBlog.websiteUrl,
 			createdAt: newBlog.createdAt,
-		}
+		};
 	}
 
 	async createPostByBlogId(dto: CreatePostsDto, blogId: string) {
@@ -70,10 +70,7 @@ export class BlogsService {
 	}
 
 	async getAllPostsByBlogId(
-		pageNumber: number,
-		pageSize: number,
-		sortBy: string,
-		sortDirection: string,
+		{ pageNumber, pageSize, sortBy, sortDirection },
 		blogId: string,
 		userId: string,
 	) {
