@@ -1,18 +1,22 @@
 import { IsNotEmpty, IsString, IsUrl, Length, MaxLength } from "class-validator";
+import { Transform } from "class-transformer";
 
 export class CreateBlogsDto {
 	@IsNotEmpty()
 	@IsString()
-	@Length(0, 15)
+	@Length(1, 15)
+	@Transform(({ value }) => value?.trim())
 	name: string;
 
 	@IsString()
-	@Length(0, 500)
+	@Length(1, 500)
+	@Transform(({ value }) => value?.trim())
 	description: string
 
 	@IsNotEmpty()
 	@IsString()
-	@Length(0, 100)
+	@Length(1, 100)
+	@Transform(({ value }) => value?.trim())
 	@IsUrl()
 	websiteUrl: string;
 }
