@@ -59,6 +59,8 @@ export class PostsService {
 		}
 	}
 
+
+
 	async getAllPosts(
 		{ pageNumber, pageSize, sortBy, sortDirection }: PostsQueryParams,
 		userId: string,

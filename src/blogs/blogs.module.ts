@@ -12,6 +12,7 @@ import { Blogs, BlogsSchema } from './schemas/blogs.schema';
 import { BlogsRepository } from './blogs.repository';
 import { PostsModule } from "../posts/posts.module";
 import { AuthModule } from "../auth/auth.module";
+import { BlogIdValidation } from "../validation/blog-id.validation";
 
 @Module({
 	imports: [
@@ -26,8 +27,8 @@ import { AuthModule } from "../auth/auth.module";
 			useFactory: getJwtConfig,
 		}),
 	],
-	providers: [BlogsService, BlogsRepository],
+	providers: [BlogsService, BlogsRepository, BlogIdValidation],
 	controllers: [BlogsController],
-	exports: [BlogsService],
+	exports: [BlogsService, BlogsRepository, BlogIdValidation],
 })
 export class BlogsModule {}

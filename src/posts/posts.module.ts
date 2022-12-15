@@ -1,4 +1,4 @@
-import { forwardRef, Module } from "@nestjs/common";
+import { forwardRef, Inject, Module } from '@nestjs/common';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,12 +8,14 @@ import { getJwtConfig } from '../configs/jwt.config';
 import { Posts, PostsSchema } from './schemas/posts.schemas';
 import { PostsRepository } from './posts.repository';
 import { BlogsModule } from '../blogs/blogs.module';
-import { CommentsModule } from "../comments/comments.module";
-import { UsersModule } from "../users/users.module";
-import { ThrottlerGuard } from "@nestjs/throttler";
-import { APP_GUARD } from "@nestjs/core";
-import { AuthModule } from "../auth/auth.module";
-import { LikesModule } from "../likes/likes.module";
+import { CommentsModule } from '../comments/comments.module';
+import { UsersModule } from '../users/users.module';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from '../auth/auth.module';
+import { LikesModule } from '../likes/likes.module';
+import { BlogIdValidation } from '../validation/blog-id.validation';
+import { ValidationModule } from '../validation/validation.module';
 
 @Module({
 	imports: [
@@ -31,7 +33,7 @@ import { LikesModule } from "../likes/likes.module";
 		}),
 	],
 	controllers: [PostsController],
-	providers: [PostsService, PostsRepository,],
+	providers: [PostsService, PostsRepository],
 	exports: [PostsService],
 })
 export class PostsModule {}

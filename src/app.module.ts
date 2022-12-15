@@ -17,6 +17,7 @@ import { SessionsModule } from './sessions/sessions.module';
 import { LikesModule } from './likes/likes.module';
 import { LikesService } from "./likes/likes.service";
 import { EmailModule } from './email/email.module';
+import { ValidationModule } from "./validation/validation.module";
 
 
 @Module({

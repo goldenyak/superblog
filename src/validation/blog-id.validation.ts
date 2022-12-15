@@ -1,33 +1,55 @@
 import {
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
+	ValidationArguments,
+	ValidatorConstraint,
+	ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable } from '@nestjs/common';
-import { BlogsRepository } from "../blogs/blogs.repository";
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BlogsRepository } from '../blogs/blogs.repository';
+import { BlogsModule } from '../blogs/blogs.module';
+import { InjectModel } from '@nestjs/mongoose';
+import { Blogs, BlogsDocument } from '../blogs/schemas/blogs.schema';
+import { Model } from 'mongoose';
 
-@ValidatorConstraint({ name: 'blogId', async: true })
 @Injectable()
+@ValidatorConstraint({ name: 'blogId', async: true })
 export class BlogIdValidation implements ValidatorConstraintInterface {
-  constructor(private blogsRepository: BlogsRepository) {}
+	constructor(private readonly blogsRepository: BlogsRepository) {}
 
-  async validate(
-    value: any,
-    validationArguments?: ValidationArguments,
-  ): Promise<boolean> {
+	async validate(value: string | undefined, validationArguments?: ValidationArguments): Promise<any> {
+		const blogId = await this.blogsRepository.findBlogById(value);
+		if (!blogId) {
+			return false;
+		}
+    console.log(value);
+		return true;
 
-    const blogId = await this.blogsRepository.findBlogById(value);
-    if (!blogId) {
-      return false;
-    }
-    return true;
-  }
+	}
 
-  defaultMessage(validationArguments?: ValidationArguments): string {
-    return "This blogId not found";
-  }
+	defaultMessage(validationArguments?: ValidationArguments): string {
+		return 'This blogId not found';
+	}
 }
 
-// export const BlogIdValidation = (value: string) => {
+// import {
+//   ValidationArguments,
+//   ValidatorConstraintInterface,
+// } from 'class-validator';
+// import { Injectable } from '@nestjs/common';
+// import { BlogsRepository } from "../blogs/blogs.repository";
 //
+// @Injectable()
+// export class BlogIdValidation {
+//
+//   constructor(private blogsRepository: BlogsRepository, private value: string) {
+//   }
+//
+//     blogId = await this.blogsRepository.findBlogById(value);
+//     if (!blogId) {
+//       return false;
+//     }
+//     return true;
+//   }
+
+// export const BlogIdValidation = (blogId: string) => {
+//   console.log('blogId', blogId);
 // }

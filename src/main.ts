@@ -4,9 +4,11 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { HttpExceptionFilter } from './exeption-filters/exeption.filter';
+import { useContainer } from "class-validator";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	useContainer(app.select(AppModule), { fallbackOnErrors: true });
 	app.enableCors();
 	// app.setGlobalPrefix('api');
 	app.useGlobalPipes(
@@ -27,6 +29,7 @@ async function bootstrap() {
 	app.useGlobalFilters(new HttpExceptionFilter());
 	app.use(cookieParser());
 	app.set('trust proxy', 1);
+
 	await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

@@ -23,7 +23,6 @@ export class CreatePostsDto {
 
 	@IsString()
 	@IsOptional()
-	// @Validate(BlogIdValidation)
-	// @Transform(({ value }) => BlogIdValidation(value))
+	@Validate(BlogIdValidation)
 	blogId: string;
 }
