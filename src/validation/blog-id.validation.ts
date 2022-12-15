@@ -17,11 +17,17 @@ export class BlogIdValidation implements ValidatorConstraintInterface {
   ): Promise<boolean> {
 
     const blogId = await this.blogsRepository.findBlogById(value);
-    if (!blogId) return false;
+    if (!blogId) {
+      return false;
+    }
     return true;
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return "Blog doesn't exist";
+    return "This blogId not found";
   }
 }
+
+// export const BlogIdValidation = (value: string) => {
+//
+// }
