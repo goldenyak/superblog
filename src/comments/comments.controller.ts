@@ -62,16 +62,13 @@ export class CommentsController {
 	@Delete(':id')
 	async deleteCommentById(@Param('id') id: string, @Req() req: Request) {
 		const commentById = await this.commentsService.findCommentById(id);
-		const user = await this.usersService.findUserById(req.user.id);
 		if (!commentById) {
 			throw new NotFoundException();
 		}
-		if (!user) {
+		if (req.user.id !== commentById.userId) {
 			throw new ForbiddenException();
 		}
-		if (user.id === commentById.userId) {
-			return await this.commentsService.deleteCommentById(id);
-		}
+		return await this.commentsService.deleteCommentById(id);
 	}
 
 	@UseGuards(JwtAuthGuard)
