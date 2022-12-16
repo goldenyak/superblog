@@ -91,7 +91,6 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 		const result = await this.authService.checkRefreshToken(refreshToken);
-		console.log(result);
 		if (!result) {
 			throw new UnauthorizedException();
 		}
@@ -106,7 +105,7 @@ export class AuthController {
 		);
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
-			accessToken: newAccessToken,
+			newAccessToken,
 			newRefreshToken,
 		};
 	}
