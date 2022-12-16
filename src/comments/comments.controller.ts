@@ -8,6 +8,7 @@ import {
 	HttpCode,
 	HttpException,
 	HttpStatus,
+	NotFoundException,
 	Param,
 	Post,
 	Put,
@@ -63,7 +64,7 @@ export class CommentsController {
 		const commentById = await this.commentsService.findCommentById(id);
 		const user = await this.usersService.findUserById(req.user.id);
 		if (!commentById) {
-			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		if (!user) {
 			throw new ForbiddenException();
@@ -82,17 +83,13 @@ export class CommentsController {
 		@Req() req: Request,
 	) {
 		const commentById = await this.commentsService.findCommentById(id);
-		const user = await this.usersService.findUserById(req.user.id);
-
 		if (!commentById) {
-			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
-		if (!user) {
+		if (req.user.id !== commentById.userId) {
 			throw new ForbiddenException();
 		}
-		if (user.id === commentById.userId) {
-			return await this.commentsService.updateCommentById(id, dto.content);
-		}
+		return await this.commentsService.updateCommentById(id, dto.content);
 	}
 
 	@UseGuards(JwtAuthGuard)
