@@ -61,6 +61,15 @@ export class AuthService {
 		return this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
 	}
 
+	async checkUserIdByToken(token: string) {
+		try {
+			const result = await this.JwtService.verify(token, this.configService.get('JWT_SECRET'));
+			return result.id;
+		} catch (e) {
+			return null;
+		}
+	}
+
 	async sendConfirmEmail(email: string) {
 		const user = await this.usersService.findUserByEmail(email);
 		return this.emailService.sendConfirmEmail(email, user.confirmationCode);

@@ -62,12 +62,12 @@ export class BlogsController {
 		let currentUserId;
 		if (req.headers.authorization && req.headers.authorization !== 'Basic') {
 			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
+			console.log(token);
+			const userId = await this.authService.checkUserIdByToken(token);
+			console.log('userId' ,userId);
+			if (userId) {
+				currentUserId = userId;
 			}
-		} else {
-			throw new NotFoundException();
 		}
 		const blogById = await this.blogsService.findBlogById(blogId);
 		if (!blogById) {
