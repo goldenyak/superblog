@@ -114,11 +114,14 @@ export class AuthController {
 	@HttpCode(204)
 	@Post('logout')
 	async logout(@Req() req: Request) {
-		const refreshToken = req.cookies.refreshToken;
+		const refreshToken = await req.cookies.refreshToken;
 		if (!refreshToken) {
-			throw new HttpException(NOT_FOUND_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
+			throw new UnauthorizedException();
 		}
 		const tokenPayload = await this.authService.checkRefreshToken(refreshToken);
+		if (!tokenPayload) {
+			throw new UnauthorizedException();
+		}
 		return await this.sessionsService.deleteSessionByDeviceId(tokenPayload.deviceId);
 	}
 
