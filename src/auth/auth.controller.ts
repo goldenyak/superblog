@@ -91,6 +91,7 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 		const result = await this.authService.checkRefreshToken(refreshToken);
+		console.log(result);
 		if (!result) {
 			throw new UnauthorizedException();
 		}

@@ -58,7 +58,11 @@ export class AuthService {
 	}
 
 	async checkRefreshToken(refreshToken: string) {
-		return this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
+		try {
+			return await this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
+		} catch (e) {
+			return null
+		}
 	}
 
 	async checkUserIdByToken(token: string) {
