@@ -9,6 +9,7 @@ import {
 	Post,
 	Req,
 	Res,
+	UnauthorizedException,
 	UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -86,12 +87,12 @@ export class AuthController {
 	@Post('refresh-token')
 	async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
 		const refreshToken = await req.cookies.refreshToken;
-		const result = await this.authService.checkRefreshToken(refreshToken);
 		if (!refreshToken) {
-			throw new HttpException(NOT_FOUND_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
+			throw new UnauthorizedException();
 		}
+		const result = await this.authService.checkRefreshToken(refreshToken);
 		if (!result) {
-			throw new HttpException(NOT_FOUND_USER_BY_TOKEN_ERROR, HttpStatus.UNAUTHORIZED);
+			throw new UnauthorizedException();
 		}
 		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
@@ -102,7 +103,6 @@ export class AuthController {
 		const updatedSession = await this.sessionsService.updateSessionAfterRefresh(
 			foundedDevice.deviceId,
 		);
-		console.log(updatedSession);
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken: newAccessToken,
@@ -158,11 +158,10 @@ export class AuthController {
 				},
 			]);
 		}
-			return this.authService.sendNewConfirmEmail(dto.email);
-			// const emailResponseCode = confirmEmail.response.split(' ')[0];
-			// console.log(emailResponseCode);
-			// return confirmEmail;
-
+		return this.authService.sendNewConfirmEmail(dto.email);
+		// const emailResponseCode = confirmEmail.response.split(' ')[0];
+		// console.log(emailResponseCode);
+		// return confirmEmail;
 	}
 
 	@UseGuards(ThrottlerIpGuard)
