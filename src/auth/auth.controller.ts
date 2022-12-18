@@ -105,7 +105,7 @@ export class AuthController {
 		);
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
-			newAccessToken,
+			accessToken: newAccessToken,
 			newRefreshToken,
 		};
 	}
