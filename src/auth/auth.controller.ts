@@ -86,6 +86,9 @@ export class AuthController {
 	@HttpCode(200)
 	@Post('refresh-token')
 	async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+		if (!req.cookies) {
+			throw new UnauthorizedException();
+		}
 		const refreshToken = await req.cookies.refreshToken;
 		if (!refreshToken) {
 			throw new UnauthorizedException();
@@ -95,6 +98,7 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
+		console.log(foundedDevice);
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
 			result.email,
 			result.id,
