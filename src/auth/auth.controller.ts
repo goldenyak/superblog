@@ -99,6 +99,9 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
+		if (!foundedDevice) {
+			throw new UnauthorizedException()
+		}
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
 			result.email,
 			result.id,
