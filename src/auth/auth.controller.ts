@@ -89,24 +89,26 @@ export class AuthController {
 		if (!req.cookies) {
 			throw new UnauthorizedException();
 		}
-		const refreshToken = await req.cookies.refreshToken;
+		const refreshToken = req.cookies.refreshToken;
 		if (!refreshToken) {
 			throw new UnauthorizedException();
 		}
 		const result = await this.authService.checkRefreshToken(refreshToken);
+		console.log(result.deviceId);
 		if (!result) {
 			throw new UnauthorizedException();
 		}
 		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
-		console.log(foundedDevice);
 		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
 			result.email,
 			result.id,
 			result.deviceId,
 		);
+		console.log('foundedDevice: '+foundedDevice);
 		const updatedSession = await this.sessionsService.updateSessionAfterRefresh(
 			foundedDevice.deviceId,
 		);
+
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken: newAccessToken,

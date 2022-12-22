@@ -23,6 +23,7 @@ export class SessionsService {
 	) {
 		// const newRefreshToken = refreshToken.split('.').splice(0, 2).join('.');
 		const tokenPayload = await this.JwtService.verify(refreshToken);
+		// console.log(tokenPayload);
 		const session: CreateSessionDto = {
 			ip: userIp,
 			title: sessionTitle,
@@ -45,7 +46,7 @@ export class SessionsService {
 	}
 
 	async getSessionsByDeviceId(deviceId: string) {
-		return await this.sessionsRepository.getSessionsByDeviceId(deviceId);
+		return this.sessionsRepository.getSessionsByDeviceId(deviceId);
 	}
 
 	async deleteAllSessionsWithExclude(deviceId: string, userId: string) {
