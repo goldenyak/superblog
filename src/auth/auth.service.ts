@@ -96,7 +96,7 @@ export class AuthService {
 	}
 
 	async createRefreshToken(email: string, id: string) {
-		const refreshToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '24h' });
+		const refreshToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '20s' });
 		const newRefreshToken: Jwt = {
 			id: uuidv4(),
 			token: refreshToken,
