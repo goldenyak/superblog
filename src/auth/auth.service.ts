@@ -36,8 +36,8 @@ export class AuthService {
 	async login(email: string, id: string) {
 		const deviceId = uuidv4();
 		const payload = { email, id, deviceId };
-		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '1h' });
-		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '2h' });
+		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '10s' });
+		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '20s' });
 		return {
 			accessToken,
 			refreshToken,
@@ -45,10 +45,10 @@ export class AuthService {
 	}
 
 	async createNewToken(email: string, id: string, deviceId: string) {
-		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '1h' });
+		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '10s' });
 		const newRefreshToken = await this.JwtService.signAsync(
 			{ email, id, deviceId },
-			{ expiresIn: '2h' },
+			{ expiresIn: '20s' },
 		);
 		return {
 			newAccessToken,
@@ -62,6 +62,11 @@ export class AuthService {
 		} catch (e) {
 			return null;
 		}
+	}
+
+	getLastActiveDateFromRefreshToken(newRefreshToken: string) {
+		const result: any = this.JwtService.decode(newRefreshToken);
+		return new Date(result.iat * 1000);
 	}
 
 	async checkUserIdByToken(token: string) {
@@ -122,8 +127,5 @@ export class AuthService {
 		return this.authRepository.deleteAll();
 	}
 
-	getLastActiveDateFromRefreshToken(newRefreshToken: string) {
-		const result: any = this.JwtService.decode(newRefreshToken);
-		return new Date(result.iat * 1000);
-	}
+
 }

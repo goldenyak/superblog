@@ -76,7 +76,7 @@ export class AuthController {
 		const user = await this.usersService.validateUser(dto.loginOrEmail, dto.password);
 		const { accessToken, refreshToken } = await this.authService.login(user.email, user.id);
 		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle);
-		res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
+		res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken,
 			refreshToken,
@@ -112,7 +112,7 @@ export class AuthController {
 		);
 		const newLastActiveDate = this.authService.getLastActiveDateFromRefreshToken(newRefreshToken)
 		await this.sessionsService.updateSessionAfterRefresh(foundedDevice.deviceId, newLastActiveDate);
-		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: false });
+		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken: newAccessToken,
 			newRefreshToken,
