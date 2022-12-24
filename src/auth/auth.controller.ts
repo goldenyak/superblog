@@ -112,7 +112,7 @@ export class AuthController {
 		);
 		const newLastActiveDate = this.authService.getLastActiveDateFromRefreshToken(newRefreshToken)
 		await this.sessionsService.updateSessionAfterRefresh(foundedDevice.deviceId, newLastActiveDate);
-		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
+		res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken: newAccessToken,
 			newRefreshToken,
@@ -126,12 +126,17 @@ export class AuthController {
 		if (!refreshToken) {
 			throw new UnauthorizedException();
 		}
-		const tokenPayload = await this.authService.checkRefreshToken(refreshToken);
-		if (!tokenPayload) {
+		const result = await this.authService.checkRefreshToken(refreshToken);
+		if (!result) {
+			throw new UnauthorizedException();
+		}
+		const lastActiveDate = this.authService.getLastActiveDateFromRefreshToken(refreshToken)
+		const foundedDevice = await this.sessionsService.getSessionByUserAndDeviceIdAndLastActiveDate(result.userId, result.deviceId, lastActiveDate);
+		if (!foundedDevice) {
 			throw new UnauthorizedException();
 		}
 		res.clearCookie('refreshToken');
-		return await this.sessionsService.deleteSessionByDeviceId(tokenPayload.deviceId);
+		return this.sessionsService.deleteSessionByDeviceId(result.deviceId);
 	}
 
 	@UseGuards(ThrottlerIpGuard)
