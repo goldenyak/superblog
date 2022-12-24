@@ -94,7 +94,6 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 		const result = await this.authService.checkRefreshToken(refreshToken);
-		console.log(result);
 		if (!result) {
 			throw new UnauthorizedException();
 		}
@@ -107,7 +106,6 @@ export class AuthController {
 			result.id,
 			result.deviceId,
 		);
-		console.log('foundedDevice: '+foundedDevice);
 		const updatedSession = await this.sessionsService.updateSessionAfterRefresh(
 			foundedDevice.deviceId,
 		);

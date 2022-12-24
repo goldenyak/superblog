@@ -37,8 +37,7 @@ export class AuthService {
 		const deviceId = uuidv4();
 		const payload = { email, id, deviceId };
 		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '10s' });
-		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '20s' });
-		// const refreshToken = await this.createRefreshToken(email, id);
+		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '20s', });
 		return {
 			accessToken,
 			refreshToken,
@@ -58,11 +57,14 @@ export class AuthService {
 	}
 
 	async checkRefreshToken(refreshToken: string) {
-		try {
-			return await this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
-		} catch (e) {
-			return null
-		}
+		const token = await this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
+		console.log('token', token);
+		return token
+		// try {
+		// 	return  await this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
+		// } catch (e) {
+		// 	return null;
+		// }
 	}
 
 	async checkUserIdByToken(token: string) {
