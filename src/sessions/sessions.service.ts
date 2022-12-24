@@ -64,10 +64,6 @@ export class SessionsService {
 	async checkRefreshToken(refreshToken: string) {
 		try {
 			return await this.JwtService.verify(refreshToken, this.configService.get('JWT_SECRET'));
-			// const currentUser = await this.usersService.findUserById(result.id);
-			// if (!currentUser) {
-			// 	return false;
-			// }
 		} catch (error) {
 			return false;
 		}

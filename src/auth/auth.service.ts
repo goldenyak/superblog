@@ -36,19 +36,19 @@ export class AuthService {
 	async login(email: string, id: string) {
 		const deviceId = uuidv4();
 		const payload = { email, id, deviceId };
-		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '10s' });
-		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '20s', });
+		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '1h' });
+		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '2h', });
 		return {
 			accessToken,
 			refreshToken,
 		};
 	}
 
-	async createToken(email: string, id: string, deviceId: string) {
-		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '10s' });
+	async createNewToken(email: string, id: string, deviceId: string) {
+		const newAccessToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '1h' });
 		const newRefreshToken = await this.JwtService.signAsync(
 			{ email, id, deviceId },
-			{ expiresIn: '20s' },
+			{ expiresIn: '2h' },
 		);
 		return {
 			newAccessToken,
@@ -94,29 +94,29 @@ export class AuthService {
 		return await this.usersRepository.setNewPassword(recoveryCode, passwordHash);
 	}
 
-	async createRefreshToken(email: string, id: string) {
-		const refreshToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '20s' });
-		const newRefreshToken: Jwt = {
-			id: uuidv4(),
-			token: refreshToken,
-			isValid: true,
-			user: id,
-		};
-		await this.jwtModel.create(newRefreshToken);
-		return refreshToken;
-	}
+	// async createRefreshToken(email: string, id: string) {
+	// 	const refreshToken = await this.JwtService.signAsync({ email, id }, { expiresIn: '20s' });
+	// 	const newRefreshToken: Jwt = {
+	// 		id: uuidv4(),
+	// 		token: refreshToken,
+	// 		isValid: true,
+	// 		user: id,
+	// 	};
+	// 	await this.jwtModel.create(newRefreshToken);
+	// 	return refreshToken;
+	// }
+	//
+	// getTokenByUserId(id: string) {
+	// 	return this.jwtModel.find({ user: id });
+	// }
 
-	getTokenByUserId(id: string) {
-		return this.jwtModel.find({ user: id });
-	}
-
-	getToken(token: string) {
-		return this.jwtModel.findOne({ token });
-	}
-
-	deactivateToken(refreshToken: string) {
-		return this.jwtModel.findOneAndUpdate({ token: refreshToken }, { isValid: false });
-	}
+	// getToken(token: string) {
+	// 	return this.jwtModel.findOne({ token });
+	// }
+	//
+	// deactivateToken(refreshToken: string) {
+	// 	return this.jwtModel.findOneAndUpdate({ token: refreshToken }, { isValid: false });
+	// }
 
 	async deleteAll() {
 		return this.authRepository.deleteAll();

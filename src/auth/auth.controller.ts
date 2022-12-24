@@ -99,17 +99,14 @@ export class AuthController {
 		}
 		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
 		if (!foundedDevice) {
-			throw new UnauthorizedException()
+			throw new UnauthorizedException();
 		}
-		const { newAccessToken, newRefreshToken } = await this.authService.createToken(
+		const { newAccessToken, newRefreshToken } = await this.authService.createNewToken(
 			result.email,
 			result.id,
 			result.deviceId,
 		);
-		const updatedSession = await this.sessionsService.updateSessionAfterRefresh(
-			foundedDevice.deviceId,
-		);
-
+		await this.sessionsService.updateSessionAfterRefresh(foundedDevice.deviceId);
 		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
 		return {
 			accessToken: newAccessToken,
@@ -119,7 +116,7 @@ export class AuthController {
 
 	@HttpCode(204)
 	@Post('logout')
-	async logout(@Req() req: Request) {
+	async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
 		const refreshToken = await req.cookies.refreshToken;
 		if (!refreshToken) {
 			throw new UnauthorizedException();
@@ -128,6 +125,7 @@ export class AuthController {
 		if (!tokenPayload) {
 			throw new UnauthorizedException();
 		}
+		res.clearCookie('refreshToken');
 		return await this.sessionsService.deleteSessionByDeviceId(tokenPayload.deviceId);
 	}
 
