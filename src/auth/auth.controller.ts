@@ -90,21 +90,21 @@ export class AuthController {
 		// 	throw new UnauthorizedException();
 		// }
 		const refreshToken = req.cookies.refreshToken;
+		console.log('refreshToken', refreshToken);
 		if (!refreshToken) {
 			throw new UnauthorizedException();
 		}
-		console.log('refreshToken', refreshToken);
 		const result = await this.authService.checkRefreshToken(refreshToken);
+		console.log('result', result);
 		if (!result) {
 			throw new UnauthorizedException();
 		}
-		console.log('result', result);
 		const oldLastActiveDate = new Date(result.iat * 1000)
-		const foundedDevice = await this.sessionsService.getSessionByUserAndDeviceIdAndLastActiveDate(result.userId, result.deviceId, oldLastActiveDate);
+		const foundedDevice = await this.sessionsService.getSessionByUserAndDeviceIdAndLastActiveDate(result.id, result.deviceId, oldLastActiveDate);
+		console.log('foundedDevice', foundedDevice);
 		if (!foundedDevice) {
 			throw new UnauthorizedException();
 		}
-		console.log('foundedDevice', foundedDevice);
 		const { newAccessToken, newRefreshToken } = await this.authService.createNewToken(
 			result.email,
 			result.id,
@@ -131,7 +131,7 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 		const lastActiveDate = this.authService.getLastActiveDateFromRefreshToken(refreshToken)
-		const foundedDevice = await this.sessionsService.getSessionByUserAndDeviceIdAndLastActiveDate(result.userId, result.deviceId, lastActiveDate);
+		const foundedDevice = await this.sessionsService.getSessionByUserAndDeviceIdAndLastActiveDate(result.id, result.deviceId, lastActiveDate);
 		if (!foundedDevice) {
 			throw new UnauthorizedException();
 		}
