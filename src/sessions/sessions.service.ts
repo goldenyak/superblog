@@ -22,14 +22,13 @@ export class SessionsService {
 		sessionTitle: string,
 	) {
 		// const newRefreshToken = refreshToken.split('.').splice(0, 2).join('.');
-		const tokenPayload = await this.JwtService.verify(refreshToken);
+		const tokenPayload: any = await this.JwtService.decode(refreshToken);
 		// console.log(tokenPayload);
 		const session: CreateSessionDto = {
 			ip: userIp,
 			title: sessionTitle,
 			lastActiveDate: new Date(tokenPayload.iat * 1000),
 			deviceId: tokenPayload.deviceId,
-			tokenExpiredDate: new Date(tokenPayload.exp * 1000),
 			userId: userId,
 		};
 		return await this.sessionsRepository.create(session);
@@ -49,6 +48,11 @@ export class SessionsService {
 		return this.sessionsRepository.getSessionsByDeviceId(deviceId);
 	}
 
+	async getSessionByUserAndDeviceIdAndLastActiveDate(userId: string, deviceId: string, lastActiveDate: Date) {
+		return this.sessionsRepository.getSessionByUserAndDeviceIdAndLastActiveDate(userId, deviceId, lastActiveDate)
+	}
+
+
 	async deleteAllSessionsWithExclude(deviceId: string, userId: string) {
 		return await this.sessionsRepository.deleteAllSessionsWithExclude(deviceId, userId)
 	}
@@ -57,8 +61,8 @@ export class SessionsService {
 		return await this.sessionsRepository.deleteSessionByDeviceId(deviceId)
 	}
 
-	async updateSessionAfterRefresh(deviceId: string) {
-		return await this.sessionsRepository.updateSessionAfterRefresh(deviceId)
+	async updateSessionAfterRefresh(deviceId: string, lastActiveDate: Date) {
+		return await this.sessionsRepository.updateSessionAfterRefresh(deviceId, lastActiveDate)
 	}
 
 	async checkRefreshToken(refreshToken: string) {

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUrl, MaxLength } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString, IsUrl, MaxLength } from "class-validator";
 
 export class CreateSessionDto {
 	@IsString()
@@ -7,14 +7,11 @@ export class CreateSessionDto {
 	@IsString()
 	title: string;
 
-	@IsString()
+	@IsDate()
 	lastActiveDate: Date;
 
 	@IsString()
 	deviceId: string;
-
-	@IsString()
-	tokenExpiredDate: Date;
 
 	@IsString()
 	userId: string;

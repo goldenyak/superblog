@@ -26,8 +26,8 @@ export class SessionsRepository {
 		return this.sessionsModel.findOneAndDelete({ deviceId: deviceId });
 	}
 
-	async updateSessionAfterRefresh(deviceId: string) {
-		return this.sessionsModel.findOneAndUpdate({deviceId: deviceId}, {$set: {lastActiveDate: new Date()}})
+	async updateSessionAfterRefresh(deviceId: string, lastActiveDate: Date) {
+		return this.sessionsModel.findOneAndUpdate({deviceId: deviceId}, {$set: {lastActiveDate: lastActiveDate}})
 	}
 
 	async deleteAllSessionsWithExclude(deviceId: string, userId: string) {
@@ -36,5 +36,9 @@ export class SessionsRepository {
 
 	async deleteAll() {
 		return this.sessionsModel.deleteMany().exec();
+	}
+
+	async getSessionByUserAndDeviceIdAndLastActiveDate(userId: string, deviceId: string, lastActiveDate: Date) {
+		return this.sessionsModel.findOne({userId, deviceId, lastActiveDate})
 	}
 }

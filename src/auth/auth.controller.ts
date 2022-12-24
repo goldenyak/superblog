@@ -75,8 +75,8 @@ export class AuthController {
 
 		const user = await this.usersService.validateUser(dto.loginOrEmail, dto.password);
 		const { accessToken, refreshToken } = await this.authService.login(user.email, user.id);
-		await res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 		await this.sessionsService.createNewSession(userIp, user.id, refreshToken, sessionTitle);
+		res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false });
 		return {
 			accessToken,
 			refreshToken,
@@ -86,28 +86,33 @@ export class AuthController {
 	@HttpCode(200)
 	@Post('refresh-token')
 	async refreshToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-		if (!req.cookies) {
-			throw new UnauthorizedException();
-		}
+		// if (!req.cookies) {
+		// 	throw new UnauthorizedException();
+		// }
 		const refreshToken = req.cookies.refreshToken;
 		if (!refreshToken) {
 			throw new UnauthorizedException();
 		}
+		console.log('refreshToken', refreshToken);
 		const result = await this.authService.checkRefreshToken(refreshToken);
 		if (!result) {
 			throw new UnauthorizedException();
 		}
-		const foundedDevice = await this.sessionsService.getSessionsByDeviceId(result.deviceId);
+		console.log('result', result);
+		const oldLastActiveDate = new Date(result.iat * 1000)
+		const foundedDevice = await this.sessionsService.getSessionByUserAndDeviceIdAndLastActiveDate(result.userId, result.deviceId, oldLastActiveDate);
 		if (!foundedDevice) {
 			throw new UnauthorizedException();
 		}
+		console.log('foundedDevice', foundedDevice);
 		const { newAccessToken, newRefreshToken } = await this.authService.createNewToken(
 			result.email,
 			result.id,
 			result.deviceId,
 		);
-		await this.sessionsService.updateSessionAfterRefresh(foundedDevice.deviceId);
-		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
+		const newLastActiveDate = this.authService.getLastActiveDateFromRefreshToken(newRefreshToken)
+		await this.sessionsService.updateSessionAfterRefresh(foundedDevice.deviceId, newLastActiveDate);
+		await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: false });
 		return {
 			accessToken: newAccessToken,
 			newRefreshToken,
