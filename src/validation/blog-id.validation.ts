@@ -4,10 +4,10 @@ import {
 	ValidatorConstraintInterface,
 } from 'class-validator';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BlogsRepository } from '../blogs/blogs.repository';
-import { BlogsModule } from '../blogs/blogs.module';
+import { BlogsRepository } from '../api/public/blogs/blogs.repository';
+import { BlogsModule } from '../api/public/blogs/blogs.module';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blogs, BlogsDocument } from '../blogs/schemas/blogs.schema';
+import { Blogs, BlogsDocument } from '../api/public/blogs/schemas/blogs.schema';
 import { Model } from 'mongoose';
 
 @Injectable()

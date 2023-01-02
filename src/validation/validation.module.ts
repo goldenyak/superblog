@@ -1,7 +1,7 @@
-import { BlogsModule } from "../blogs/blogs.module";
+import { BlogsModule } from "../api/public/blogs/blogs.module";
 import { BlogIdValidation } from "./blog-id.validation";
 import { forwardRef, Module } from "@nestjs/common";
-import { PostsModule } from "../posts/posts.module";
+import { PostsModule } from "../api/public/posts/posts.module";
 
 @Module({
 	imports: [

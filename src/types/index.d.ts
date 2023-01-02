@@ -1,4 +1,4 @@
-import { User } from "../users/schemas/user.schema";
+import { User } from "../api/public/users/schemas/user.schema";
 
 
 declare global {
