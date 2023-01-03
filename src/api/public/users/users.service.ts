@@ -34,8 +34,8 @@ export class UsersService {
 			email: newUser.email,
 			createdAt: newUser.createdAt,
 			banInfo: {
-				isBanned: newUser.banInfo.isBanned,
-				banDate: newUser.banInfo.banDate,
+				isBanned: null,
+				banDate: null,
 				banReason: newUser.banInfo.banReason
 			}
 		};
