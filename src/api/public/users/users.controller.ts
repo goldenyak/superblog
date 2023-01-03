@@ -25,24 +25,24 @@ import { UsersQueryDto } from './dto/users-query.dto';
 export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
-	@UseGuards(BasicAuthGuard)
-	@HttpCode(201)
-	@Post()
-	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
-		const currentUser = await this.usersService.findUserByLogin(dto.login);
-		if (currentUser) {
-			throw new BadRequestException();
-		} else {
-			return await this.usersService.create(dto);
-		}
-		// return await this.usersService.create(dto);
-	}
+	// @UseGuards(BasicAuthGuard)
+	// @HttpCode(201)
+	// @Post()
+	// async create(@Body() dto: CreateUserDto, @Req() req: Request) {
+	// 	const currentUser = await this.usersService.findUserByLogin(dto.login);
+	// 	if (currentUser) {
+	// 		throw new BadRequestException();
+	// 	} else {
+	// 		return await this.usersService.create(dto);
+	// 	}
+	// 	// return await this.usersService.create(dto);
+	// }
 
-	@HttpCode(200)
-	@Get()
-	async getAllUsers(@Query() queryParams: UsersQueryDto) {
-		return this.usersService.getAllUsers(queryParams);
-	}
+	// @HttpCode(200)
+	// @Get()
+	// async getAllUsers(@Query() queryParams: UsersQueryDto) {
+	// 	return this.usersService.getAllUsers(queryParams);
+	// }
 
 	@Get(':id')
 	async findUserById(@Param('id') id: string) {
@@ -53,16 +53,16 @@ export class UsersController {
 		return foundedUser;
 	}
 
-	@UseGuards(BasicAuthGuard)
-	@HttpCode(204)
-	@Delete('/:id')
-	async deleteUserById(@Param('id') id: string) {
-		const deletedUser = await this.usersService.deleteUserById(id);
-		if (!deletedUser) {
-			throw new NotFoundException(NOT_FOUND_USER_ERROR);
-		}
-		return;
-	}
+	// @UseGuards(BasicAuthGuard)
+	// @HttpCode(204)
+	// @Delete('/:id')
+	// async deleteUserById(@Param('id') id: string) {
+	// 	const deletedUser = await this.usersService.deleteUserById(id);
+	// 	if (!deletedUser) {
+	// 		throw new NotFoundException(NOT_FOUND_USER_ERROR);
+	// 	}
+	// 	return;
+	// }
 
 
 	@Delete()

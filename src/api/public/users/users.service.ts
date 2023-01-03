@@ -21,6 +21,11 @@ export class UsersService {
 			createdAt: new Date(),
 			confirmationCode: uuidv4(),
 			isConfirmed: false,
+			banInfo: {
+				isBanned: false,
+				banDate: new Date().toISOString(),
+				banReason: 'notBanned'
+			}
 		};
 		await this.usersRepository.create(newUser);
 		return {
@@ -28,10 +33,16 @@ export class UsersService {
 			login: newUser.login,
 			email: newUser.email,
 			createdAt: newUser.createdAt,
+			banInfo: {
+				isBanned: newUser.banInfo.isBanned,
+				banDate: newUser.banInfo.banDate,
+				banReason: newUser.banInfo.banReason
+			}
 		};
 	}
 
 	async getAllUsers({
+		banStatus,
 		searchLoginTerm,
 		searchEmailTerm,
 		pageNumber,
@@ -39,9 +50,10 @@ export class UsersService {
 		sortBy,
 		sortDirection,
 	}: UsersQueryDto) {
-		const countUsers = await this.usersRepository.countUsers(searchLoginTerm, searchEmailTerm);
+		const countUsers = await this.usersRepository.countUsers(searchLoginTerm, searchEmailTerm, banStatus);
 
 		const allUsers = await this.usersRepository.getAllUsers(
+			banStatus,
 			searchLoginTerm,
 			searchEmailTerm,
 			pageNumber,

@@ -6,6 +6,7 @@ import { CreatePostsDto } from '../posts/dto/create-post.dto';
 import { PostsService } from '../posts/posts.service';
 import { Blogs } from './schemas/blogs.schema';
 import { BlogsQueryParams } from './dto/blogs-query.dto';
+import { UpdatePostDto } from "../posts/dto/update-post.dto";
 
 @Injectable()
 export class BlogsService {
@@ -13,9 +14,6 @@ export class BlogsService {
 		private readonly blogsRepository: BlogsRepository,
 		@Inject(forwardRef(() => PostsService)) private readonly postsService: PostsService,
 	) {}
-
-
-
 
 	async findBlogById(id: string) {
 		return this.blogsRepository.findBlogById(id);
@@ -29,7 +27,16 @@ export class BlogsService {
 		return await this.blogsRepository.updateBlogById(id, name, description, websiteUrl);
 	}
 
+	async updatePostForSpecifiedBlog(postId: string, {title, shortDescription, content}: UpdatePostDto) {
+		return await this.postsService.updatePostById(postId, title, shortDescription, content);
+	}
+
+	async deletePostForSpecifiedBlog(postId: string, blogId: string) {
+		return this.postsService.deletePostById(postId);
+	}
+
 	async deleteAll() {
 		return await this.blogsRepository.deleteAll();
 	}
+
 }

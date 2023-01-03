@@ -7,6 +7,9 @@ import {
 
 export class UsersQueryDto {
 	@IsOptional()
+	public banStatus = 'all';
+
+	@IsOptional()
 	public searchLoginTerm = '';
 
 	@IsOptional()

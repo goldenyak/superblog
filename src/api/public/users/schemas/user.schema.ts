@@ -3,6 +3,17 @@ import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
+class BanInfoAdvantage {
+	@Prop()
+	isBanned: boolean
+
+	@Prop()
+	banDate: string
+
+	@Prop()
+	banReason: 'notBanned' | 'all' | 'banned'
+}
+
 @Schema({ versionKey: false })
 export class User {
 	@Prop()
@@ -28,6 +39,10 @@ export class User {
 
 	@Prop()
 	recoveryCode?: string;
+
+	@Prop({ type: BanInfoAdvantage })
+	banInfo: BanInfoAdvantage;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -13,6 +13,7 @@ export class UsersRepository {
 	}
 
 	async getAllUsers(
+		banStatus: string,
 		searchLoginTerm: string,
 		searchEmailTerm: string,
 		pageNumber: number,
@@ -20,7 +21,7 @@ export class UsersRepository {
 		sortBy: string,
 		sortDirection: string,
 	) {
-		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm);
+		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus);
 		const sortByFilter = this.getFilterForSortBy(sortBy);
 		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
@@ -65,7 +66,7 @@ export class UsersRepository {
 	}
 
 	async addNewConfirmationCodeByEmail(email: string, newConfirmationCode: string) {
-		return this.userModel.findOneAndUpdate({ email}, { confirmationCode: newConfirmationCode });
+		return this.userModel.findOneAndUpdate({ email }, { confirmationCode: newConfirmationCode });
 	}
 
 	async addRecoveryCode(email: string, recoveryCode: string) {
@@ -84,8 +85,8 @@ export class UsersRepository {
 		return this.userModel.deleteMany().exec();
 	}
 
-	async countUsers(searchLoginTerm: string | null, searchEmailTerm: string | null) {
-		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm);
+	async countUsers(searchLoginTerm: string | null, searchEmailTerm: string | null, banStatus: string | null) {
+		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus);
 		return this.userModel.count(filter);
 	}
 
@@ -104,17 +105,22 @@ export class UsersRepository {
 		}
 	}
 
-	private getFilterForQuery(searchLoginTerm: string | null, searchEmailTerm: string | null) {
-		if (!searchLoginTerm && !searchEmailTerm) return {};
+	private getFilterForQuery(
+		searchLoginTerm: string | null,
+		searchEmailTerm: string | null,
+		banStatus: string | null,
+	) {
+		if (!searchLoginTerm && !searchEmailTerm && !banStatus) return {};
 		if (searchLoginTerm && !searchEmailTerm)
 			return { login: { $regex: searchLoginTerm, $options: 'i' } };
 		if (!searchLoginTerm && searchEmailTerm)
 			return { email: { $regex: searchEmailTerm, $options: 'i' } };
-		if (searchLoginTerm && searchEmailTerm)
+		if (searchLoginTerm && searchEmailTerm && banStatus)
 			return {
 				$or: [
 					{ login: { $regex: searchLoginTerm, $options: 'i' } },
 					{ email: { $regex: searchEmailTerm, $options: 'i' } },
+					{ 'banInfo.banStatus': { $regex: banStatus, $options: 'i' } },
 				],
 			};
 	}

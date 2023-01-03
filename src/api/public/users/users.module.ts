@@ -6,13 +6,14 @@ import { User, UserSchema } from "./schemas/user.schema";
 import { UsersRepository } from "./users.repository";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigModule } from "@nestjs/config";
+import { SuperAdminController } from "../../super-admin/api/super-admin.controller";
 
 @Module({
   imports: [
     MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
     ConfigModule
   ],
-  controllers: [UsersController],
+  controllers: [UsersController, SuperAdminController],
   providers: [UsersService, UsersRepository, JwtService],
   exports: [UsersService, UsersRepository]
 })
