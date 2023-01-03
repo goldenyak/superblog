@@ -31,10 +31,10 @@ export class SuperAdminController {
 	@HttpCode(201)
 	@Post()
 	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
-		const currentUser = await this.usersService.findUserByLogin(dto.login);
-		if (currentUser) {
-			throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-		}
+		// const currentUser = await this.usersService.findUserByLogin(dto.login);
+		// if (currentUser) {
+		// 	throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+		// }
 		return await this.usersService.create(dto);
 	}
 
