@@ -41,4 +41,8 @@ export class SessionsRepository {
 	async getSessionByUserAndDeviceIdAndLastActiveDate(userId: string, deviceId: string, lastActiveDate: Date) {
 		return this.sessionsModel.findOne({userId, deviceId, lastActiveDate})
 	}
+
+	deleteAllSessionForBanUser(id: string) {
+		return this.sessionsModel.deleteMany({ userId: id} );
+	}
 }

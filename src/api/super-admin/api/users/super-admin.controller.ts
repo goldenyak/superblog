@@ -23,10 +23,12 @@ import { UsersService } from '../../../public/users/users.service';
 import { UsersQueryDto } from "../../../public/users/dto/users-query.dto";
 import { NOT_FOUND_USER_ERROR } from "../../../public/users/constants/users.constants";
 import { UpdateBanUserDto } from "./dto/update-ban-user.dto";
+import { SessionsService } from "../../../public/sessions/sessions.service";
 
 @Controller('sa/users')
 export class SuperAdminController {
-	constructor(private readonly usersService: UsersService) {}
+	constructor(private readonly usersService: UsersService,
+							private readonly sessionsService: SessionsService) {}
 
 	@UseGuards(BasicAuthGuard)
 	@HttpCode(201)
@@ -53,7 +55,8 @@ export class SuperAdminController {
 		if (!foundedUser) {
 			throw new NotFoundException();
 		}
-		return await this.usersService.updateUserBanInfo(id, dto)
+		await this.usersService.updateUserBanInfo(id, dto)
+		return await this.sessionsService.deleteAllSessionForBanUser(id)
 	}
 
 	@UseGuards(BasicAuthGuard)

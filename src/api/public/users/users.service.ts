@@ -54,11 +54,9 @@ export class UsersService {
 		const countUsers = await this.usersRepository.countUsers(
 			searchLoginTerm,
 			searchEmailTerm,
-			banStatus,
 		);
 
 		const allUsers = await this.usersRepository.getAllUsers(
-			banStatus,
 			searchLoginTerm,
 			searchEmailTerm,
 			pageNumber,

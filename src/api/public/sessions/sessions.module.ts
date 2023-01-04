@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from "@nestjs/common";
 import { SessionsController } from './sessions.controller';
 import { SessionsService } from './sessions.service';
 import { JwtModule, JwtService } from "@nestjs/jwt";
@@ -9,10 +9,11 @@ import { Sessions, SessionsSchema } from "./schemas/session.schema";
 import { SessionsRepository } from "./sessions.repository";
 import { UsersModule } from "../users/users.module";
 import { UsersService } from "../users/users.service";
+import { BlogsModule } from "../blogs/blogs.module";
 
 @Module({
 	imports: [
-		UsersModule,
+		forwardRef(() => UsersModule),
 		ConfigModule,
 		MongooseModule.forFeature([{ name: Sessions.name, schema: SessionsSchema }]),
 		JwtModule.registerAsync({
