@@ -6,6 +6,7 @@ import { User } from './schemas/user.schema';
 import { compare, genSalt, hash } from 'bcrypt';
 import { UNREGISTERED_USER_ERROR, WRONG_PASSWORD_ERROR } from './constants/users.constants';
 import { UsersQueryDto } from './dto/users-query.dto';
+import { UpdateBanUserDto } from '../../super-admin/api/users/dto/update-ban-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,8 +25,8 @@ export class UsersService {
 			banInfo: {
 				isBanned: false,
 				banDate: new Date().toISOString(),
-				banReason: 'notBanned'
-			}
+				banReason: 'notBanned',
+			},
 		};
 		await this.usersRepository.create(newUser);
 		return {
@@ -36,8 +37,8 @@ export class UsersService {
 			banInfo: {
 				isBanned: false,
 				banDate: null,
-				banReason: null
-			}
+				banReason: null,
+			},
 		};
 	}
 
@@ -50,7 +51,11 @@ export class UsersService {
 		sortBy,
 		sortDirection,
 	}: UsersQueryDto) {
-		const countUsers = await this.usersRepository.countUsers(searchLoginTerm, searchEmailTerm, banStatus);
+		const countUsers = await this.usersRepository.countUsers(
+			searchLoginTerm,
+			searchEmailTerm,
+			banStatus,
+		);
 
 		const allUsers = await this.usersRepository.getAllUsers(
 			banStatus,
@@ -97,7 +102,11 @@ export class UsersService {
 	async addNewConfirmationCodeByEmail(email: string) {
 		const newConfirmationCode = uuidv4();
 		await this.usersRepository.addNewConfirmationCodeByEmail(email, newConfirmationCode);
-		return newConfirmationCode
+		return newConfirmationCode;
+	}
+
+	async updateUserBanInfo(id: string, dto: UpdateBanUserDto) {
+		return this.usersRepository.updateUserBanInfo(id, dto);
 	}
 
 	async addRecoveryCode(email: string, recoveryCode: string) {
@@ -111,6 +120,9 @@ export class UsersService {
 	async validateUser(login: string, password: string) {
 		const user = await this.findUserByLogin(login);
 		if (!user) {
+			throw new HttpException(UNREGISTERED_USER_ERROR, HttpStatus.UNAUTHORIZED);
+		}
+		if(user.banInfo.isBanned) {
 			throw new HttpException(UNREGISTERED_USER_ERROR, HttpStatus.UNAUTHORIZED);
 		}
 		const isPasswordCorrect = await compare(password, user.password);

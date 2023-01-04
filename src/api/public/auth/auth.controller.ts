@@ -86,18 +86,15 @@ export class AuthController {
 		// 	throw new UnauthorizedException();
 		// }
 		const refreshToken = req.cookies.refreshToken;
-		console.log('refreshToken', refreshToken);
 		if (!refreshToken) {
 			throw new UnauthorizedException();
 		}
 		const result = await this.authService.checkRefreshToken(refreshToken);
-		console.log('result', result);
 		if (!result) {
 			throw new UnauthorizedException();
 		}
 		const oldLastActiveDate = new Date(result.iat * 1000)
 		const foundedDevice = await this.sessionsService.getSessionByUserAndDeviceIdAndLastActiveDate(result.id, result.deviceId, oldLastActiveDate);
-		console.log('foundedDevice', foundedDevice);
 		if (!foundedDevice) {
 			throw new UnauthorizedException();
 		}

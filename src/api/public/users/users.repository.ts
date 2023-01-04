@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateBanUserDto } from "../../super-admin/api/users/dto/update-ban-user.dto";
 
 @Injectable()
 export class UsersRepository {
@@ -65,6 +66,10 @@ export class UsersRepository {
 		return this.userModel.findOneAndUpdate({ confirmationCode: code }, { isConfirmed: true });
 	}
 
+	async updateUserBanInfo(id: string, dto: UpdateBanUserDto) {
+		return this.userModel.findOneAndUpdate({id: id}, {'banInfo.isBanned': dto.isBanned, 'banInfo.banReason': dto.banReason});
+	}
+
 	async addNewConfirmationCodeByEmail(email: string, newConfirmationCode: string) {
 		return this.userModel.findOneAndUpdate({ email }, { confirmationCode: newConfirmationCode });
 	}
@@ -115,13 +120,18 @@ export class UsersRepository {
 			return { login: { $regex: searchLoginTerm, $options: 'i' } };
 		if (!searchLoginTerm && searchEmailTerm)
 			return { email: { $regex: searchEmailTerm, $options: 'i' } };
+		if (!searchLoginTerm && banStatus)
+			return { banStatus: { $regex: banStatus, $options: 'i' } };
+		if (!searchEmailTerm && banStatus)
+			return { banStatus: { $regex: banStatus, $options: 'i' } };
 		if (searchLoginTerm && searchEmailTerm && banStatus)
 			return {
 				$or: [
 					{ login: { $regex: searchLoginTerm, $options: 'i' } },
 					{ email: { $regex: searchEmailTerm, $options: 'i' } },
-					{ 'banInfo.banStatus': { $regex: banStatus, $options: 'i' } },
+					{ banStatus: { $regex: banStatus, $options: 'i' } },
 				],
 			};
 	}
+
 }

@@ -6,7 +6,7 @@ import { User, UserSchema } from "./schemas/user.schema";
 import { UsersRepository } from "./users.repository";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigModule } from "@nestjs/config";
-import { SuperAdminController } from "../../super-admin/api/super-admin.controller";
+import { SuperAdminController } from "../../super-admin/api/users/super-admin.controller";
 
 @Module({
   imports: [

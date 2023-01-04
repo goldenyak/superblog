@@ -17,11 +17,12 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
-import { CreateUserDto } from '../../public/users/dto/create-user.dto';
-import { UsersService } from '../../public/users/users.service';
-import { UsersQueryDto } from "../../public/users/dto/users-query.dto";
-import { NOT_FOUND_USER_ERROR } from "../../public/users/constants/users.constants";
+import { BasicAuthGuard } from '../../../../guards/basic-auth.guard';
+import { CreateUserDto } from '../../../public/users/dto/create-user.dto';
+import { UsersService } from '../../../public/users/users.service';
+import { UsersQueryDto } from "../../../public/users/dto/users-query.dto";
+import { NOT_FOUND_USER_ERROR } from "../../../public/users/constants/users.constants";
+import { UpdateBanUserDto } from "./dto/update-ban-user.dto";
 
 @Controller('sa/users')
 export class SuperAdminController {
@@ -42,6 +43,17 @@ export class SuperAdminController {
 	@Get()
 	async getAllUsers(@Query() queryParams: UsersQueryDto) {
 		return this.usersService.getAllUsers(queryParams);
+	}
+
+	@UseGuards(BasicAuthGuard)
+	@HttpCode(204)
+	@Put('/:id/ban')
+	async updateBanUser(@Param('id') id: string, @Body() dto: UpdateBanUserDto) {
+		const foundedUser = await this.usersService.findUserById(id);
+		if (!foundedUser) {
+			throw new NotFoundException();
+		}
+		return await this.usersService.updateUserBanInfo(id, dto)
 	}
 
 	@UseGuards(BasicAuthGuard)
