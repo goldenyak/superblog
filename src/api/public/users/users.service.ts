@@ -24,8 +24,8 @@ export class UsersService {
 			isConfirmed: false,
 			banInfo: {
 				isBanned: false,
-				banDate: new Date().toISOString(),
-				banReason: 'notBanned',
+				banDate: null,
+				banReason: null,
 			},
 		};
 		await this.usersRepository.create(newUser);
@@ -106,8 +106,8 @@ export class UsersService {
 		return newConfirmationCode;
 	}
 
-	async updateUserBanInfo(id: string, dto: UpdateBanUserDto) {
-		return this.usersRepository.updateUserBanInfo(id, dto);
+	async banUser(id: string, dto: UpdateBanUserDto) {
+		return this.usersRepository.banUser(id, dto);
 	}
 
 	async unbanUser(id: string, dto: UpdateBanUserDto) {

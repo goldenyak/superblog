@@ -76,10 +76,14 @@ export class UsersRepository {
 		return this.userModel.findOneAndUpdate({ confirmationCode: code }, { isConfirmed: true });
 	}
 
-	async updateUserBanInfo(id: string, dto: UpdateBanUserDto) {
+	async banUser(id: string, dto: UpdateBanUserDto) {
 		return this.userModel.findOneAndUpdate(
 			{ id: id },
-			{ 'banInfo.isBanned': dto.isBanned, 'banInfo.banReason': dto.banReason },
+			{
+				'banInfo.isBanned': dto.isBanned,
+				'banInfo.banDate': new Date().toISOString(),
+				'banInfo.banReason': dto.banReason,
+			},
 		);
 	}
 

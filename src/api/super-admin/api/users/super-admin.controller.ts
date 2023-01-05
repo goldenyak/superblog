@@ -58,7 +58,7 @@ export class SuperAdminController {
 		if (!dto.isBanned) {
 			return await this.usersService.unbanUser(id, dto)
 		}
-		await this.usersService.updateUserBanInfo(id, dto)
+		await this.usersService.banUser(id, dto)
 		return await this.sessionsService.deleteAllSessionForBanUser(id)
 	}
 
