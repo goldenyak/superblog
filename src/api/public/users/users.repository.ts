@@ -29,6 +29,8 @@ export class UsersRepository {
 		const sortByFilter = this.getFilterForSortBy(sortBy);
 		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
+		console.log(filter);
+
 		const users = await this.userModel
 			.find(filter)
 			.skip((pageNumber - 1) * pageSize)
@@ -160,5 +162,20 @@ export class UsersRepository {
 		} else {
 			return { $or: [...searchTerms] };
 		}
+
+		// if (!searchLoginTerm && !searchEmailTerm)
+		// 	return { 'banInfo.isBanned': { $regex: banFilter, $options: 'i' } };
+		// 	// return {}
+		// if (searchLoginTerm && !searchEmailTerm)
+		// 	return { login: { $regex: searchLoginTerm, $options: 'i' } };
+		// if (!searchLoginTerm && searchEmailTerm)
+		// 	return { email: { $regex: searchEmailTerm, $options: 'i' } };
+		// if (searchLoginTerm && searchEmailTerm)
+		// 	return {
+		// 		$or: [
+		// 			{ login: { $regex: searchLoginTerm, $options: 'i' } },
+		// 			{ email: { $regex: searchEmailTerm, $options: 'i' } },
+		// 		],
+		// 	};
 	}
 }
