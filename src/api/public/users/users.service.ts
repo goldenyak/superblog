@@ -110,6 +110,10 @@ export class UsersService {
 		return this.usersRepository.updateUserBanInfo(id, dto);
 	}
 
+	async unbanUser(id: string, dto: UpdateBanUserDto) {
+		return await this.usersRepository.unbanUser(id, dto)
+	}
+
 	async addRecoveryCode(email: string, recoveryCode: string) {
 		return await this.usersRepository.addRecoveryCode(email, recoveryCode);
 	}

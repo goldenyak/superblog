@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { BanStatusEnum, UpdateBanUserDto } from "../../super-admin/api/users/dto/update-ban-user.dto";
+import {
+	BanStatusEnum,
+	UpdateBanUserDto,
+} from '../../super-admin/api/users/dto/update-ban-user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -22,7 +25,7 @@ export class UsersRepository {
 		sortBy: string,
 		sortDirection: string,
 	) {
-		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus,);
+		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus);
 		const sortByFilter = this.getFilterForSortBy(sortBy);
 		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
@@ -41,8 +44,8 @@ export class UsersRepository {
 				banInfo: {
 					isBanned: user.banInfo.isBanned,
 					banDate: user.banInfo.banDate,
-					banReason: user.banInfo.banReason
-				}
+					banReason: user.banInfo.banReason,
+				},
 			};
 		});
 	}
@@ -72,7 +75,17 @@ export class UsersRepository {
 	}
 
 	async updateUserBanInfo(id: string, dto: UpdateBanUserDto) {
-		return this.userModel.findOneAndUpdate({id: id}, {'banInfo.isBanned': dto.isBanned, 'banInfo.banReason': dto.banReason});
+		return this.userModel.findOneAndUpdate(
+			{ id: id },
+			{ 'banInfo.isBanned': dto.isBanned, 'banInfo.banReason': dto.banReason },
+		);
+	}
+
+	async unbanUser(id: string, dto: UpdateBanUserDto) {
+		return this.userModel.findOneAndUpdate(
+			{ id: id },
+			{ 'banInfo.isBanned': dto.isBanned, 'banInfo.banDate': null, 'banInfo.banReason': null },
+		);
 	}
 
 	async addNewConfirmationCodeByEmail(email: string, newConfirmationCode: string) {
@@ -95,8 +108,12 @@ export class UsersRepository {
 		return this.userModel.deleteMany().exec();
 	}
 
-	async countUsers(searchLoginTerm: string | null, searchEmailTerm: string | null, banStatus: string,) {
-		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus,);
+	async countUsers(
+		searchLoginTerm: string | null,
+		searchEmailTerm: string | null,
+		banStatus: string,
+	) {
+		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus);
 		return this.userModel.count(filter);
 	}
 
@@ -116,33 +133,32 @@ export class UsersRepository {
 	}
 
 	private getFilterForQuery(
-		banStatus: string,
 		searchLoginTerm: string | null,
 		searchEmailTerm: string | null,
+		banStatus: string,
 	) {
-		let banFilter
-		switch(banStatus){
+		const searchTerms = [];
+		if (searchLoginTerm) searchTerms.push({ login: { $regex: searchLoginTerm, $options: 'i' } });
+		if (searchEmailTerm) searchTerms.push({ email: { $regex: searchEmailTerm, $options: 'i' } });
+		let banFilter;
+		switch (banStatus) {
 			case BanStatusEnum.all:
-				banFilter = null
+				banFilter = null;
 				break;
 			case BanStatusEnum.banned:
-					banFilter = {"banInfo.isBanned" : true}
+				banFilter = { 'banInfo.isBanned': true };
 				break;
 			case BanStatusEnum.notBanned:
-				banFilter = {"banInfo.isBanned" : false}
+				banFilter = { 'banInfo.isBanned': false };
 		}
-		if (!searchLoginTerm && !searchEmailTerm) return {"banInfo.isBanned": { $regex: banFilter, $options: 'i' }};
-		if (searchLoginTerm && !searchEmailTerm)
-			return { login: { $regex: searchLoginTerm, $options: 'i' } };
-		if (!searchLoginTerm && searchEmailTerm)
-			return { email: { $regex: searchEmailTerm, $options: 'i' } };
-		if (searchLoginTerm && searchEmailTerm)
-			return {
-				$or: [
-					{ login: { $regex: searchLoginTerm, $options: 'i' } },
-					{ email: { $regex: searchEmailTerm, $options: 'i' } },
-				],
-			};
+		if (!banFilter && !searchTerms.length) {
+			return {};
+		} else if (banFilter && searchTerms.length)
+			return { $and: { $or: [...searchTerms], banFilter } };
+		else if (banFilter) {
+			return banFilter;
+		} else {
+			return { $or: [...searchTerms] };
+		}
 	}
-
 }

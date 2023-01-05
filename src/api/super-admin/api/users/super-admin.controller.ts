@@ -55,6 +55,9 @@ export class SuperAdminController {
 		if (!foundedUser) {
 			throw new NotFoundException();
 		}
+		if (!dto.isBanned) {
+			return await this.usersService.unbanUser(id, dto)
+		}
 		await this.usersService.updateUserBanInfo(id, dto)
 		return await this.sessionsService.deleteAllSessionForBanUser(id)
 	}
