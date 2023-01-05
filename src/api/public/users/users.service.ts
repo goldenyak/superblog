@@ -51,12 +51,13 @@ export class UsersService {
 		sortBy,
 		sortDirection,
 	}: UsersQueryDto) {
+
 		const countUsers = await this.usersRepository.countUsers(
-			banStatus,
 			searchLoginTerm,
 			searchEmailTerm,
-
+			banStatus,
 		);
+		console.log(countUsers);
 
 		const allUsers = await this.usersRepository.getAllUsers(
 			banStatus,
@@ -111,7 +112,7 @@ export class UsersService {
 	}
 
 	async unbanUser(id: string, dto: UpdateBanUserDto) {
-		return await this.usersRepository.unbanUser(id, dto)
+		return await this.usersRepository.unbanUser(id, dto);
 	}
 
 	async addRecoveryCode(email: string, recoveryCode: string) {
@@ -127,7 +128,7 @@ export class UsersService {
 		if (!user) {
 			throw new HttpException(UNREGISTERED_USER_ERROR, HttpStatus.UNAUTHORIZED);
 		}
-		if(user.banInfo.isBanned) {
+		if (user.banInfo.isBanned) {
 			throw new HttpException(UNREGISTERED_USER_ERROR, HttpStatus.UNAUTHORIZED);
 		}
 		const isPasswordCorrect = await compare(password, user.password);
