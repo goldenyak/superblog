@@ -74,7 +74,7 @@ export class UsersService {
 			page: pageNumber,
 			pageSize: pageSize,
 			totalCount: countUsers,
-			items: allUsers,
+			items: allUsers
 		};
 	}
 
