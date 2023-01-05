@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateBanUserDto } from "../../super-admin/api/users/dto/update-ban-user.dto";
+import { BanStatusEnum, UpdateBanUserDto } from "../../super-admin/api/users/dto/update-ban-user.dto";
 
 @Injectable()
 export class UsersRepository {
@@ -14,6 +14,7 @@ export class UsersRepository {
 	}
 
 	async getAllUsers(
+		banStatus: string,
 		searchLoginTerm: string,
 		searchEmailTerm: string,
 		pageNumber: number,
@@ -21,7 +22,7 @@ export class UsersRepository {
 		sortBy: string,
 		sortDirection: string,
 	) {
-		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm);
+		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus,);
 		const sortByFilter = this.getFilterForSortBy(sortBy);
 		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
@@ -94,8 +95,8 @@ export class UsersRepository {
 		return this.userModel.deleteMany().exec();
 	}
 
-	async countUsers(searchLoginTerm: string | null, searchEmailTerm: string | null) {
-		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm);
+	async countUsers(searchLoginTerm: string | null, searchEmailTerm: string | null, banStatus: string,) {
+		const filter = this.getFilterForQuery(searchLoginTerm, searchEmailTerm, banStatus,);
 		return this.userModel.count(filter);
 	}
 
@@ -115,10 +116,22 @@ export class UsersRepository {
 	}
 
 	private getFilterForQuery(
+		banStatus: string,
 		searchLoginTerm: string | null,
 		searchEmailTerm: string | null,
 	) {
-		if (!searchLoginTerm && !searchEmailTerm) return {};
+		let banFilter
+		switch(banStatus){
+			case BanStatusEnum.all:
+				banFilter = null
+				break;
+			case BanStatusEnum.banned:
+					banFilter = {"banInfo.isBanned" : true}
+				break;
+			case BanStatusEnum.notBanned:
+				banFilter = {"banInfo.isBanned" : false}
+		}
+		if (!searchLoginTerm && !searchEmailTerm) return {"banInfo.isBanned": { $regex: banFilter, $options: 'i' }};
 		if (searchLoginTerm && !searchEmailTerm)
 			return { login: { $regex: searchLoginTerm, $options: 'i' } };
 		if (!searchLoginTerm && searchEmailTerm)

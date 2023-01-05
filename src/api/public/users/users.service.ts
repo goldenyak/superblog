@@ -52,11 +52,14 @@ export class UsersService {
 		sortDirection,
 	}: UsersQueryDto) {
 		const countUsers = await this.usersRepository.countUsers(
+			banStatus,
 			searchLoginTerm,
 			searchEmailTerm,
+
 		);
 
 		const allUsers = await this.usersRepository.getAllUsers(
+			banStatus,
 			searchLoginTerm,
 			searchEmailTerm,
 			pageNumber,
