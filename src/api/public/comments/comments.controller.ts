@@ -21,9 +21,7 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { LikeCommentDto } from './dto/like-comment.dto';
-import { log } from 'util';
 import { AuthService } from '../auth/auth.service';
 
 @Controller('comments')
@@ -42,17 +40,21 @@ export class CommentsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
+
 		if (req.headers.authorization) {
-			console.log(req.headers.authorization);
 			const token = req.headers.authorization.split(' ')[1];
 			const result = await this.authService.checkRefreshToken(token);
 			if (result) {
 				currentUserId = result.id;
 			}
 		}
+		const currentUser = await this.usersService.findUserById(currentUserId);
+		if (currentUser.banInfo.isBanned) {
+			throw new NotFoundException();
+		}
 		const commentById = await this.commentsService.findCommentById(id, currentUserId);
 		if (!commentById) {
-			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
+			throw new NotFoundException();
 		}
 		return commentById;
 	}

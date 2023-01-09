@@ -59,7 +59,7 @@ export class CommentsService {
 			sortBy,
 			sortDirection,
 			postId,
-		);
+		)
 
 		//
 		// const result = await Promise.all(allCommentsByPostId.map(async comment => {
