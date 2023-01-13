@@ -39,24 +39,22 @@ export class CommentsController {
 		@Req() req: Request,
 		@Headers('authorization') header: string,
 	) {
-		let currentUserId;
+		// let currentUserId;
 
 		if (req.headers.authorization) {
 			const token = req.headers.authorization.split(' ')[1];
 			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
+			if (!result) {
+				throw new NotFoundException();
 			}
+			const currentUser = await this.usersService.findUserById(result.id);
+			console.log('currentUser', currentUser);
+			const commentById = await this.commentsService.findCommentById(id, currentUser.id);
+			if (!commentById) {
+				throw new NotFoundException();
+			}
+			return commentById;
 		}
-		const currentUser = await this.usersService.findUserById(currentUserId);
-		if (currentUser.banInfo.isBanned) {
-			throw new NotFoundException();
-		}
-		const commentById = await this.commentsService.findCommentById(id, currentUserId);
-		if (!commentById) {
-			throw new NotFoundException();
-		}
-		return commentById;
 	}
 
 	@UseGuards(JwtAuthGuard)
