@@ -46,7 +46,7 @@ export class CommentsController {
 				throw new NotFoundException();
 			}
 			const currentUser = await this.usersService.findUserById(result.id);
-			if (!currentUser || currentUser.banInfo.isBanned) {
+			if (!currentUser || !currentUser.banInfo.isBanned) {
 				throw new NotFoundException();
 			}
 			const commentById = await this.commentsService.findCommentById(id, currentUser.id);
