@@ -39,8 +39,6 @@ export class CommentsController {
 		@Req() req: Request,
 		@Headers('authorization') header: string,
 	) {
-		// let currentUserId;
-
 		if (req.headers.authorization) {
 			const token = req.headers.authorization.split(' ')[1];
 			const result = await this.authService.checkRefreshToken(token);
@@ -48,13 +46,16 @@ export class CommentsController {
 				throw new NotFoundException();
 			}
 			const currentUser = await this.usersService.findUserById(result.id);
-			console.log('currentUser', currentUser);
+			if (!currentUser || currentUser.banInfo.isBanned) {
+				throw new NotFoundException();
+			}
 			const commentById = await this.commentsService.findCommentById(id, currentUser.id);
 			if (!commentById) {
 				throw new NotFoundException();
 			}
 			return commentById;
 		}
+		throw new NotFoundException();
 	}
 
 	@UseGuards(JwtAuthGuard)
