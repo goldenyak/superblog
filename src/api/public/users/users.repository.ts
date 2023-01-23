@@ -29,8 +29,6 @@ export class UsersRepository {
 		const sortByFilter = this.getFilterForSortBy(sortBy);
 		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
-		console.log(filter);
-
 		const users = await this.userModel
 			.find(filter)
 			.skip((pageNumber - 1) * pageSize)

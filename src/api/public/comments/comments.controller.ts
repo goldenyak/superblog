@@ -39,23 +39,30 @@ export class CommentsController {
 		@Req() req: Request,
 		@Headers('authorization') header: string,
 	) {
-		if (req.headers.authorization) {
-			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (!result) {
-				throw new NotFoundException();
-			}
-			const currentUser = await this.usersService.findUserById(result.id);
-			if (!currentUser || currentUser.banInfo.isBanned) {
-				throw new NotFoundException();
-			}
-			const commentById = await this.commentsService.findCommentById(id, currentUser.id);
-			if (!commentById) {
-				throw new NotFoundException();
-			}
-			return commentById;
+		const commentById = await this.commentsService.findCommentById(id);
+		if (!commentById) {
+			throw new NotFoundException();
 		}
-		throw new NotFoundException();
+		const currentUser = await this.usersService.findUserById(commentById.userId);
+		if (!currentUser || currentUser.banInfo.isBanned) {
+			throw new NotFoundException();
+		}
+		return commentById;
+		// if (req.headers.authorization) {
+		// 	const token = req.headers.authorization.split(' ')[1];
+		// 	const result = await this.authService.checkRefreshToken(token);
+		//
+		// 	const currentUser = await this.usersService.findUserById(result?.id);
+		// 	if (!commentById || currentUser.banInfo.isBanned) {
+		// 		throw new NotFoundException();
+		// 	}
+		// 	const commentById = await this.commentsService.findCommentById(id, currentUser.id);
+		// 	if (!commentById) {
+		// 		throw new NotFoundException();
+		// 	}
+		// 	return commentById;
+		// }
+		// throw new NotFoundException();
 	}
 
 	@UseGuards(JwtAuthGuard)

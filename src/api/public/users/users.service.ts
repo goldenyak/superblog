@@ -57,7 +57,6 @@ export class UsersService {
 			searchEmailTerm,
 			banStatus,
 		);
-		console.log(countUsers);
 
 		const allUsers = await this.usersRepository.getAllUsers(
 			banStatus,
