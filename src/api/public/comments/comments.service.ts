@@ -6,12 +6,14 @@ import { Comments } from './schemas/comments.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../users/schemas/user.schema';
 import { LikesService } from '../likes/likes.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class CommentsService {
 	constructor(
 		private readonly commentsRepository: CommentsRepository,
 		private readonly likesService: LikesService,
+		private readonly usersService: UsersService,
 		@Inject(forwardRef(() => PostsService)) private readonly postsService: PostsService,
 	) {}
 
@@ -59,7 +61,7 @@ export class CommentsService {
 			sortBy,
 			sortDirection,
 			postId,
-		)
+		);
 
 		//
 		// const result = await Promise.all(allCommentsByPostId.map(async comment => {
@@ -86,9 +88,12 @@ export class CommentsService {
 		if (!foundedComment) {
 			throw new NotFoundException();
 		}
-		return await this.likesService.getLikesInfoForComment(foundedComment, userId);
+		const currentUser = await this.usersService.findUserById(foundedComment.userId);
+		if (!currentUser || currentUser.banInfo.isBanned) {
+			throw new NotFoundException();
+		}
+		return await this.likesService.getLikesInfoForComment(foundedComment, foundedComment.userId);
 	}
-
 
 	async deleteCommentById(id: string) {
 		return await this.commentsRepository.deleteCommentById(id);

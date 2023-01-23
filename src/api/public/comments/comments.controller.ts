@@ -40,29 +40,14 @@ export class CommentsController {
 		@Headers('authorization') header: string,
 	) {
 		const commentById = await this.commentsService.findCommentById(id);
-		if (!commentById) {
-			throw new NotFoundException();
-		}
-		const currentUser = await this.usersService.findUserById(commentById.userId);
-		if (!currentUser || currentUser.banInfo.isBanned) {
-			throw new NotFoundException();
-		}
-		return commentById;
-		// if (req.headers.authorization) {
-		// 	const token = req.headers.authorization.split(' ')[1];
-		// 	const result = await this.authService.checkRefreshToken(token);
-		//
-		// 	const currentUser = await this.usersService.findUserById(result?.id);
-		// 	if (!commentById || currentUser.banInfo.isBanned) {
-		// 		throw new NotFoundException();
-		// 	}
-		// 	const commentById = await this.commentsService.findCommentById(id, currentUser.id);
-		// 	if (!commentById) {
-		// 		throw new NotFoundException();
-		// 	}
-		// 	return commentById;
+		// if (!commentById) {
+		// 	throw new NotFoundException();
 		// }
-		// throw new NotFoundException();
+		// const currentUser = await this.usersService.findUserById(commentById.userId);
+		// if (!currentUser || currentUser.banInfo.isBanned) {
+		// 	throw new NotFoundException();
+		// }
+		return commentById;
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -106,13 +91,13 @@ export class CommentsController {
 		@Req() req: Request,
 	) {
 		const commentById = await this.commentsService.findCommentById(id);
-		const user = await this.usersService.findUserById(req.user.id);
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
 		}
-		if (!user) {
+		const currentUser = await this.usersService.findUserById(req.user.id);
+		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new ForbiddenException();
 		}
-		return await this.commentsService.addLikeCommentById(commentById.id, user.id, dto.likeStatus);
+		return await this.commentsService.addLikeCommentById(commentById.id, currentUser.id, dto.likeStatus);
 	}
 }
