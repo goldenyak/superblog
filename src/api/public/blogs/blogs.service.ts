@@ -24,8 +24,10 @@ export class BlogsService {
 			websiteUrl: foundedBlog.websiteUrl,
 			createdAt: foundedBlog.createdAt
 		}
+	}
 
-
+	async findBlogByIdWithBloggerInfo(id: string) {
+		return  await this.blogsRepository.findBlogById(id);
 	}
 
 	async deleteBlogById(id: string) {
