@@ -74,14 +74,13 @@ export class BlogsController {
 	@Delete(':id')
 	async deleteBlogById(@Param('id') id: string, @Req() req: Request) {
 		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(id);
+		if (!foundedBlog) {
+			throw new NotFoundException();
+		}
 		if (foundedBlog.bloggerInfo.id !== req.user.id) {
 			throw new ForbiddenException();
 		}
-		const deletedBlog = await this.blogsService.deleteBlogById(id);
-		if (!deletedBlog) {
-			throw new NotFoundException();
-		}
-		return;
+		return await this.blogsService.deleteBlogById(id);
 	}
 
 	@UseGuards(JwtAuthGuard)
