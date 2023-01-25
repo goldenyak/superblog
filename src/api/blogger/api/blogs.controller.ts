@@ -74,9 +74,9 @@ export class BlogsController {
 	@Delete(':id')
 	async deleteBlogById(@Param('id') id: string, @Req() req: Request) {
 		const foundedBlog = await this.blogsService.findBlogById(id);
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
-			throw new ForbiddenException();
-		}
+		// if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		// 	throw new ForbiddenException();
+		// }
 		const deletedBlog = await this.blogsService.deleteBlogById(id);
 		if (!deletedBlog) {
 			throw new NotFoundException();
@@ -96,9 +96,9 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
-			throw new ForbiddenException();
-		}
+		// if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		// 	throw new ForbiddenException();
+		// }
 		const deletedPost = await this.blogsService.deletePostForSpecifiedBlog(postId, blogId);
 		if (!deletedPost) {
 			throw new NotFoundException();
@@ -114,9 +114,9 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
-			throw new ForbiddenException();
-		}
+		// if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		// 	throw new ForbiddenException();
+		// }
 		await this.blogsService.updateBlogById(id, dto.name, dto.description, dto.websiteUrl);
 		return;
 	}
@@ -134,9 +134,9 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
-			throw new ForbiddenException();
-		}
+		// if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		// 	throw new ForbiddenException();
+		// }
 		return await this.blogsService.updatePostForSpecifiedBlog(postId, dto);
 	}
 }

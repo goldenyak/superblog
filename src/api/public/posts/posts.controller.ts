@@ -122,7 +122,6 @@ export class PostsController {
 		@Headers('authorization') header: string,
 	) {
 		let currentUserId;
-		console.log(req.headers.authorization);
 		if (req.headers.authorization) {
 			const token = req.headers.authorization.split(' ')[1];
 			const result = await this.authService.checkRefreshToken(token);
@@ -169,13 +168,14 @@ export class PostsController {
 	@Put(':id/like-status')
 	async addLikePostById(@Body() dto: LikePostDto, @Param('id') id: string, @Req() req: Request) {
 		const postById = await this.postsService.findPostById(id);
-		const user = await this.usersService.findUserById(req.user.id);
 		if (!postById) {
 			throw new NotFoundException();
 		}
-		if (!user) {
+		const currentUser = await this.usersService.findUserById(req.user.id);
+
+		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new ForbiddenException();
 		}
-		return await this.postsService.addLikePostById(postById.id, user.id, dto.likeStatus);
+		return await this.postsService.addLikePostById(postById.id, currentUser.id, dto.likeStatus);
 	}
 }

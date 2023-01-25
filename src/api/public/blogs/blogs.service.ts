@@ -16,7 +16,16 @@ export class BlogsService {
 	) {}
 
 	async findBlogById(id: string) {
-		return this.blogsRepository.findBlogById(id);
+		const foundedBlog = await this.blogsRepository.findBlogById(id);
+		return {
+			id: foundedBlog.id,
+			name: foundedBlog.name,
+			description: foundedBlog.description,
+			websiteUrl: foundedBlog.websiteUrl,
+			createdAt: foundedBlog.createdAt
+		}
+
+
 	}
 
 	async deleteBlogById(id: string) {
