@@ -38,13 +38,21 @@ export class LikesRepository {
 	}
 
 	async getLikesCountByParentId(parentId: string): Promise<number> {
-		return this.likesModel.countDocuments({ parentId: parentId, status: 'Like' });
+		return this.likesModel.countDocuments({ parentId: parentId, status: 'Like',  userBanStatus: false});
 	}
 	async getDislikesCountByParentId(parentId: string): Promise<number> {
-		return this.likesModel.countDocuments({ parentId: parentId, status: 'Dislike' });
+		return this.likesModel.countDocuments({ parentId: parentId, status: 'Dislike',  userBanStatus: false });
 	}
 
 	async deleteAll() {
 		return this.likesModel.deleteMany().exec();
+	}
+
+	async banUserLikeStatus(userId: string) {
+		return this.likesModel.updateMany({userId: userId}, {userBanStatus: true})
+	}
+
+	async unbanUserLikeStatus(userId: string) {
+		return this.likesModel.updateMany({userId: userId}, {userBanStatus: false})
 	}
 }

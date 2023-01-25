@@ -7,6 +7,7 @@ import { compare, genSalt, hash } from 'bcrypt';
 import { UNREGISTERED_USER_ERROR, WRONG_PASSWORD_ERROR } from './constants/users.constants';
 import { UsersQueryDto } from './dto/users-query.dto';
 import { UpdateBanUserDto } from '../../super-admin/api/users/dto/update-ban-user.dto';
+import { LikesService } from "../likes/likes.service";
 
 @Injectable()
 export class UsersService {

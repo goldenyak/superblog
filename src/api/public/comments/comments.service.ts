@@ -88,10 +88,10 @@ export class CommentsService {
 		if (!foundedComment) {
 			throw new NotFoundException();
 		}
-		const currentUser = await this.usersService.findUserById(foundedComment.userId);
-		if (!currentUser || currentUser.banInfo.isBanned) {
-			throw new NotFoundException();
-		}
+		// const currentUser = await this.usersService.findUserById(foundedComment.userId);
+		// if (!currentUser || currentUser.banInfo.isBanned) {
+		// 	throw new NotFoundException();
+		// }
 		return await this.likesService.getLikesInfoForComment(foundedComment, foundedComment.userId);
 	}
 

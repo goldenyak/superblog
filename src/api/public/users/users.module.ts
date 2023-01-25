@@ -9,11 +9,15 @@ import { ConfigModule } from "@nestjs/config";
 import { SuperAdminController } from "../../super-admin/api/users/super-admin.controller";
 import { SessionsModule } from "../sessions/sessions.module";
 import { BlogsModule } from "../blogs/blogs.module";
+import { LikesModule } from "../likes/likes.module";
+import { LikesService } from "../likes/likes.service";
+import { LikesRepository } from "../likes/likes.repository";
 
 @Module({
   imports: [
     MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
     forwardRef(() => SessionsModule),
+    forwardRef(() => LikesModule),
     ConfigModule,
   ],
   controllers: [UsersController, SuperAdminController],

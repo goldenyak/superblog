@@ -24,11 +24,13 @@ import { UsersQueryDto } from "../../../public/users/dto/users-query.dto";
 import { NOT_FOUND_USER_ERROR } from "../../../public/users/constants/users.constants";
 import { UpdateBanUserDto } from "./dto/update-ban-user.dto";
 import { SessionsService } from "../../../public/sessions/sessions.service";
+import { LikesService } from "../../../public/likes/likes.service";
 
 @Controller('sa/users')
 export class SuperAdminController {
 	constructor(private readonly usersService: UsersService,
-							private readonly sessionsService: SessionsService) {}
+							private readonly sessionsService: SessionsService,
+							private readonly likesService: LikesService) {}
 
 	@UseGuards(BasicAuthGuard)
 	@HttpCode(201)
@@ -56,9 +58,11 @@ export class SuperAdminController {
 			throw new NotFoundException();
 		}
 		if (!dto.isBanned) {
+			await this.likesService.unbanUserLikeStatus(id)
 			return await this.usersService.unbanUser(id, dto)
 		}
 		await this.usersService.banUser(id, dto)
+		await this.likesService.banUserLikeStatus(id)
 		return await this.sessionsService.deleteAllSessionForBanUser(id)
 	}
 

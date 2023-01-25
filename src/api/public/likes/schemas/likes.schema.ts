@@ -12,6 +12,9 @@ export class Likes {
   userId: string;
 
   @Prop()
+  userBanStatus: boolean;
+
+  @Prop()
   login: string;
 
   @Prop()

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { LikesRepository } from './likes.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from '../users/users.service';
@@ -12,6 +12,9 @@ export class LikesService {
 
 	async createLike(parentId: string, userId: string, likeStatus: string) {
 		const user = await this.usersService.findUserById(userId);
+		if (user.banInfo.isBanned) {
+			throw new NotFoundException()
+		}
 		const updatedLike = await this.likesRepository.updateLike(userId, parentId, likeStatus);
 		if (updatedLike) {
 			return updatedLike;
@@ -19,6 +22,7 @@ export class LikesService {
 			const newLike = {
 				id: uuidv4(),
 				userId: userId,
+				userBanStatus: user.banInfo.isBanned,
 				login: user.login,
 				parentId: parentId,
 				createdAt: new Date(),
@@ -101,7 +105,17 @@ export class LikesService {
 		});
 	}
 
+	async banUserLikeStatus(userId: string) {
+		return await this.likesRepository.banUserLikeStatus(userId)
+	}
+
+	async unbanUserLikeStatus(userId: string) {
+		return await this.likesRepository.unbanUserLikeStatus(userId)
+	}
+
 	async deleteAll() {
 		return await this.likesRepository.deleteAll();
 	}
+
+
 }
