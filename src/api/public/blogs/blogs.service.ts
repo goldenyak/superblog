@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { BlogsRepository } from './blogs.repository';
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,14 +16,19 @@ export class BlogsService {
 	) {}
 
 	async findBlogById(id: string) {
-		const foundedBlog = await this.blogsRepository.findBlogById(id);
-		return {
-			id: foundedBlog.id,
-			name: foundedBlog.name,
-			description: foundedBlog.description,
-			websiteUrl: foundedBlog.websiteUrl,
-			createdAt: foundedBlog.createdAt
+		try {
+			const foundedBlog = await this.blogsRepository.findBlogById(id);
+			return {
+				id: foundedBlog.id,
+				name: foundedBlog.name,
+				description: foundedBlog.description,
+				websiteUrl: foundedBlog.websiteUrl,
+				createdAt: foundedBlog.createdAt
+			}
+		} catch (e) {
+			throw new NotFoundException()
 		}
+
 	}
 
 	async findBlogByIdWithBloggerInfo(id: string) {
