@@ -16,6 +16,11 @@ import { AuthModule } from '../auth/auth.module';
 import { LikesModule } from '../likes/likes.module';
 import { BlogIdValidation } from '../../../validation/blog-id.validation';
 import { ValidationModule } from '../../../validation/validation.module';
+import { FindUserByIdUseCase } from "../users/use-cases/find-user-by-id.use-case";
+
+const useCases = [
+	FindUserByIdUseCase
+]
 
 @Module({
 	imports: [
@@ -33,7 +38,7 @@ import { ValidationModule } from '../../../validation/validation.module';
 		}),
 	],
 	controllers: [PostsController],
-	providers: [PostsService, PostsRepository],
+	providers: [PostsService, PostsRepository, ...useCases],
 	exports: [PostsService],
 })
 export class PostsModule {}

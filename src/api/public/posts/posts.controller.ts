@@ -6,19 +6,16 @@ import {
 	Get,
 	Headers,
 	HttpCode,
-	HttpException,
-	HttpStatus, NotFoundException,
+	NotFoundException,
 	Param,
 	Post,
 	Put,
 	Query,
 	Req,
-	UseGuards
-} from "@nestjs/common";
+	UseGuards,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-post.dto';
-import { NOT_FOUND_BLOG_ERROR } from '../blogs/constants/blogs.constants';
-import { NOT_FOUND_POST_ERROR } from './constants/posts.constants';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreateCommentDto } from '../comments/dto/create-comment.dto';
 import { CommentsService } from '../comments/comments.service';
@@ -28,7 +25,7 @@ import { UsersService } from '../users/users.service';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { AuthService } from '../auth/auth.service';
 import { LikePostDto } from './dto/like-post.dto';
-import { PostsQueryParams } from "./dto/posts-query.dto";
+import { PostsQueryParams } from './dto/posts-query.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -43,6 +40,43 @@ export class PostsController {
 	@Post()
 	async create(@Body() dto: CreatePostsDto) {
 		return await this.postsService.create(dto);
+	}
+
+	@HttpCode(200)
+	@Get()
+	async getAllPosts(
+		@Query() queryParams: PostsQueryParams,
+		@Req() req: Request,
+		@Headers('authorization') header: string,
+	) {
+		let currentUserId;
+		if (req.headers.authorization) {
+			const token = req.headers.authorization.split(' ')[1];
+			const result = await this.authService.checkRefreshToken(token);
+			if (result) {
+				currentUserId = result.id;
+			}
+		}
+		return this.postsService.getAllPosts(queryParams, currentUserId);
+	}
+
+	@Get(':id')
+	async findPostById(
+		@Param('id') id: string,
+		@Req() req: Request,
+		@Headers('authorization') header: string,
+	) {
+		let currentUserId = null;
+		return await this.postsService.findPostById(id);
+
+		// let currentUserId;
+		// if (req.headers.authorization) {
+		// 	const token = req.headers.authorization.split(' ')[1];
+		// 	const result = await this.authService.checkRefreshToken(token);
+		// 	if (result) {
+		// 		currentUserId = result.id;
+		// 	}
+		// }
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -62,24 +96,6 @@ export class PostsController {
 		} else {
 			return await this.commentsService.create(dto, postId, user);
 		}
-	}
-
-	@HttpCode(200)
-	@Get()
-	async getAllPosts(
-		@Query() queryParams: PostsQueryParams,
-		@Req() req: Request,
-		@Headers('authorization') header: string,
-	) {
-		let currentUserId;
-		if (req.headers.authorization) {
-			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
-			}
-		}
-		return this.postsService.getAllPosts(queryParams, currentUserId);
 	}
 
 	@HttpCode(200)
@@ -103,7 +119,7 @@ export class PostsController {
 		}
 		const postById = await this.postsService.findPostById(id);
 		if (!postById) {
-			throw new NotFoundException()
+			throw new NotFoundException();
 		}
 		return await this.postsService.getAllCommentsByPostId(
 			pageNumber,
@@ -113,27 +129,6 @@ export class PostsController {
 			id,
 			currentUserId,
 		);
-	}
-
-	@Get(':id')
-	async findPostById(
-		@Param('id') id: string,
-		@Req() req: Request,
-		@Headers('authorization') header: string,
-	) {
-		let currentUserId;
-		if (req.headers.authorization) {
-			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
-			if (result) {
-				currentUserId = result.id;
-			}
-		}
-		const foundedPost = await this.postsService.findPostById(id, currentUserId);
-		if (!foundedPost) {
-			throw new NotFoundException();
-		}
-		return foundedPost;
 	}
 
 	@UseGuards(BasicAuthGuard)

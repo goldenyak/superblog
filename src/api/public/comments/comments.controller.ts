@@ -39,15 +39,7 @@ export class CommentsController {
 		@Req() req: Request,
 		@Headers('authorization') header: string,
 	) {
-		const commentById = await this.commentsService.findCommentById(id);
-		// if (!commentById) {
-		// 	throw new NotFoundException();
-		// }
-		// const currentUser = await this.usersService.findUserById(commentById.userId);
-		// if (!currentUser || currentUser.banInfo.isBanned) {
-		// 	throw new NotFoundException();
-		// }
-		return commentById;
+		return  await this.commentsService.findCommentById(id);
 	}
 
 	@UseGuards(JwtAuthGuard)

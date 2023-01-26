@@ -7,56 +7,92 @@ import { CommentsService } from '../comments/comments.service';
 import { Posts } from './schemas/posts.schemas';
 import { LikesService } from '../likes/likes.service';
 import { PostsQueryParams } from './dto/posts-query.dto';
+import { FindUserByIdUseCase } from "../users/use-cases/find-user-by-id.use-case";
+import { Blogs } from "../blogs/schemas/blogs.schema";
 
 @Injectable()
 export class PostsService {
 	constructor(
 		private readonly postsRepository: PostsRepository,
 		private readonly likesService: LikesService,
+		private readonly findUserById: FindUserByIdUseCase,
 		@Inject(forwardRef(() => BlogsService)) private readonly blogsService: BlogsService,
 		@Inject(forwardRef(() => CommentsService)) private readonly commentsService: CommentsService,
 	) {}
 
-	async create(dto: CreatePostsDto, blogId?: string) {
-		const foundedBlog = await this.blogsService.findBlogById(dto.blogId ? dto.blogId : blogId);
-		if (!foundedBlog) {
-			throw new BadRequestException([{
-				message: 'blogId',
-				field: 'blogId'
-			}]);
-		} else {
-			const newPost: Posts = {
-				id: uuidv4(),
-				title: dto.title,
-				shortDescription: dto.shortDescription,
-				content: dto.content,
-				blogId: blogId ? blogId : foundedBlog.id,
-				blogName: foundedBlog.name,
-				createdAt: new Date(),
-				extendedLikesInfo: {
-					likesCount: 0,
-					dislikesCount: 0,
-					myStatus: 'None',
-					newestLikes: [],
-				},
-			};
-			await this.postsRepository.create(newPost);
-			return {
-				id: newPost.id,
-				title: dto.title,
-				shortDescription: dto.shortDescription,
-				content: dto.content,
-				blogId: newPost.blogId,
-				blogName: newPost.blogName,
-				createdAt: newPost.createdAt,
-				extendedLikesInfo: {
-					likesCount: 0,
-					dislikesCount: 0,
-					myStatus: 'None',
-					newestLikes: [],
-				},
-			};
-		}
+	async create(dto: CreatePostsDto, foundedBlog?: Blogs) {
+		const newPost: Posts = {
+			id: uuidv4(),
+			title: dto.title,
+			shortDescription: dto.shortDescription,
+			content: dto.content,
+			blogId: foundedBlog.id,
+			blogName: foundedBlog.name,
+			userId: foundedBlog.bloggerInfo.id,
+			createdAt: new Date(),
+			extendedLikesInfo: {
+				likesCount: 0,
+				dislikesCount: 0,
+				myStatus: 'None',
+				newestLikes: [],
+			},
+		};
+		await this.postsRepository.create(newPost);
+		return {
+			id: newPost.id,
+			title: dto.title,
+			shortDescription: dto.shortDescription,
+			content: dto.content,
+			blogId: newPost.blogId,
+			blogName: newPost.blogName,
+			createdAt: newPost.createdAt,
+			extendedLikesInfo: {
+				likesCount: 0,
+				dislikesCount: 0,
+				myStatus: 'None',
+				newestLikes: [],
+			},
+		};
+		// const foundedBlog = await this.blogsService.findBlogById(dto.blogId ? dto.blogId : blogId);
+		// if (!foundedBlog) {
+		// 	throw new BadRequestException([{
+		// 		message: 'blogId',
+		// 		field: 'blogId'
+		// 	}]);
+		// } else {
+		// 	const newPost: Posts = {
+		// 		id: uuidv4(),
+		// 		title: dto.title,
+		// 		shortDescription: dto.shortDescription,
+		// 		content: dto.content,
+		// 		blogId: blogId ? blogId : foundedBlog.id,
+		// 		blogName: foundedBlog.name,
+		// 		userId: foundedBlog.bloggerInfo.id,
+		// 		createdAt: new Date(),
+		// 		extendedLikesInfo: {
+		// 			likesCount: 0,
+		// 			dislikesCount: 0,
+		// 			myStatus: 'None',
+		// 			newestLikes: [],
+		// 		},
+		// 	};
+		// 	await this.postsRepository.create(newPost);
+		// 	return {
+		// 		id: newPost.id,
+		// 		title: dto.title,
+		// 		shortDescription: dto.shortDescription,
+		// 		content: dto.content,
+		// 		blogId: newPost.blogId,
+		// 		blogName: newPost.blogName,
+		// 		createdAt: newPost.createdAt,
+		// 		extendedLikesInfo: {
+		// 			likesCount: 0,
+		// 			dislikesCount: 0,
+		// 			myStatus: 'None',
+		// 			newestLikes: [],
+		// 		},
+		// 	};
+		// }
 	}
 
 	async getAllPosts(
@@ -135,12 +171,16 @@ export class PostsService {
 		};
 	}
 
-	async findPostById(id: string, userId?: string | undefined) {
+	async findPostById(id: string) {
 		const foundedPost = await this.postsRepository.findPostById(id);
 		if (!foundedPost) {
 			throw new NotFoundException();
 		}
-		return await this.likesService.getLikesInfoForPost(foundedPost, userId);
+		const currentUser = await this.findUserById.execute(foundedPost.userId)
+		if (!currentUser || currentUser.banInfo.isBanned) {
+			throw new NotFoundException();
+		}
+		return await this.likesService.getLikesInfoForPost(foundedPost, foundedPost.userId);
 	}
 
 	async deletePostById(id: string) {

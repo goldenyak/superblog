@@ -45,6 +45,9 @@ export class Posts {
 	blogName: string;
 
 	@Prop()
+	userId: string;
+
+	@Prop()
 	createdAt: Date;
 
 	@Prop({ type: PostLikesInfoAdvantage })

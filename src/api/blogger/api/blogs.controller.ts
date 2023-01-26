@@ -68,7 +68,7 @@ export class BlogsController {
 		if (foundedBlog.bloggerInfo.id !== req.user.id) {
 			throw new ForbiddenException();
 		}
-		return await this.createPost.execute(dto, foundedBlog.id);
+		return await this.createPost.execute(dto, foundedBlog);
 	}
 
 	@UseGuards(JwtAuthGuard)

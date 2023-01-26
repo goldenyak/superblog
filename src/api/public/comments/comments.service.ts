@@ -83,7 +83,7 @@ export class CommentsService {
 		};
 	}
 
-	async findCommentById(commentId: string, userId?: string | undefined) {
+	async findCommentById(commentId: string) {
 		const foundedComment = await this.commentsRepository.findCommentById(commentId);
 		if (!foundedComment) {
 			throw new NotFoundException();
@@ -105,7 +105,7 @@ export class CommentsService {
 
 	async addLikeCommentById(commentId: string, userId: string, likeStatus: string) {
 		await this.likesService.createLike(commentId, userId, likeStatus);
-		const foundedComment = await this.findCommentById(commentId, userId);
+		const foundedComment = await this.findCommentById(commentId);
 		const updatedComment = await this.likesService.getLikesInfoForComment(foundedComment, userId);
 		return await this.commentsRepository.updateLikesInfoByComment(commentId, updatedComment);
 	}
