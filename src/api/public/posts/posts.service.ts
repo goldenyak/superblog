@@ -59,8 +59,6 @@ export class PostsService {
 		}
 	}
 
-
-
 	async getAllPosts(
 		{ pageNumber, pageSize, sortBy, sortDirection }: PostsQueryParams,
 		userId: string,
@@ -78,11 +76,6 @@ export class PostsService {
 				return await this.likesService.getLikesInfoForPost(post, userId);
 			}),
 		);
-		// const result = [];
-		// for (const post of allPosts) {
-		// 	const mappedComment = await this.likesService.getLikesInfoForPost(post, userId);
-		// 	result.push(mappedComment);
-		// }
 
 		return {
 			pagesCount: Math.ceil(countedAllPosts / pageSize),
@@ -164,9 +157,5 @@ export class PostsService {
 
 	async addLikePostById(postId: string, userId: string, likeStatus: string) {
 		return this.likesService.createLike(postId, userId, likeStatus);
-		// await this.likesService.createLike(postId, userId, likeStatus);
-		// const foundedPost = await this.findPostById(postId, userId);
-		// const updatedPost = await this.likesService.getLikesInfoForPost(foundedPost, userId);
-		// return await this.postsRepository.updateLikesInfoByPost(postId, updatedPost);
 	}
 }

@@ -47,7 +47,7 @@ export class BlogsService {
 		return await this.postsService.updatePostById(postId, title, shortDescription, content);
 	}
 
-	async deletePostForSpecifiedBlog(postId: string, blogId: string) {
+	async deletePostForSpecifiedBlog(postId: string) {
 		return this.postsService.deletePostById(postId);
 	}
 

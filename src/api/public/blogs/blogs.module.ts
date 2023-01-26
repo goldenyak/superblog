@@ -1,6 +1,6 @@
-import { forwardRef, Module } from "@nestjs/common";
+import { forwardRef, Module } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import {PublicBlogsController } from "./api/blogs.controller";
+import { PublicBlogsController } from './api/blogs.controller';
 import { UsersModule } from '../users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -8,17 +8,25 @@ import { JwtModule } from '@nestjs/jwt';
 import { getJwtConfig } from '../../../configs/jwt.config';
 import { Blogs, BlogsSchema } from './schemas/blogs.schema';
 import { BlogsRepository } from './blogs.repository';
-import { PostsModule } from "../posts/posts.module";
-import { AuthModule } from "../auth/auth.module";
-import { BlogIdValidation } from "../../../validation/blog-id.validation";
-import { CreateBlogUseCase } from "./use-cases/create-blog.use-case";
-import { GetAllBlogsUseCase } from "./use-cases/get-all-blogs.use-case";
-import { CreatePostByBlogIdUseCase } from "./use-cases/create-post-by-blog-id.use-case";
-import { GetAllPostByBlogIdUseCase } from "./use-cases/get-all-posts.use-case";
-import { BlogsController } from "../../blogger/api/blogs.controller";
-import { GetAllBlogsForCurrentUserUseCase } from "../../blogger/use-cases/get-all-blogs-for-current-user.use-case";
+import { PostsModule } from '../posts/posts.module';
+import { AuthModule } from '../auth/auth.module';
+import { BlogIdValidation } from '../../../validation/blog-id.validation';
+import { CreateBlogUseCase } from './use-cases/create-blog.use-case';
+import { GetAllBlogsUseCase } from './use-cases/get-all-blogs.use-case';
+import { CreatePostByBlogIdUseCase } from './use-cases/create-post-by-blog-id.use-case';
+import { GetAllPostByBlogIdUseCase } from './use-cases/get-all-posts.use-case';
+import { BlogsController } from '../../blogger/api/blogs.controller';
+import { GetAllBlogsForCurrentUserUseCase } from '../../blogger/use-cases/get-all-blogs-for-current-user.use-case';
+import { FindPostByIdUseCase } from './use-cases/find-post-by-id.use-case';
 
-const useCases = [CreateBlogUseCase, GetAllBlogsUseCase, GetAllBlogsForCurrentUserUseCase, CreatePostByBlogIdUseCase, GetAllPostByBlogIdUseCase]
+const useCases = [
+	CreateBlogUseCase,
+	GetAllBlogsUseCase,
+	GetAllBlogsForCurrentUserUseCase,
+	CreatePostByBlogIdUseCase,
+	GetAllPostByBlogIdUseCase,
+	FindPostByIdUseCase,
+];
 
 @Module({
 	imports: [

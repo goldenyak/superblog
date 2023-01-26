@@ -26,6 +26,7 @@ import { UpdateBlogDto } from '../../public/blogs/dto/update-blog.dto';
 import { BlogsQueryParams } from '../../public/blogs/dto/blogs-query.dto';
 import { GetAllBlogsForCurrentUserUseCase } from '../use-cases/get-all-blogs-for-current-user.use-case';
 import { UpdatePostDto } from '../../public/posts/dto/update-post.dto';
+import { FindPostByIdUseCase } from '../../public/blogs/use-cases/find-post-by-id.use-case';
 
 @Controller('blogger/blogs')
 export class BlogsController {
@@ -36,6 +37,7 @@ export class BlogsController {
 		private readonly getAllBlogsByUser: GetAllBlogsForCurrentUserUseCase,
 		private readonly getAllPosts: GetAllPostByBlogIdUseCase,
 		private readonly createPost: CreatePostByBlogIdUseCase,
+		private readonly findPostById: FindPostByIdUseCase,
 	) {}
 
 	@UseGuards(JwtAuthGuard)
@@ -85,6 +87,25 @@ export class BlogsController {
 
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(204)
+	@Put(':blogId/posts/:postId')
+	async updatePostForSpecifiedBlog(
+		@Body() dto: UpdatePostDto,
+		@Param('blogId') blogId: string,
+		@Param('postId') postId: string,
+		@Req() req: Request,
+	) {
+		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(blogId);
+		if (!foundedBlog) {
+			throw new NotFoundException();
+		}
+		if (foundedBlog.bloggerInfo.id !== req.user.id) {
+			throw new ForbiddenException();
+		}
+		return await this.blogsService.updatePostForSpecifiedBlog(postId, dto);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@HttpCode(204)
 	@Delete(':blogId/posts/:postId')
 	async deletePostForSpecifiedBlog(
 		@Param('blogId') blogId: string,
@@ -98,11 +119,11 @@ export class BlogsController {
 		if (foundedBlog.bloggerInfo.id !== req.user.id) {
 			throw new ForbiddenException();
 		}
-		const deletedPost = await this.blogsService.deletePostForSpecifiedBlog(postId, blogId);
-		if (!deletedPost) {
-			throw new NotFoundException();
+		const foundedPost = await this.findPostById.execute(postId);
+		if (foundedPost.blogId !== blogId) {
+			throw new ForbiddenException();
 		}
-		return;
+		return await this.blogsService.deletePostForSpecifiedBlog(postId);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -118,24 +139,5 @@ export class BlogsController {
 		}
 		await this.blogsService.updateBlogById(id, dto.name, dto.description, dto.websiteUrl);
 		return;
-	}
-
-	@UseGuards(JwtAuthGuard)
-	@HttpCode(204)
-	@Put(':id')
-	async updatePostForSpecifiedBlog(
-		@Body() dto: UpdatePostDto,
-		@Param('blogId') blogId: string,
-		@Param('postId') postId: string,
-		@Req() req: Request,
-	) {
-		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(blogId);
-		if (!foundedBlog) {
-			throw new NotFoundException();
-		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
-			throw new ForbiddenException();
-		}
-		return await this.blogsService.updatePostForSpecifiedBlog(postId, dto);
 	}
 }
