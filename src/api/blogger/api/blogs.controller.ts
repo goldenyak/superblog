@@ -73,6 +73,21 @@ export class BlogsController {
 
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(204)
+	@Put(':id')
+	async updateBlogById(@Body() dto: UpdateBlogDto, @Param('id') id: string, @Req() req: Request) {
+		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(id);
+		if (!foundedBlog) {
+			throw new NotFoundException();
+		}
+		if (foundedBlog.bloggerInfo.id !== req.user.id) {
+			throw new ForbiddenException();
+		}
+		await this.blogsService.updateBlogById(id, dto.name, dto.description, dto.websiteUrl);
+		return;
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@HttpCode(204)
 	@Delete(':id')
 	async deleteBlogById(@Param('id') id: string, @Req() req: Request) {
 		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(id);
@@ -101,6 +116,13 @@ export class BlogsController {
 		if (foundedBlog.bloggerInfo.id !== req.user.id) {
 			throw new ForbiddenException();
 		}
+		const foundedPost = await this.findPostById.execute(postId);
+		if (!foundedPost) {
+			throw new NotFoundException();
+		}
+		if (foundedPost.blogId !== blogId) {
+			throw new ForbiddenException();
+		}
 		return await this.blogsService.updatePostForSpecifiedBlog(postId, dto);
 	}
 
@@ -120,24 +142,12 @@ export class BlogsController {
 			throw new ForbiddenException();
 		}
 		const foundedPost = await this.findPostById.execute(postId);
+		if (!foundedPost) {
+			throw new NotFoundException();
+		}
 		if (foundedPost.blogId !== blogId) {
 			throw new ForbiddenException();
 		}
 		return await this.blogsService.deletePostForSpecifiedBlog(postId);
-	}
-
-	@UseGuards(JwtAuthGuard)
-	@HttpCode(204)
-	@Put(':id')
-	async updateBlogById(@Body() dto: UpdateBlogDto, @Param('id') id: string, @Req() req: Request) {
-		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(id);
-		if (!foundedBlog) {
-			throw new NotFoundException();
-		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
-			throw new ForbiddenException();
-		}
-		await this.blogsService.updateBlogById(id, dto.name, dto.description, dto.websiteUrl);
-		return;
 	}
 }
