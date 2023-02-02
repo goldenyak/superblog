@@ -65,9 +65,9 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
-			throw new ForbiddenException();
-		}
+		// if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		// 	throw new ForbiddenException();
+		// }
 		return await this.createPost.execute(dto, foundedBlog);
 	}
 
