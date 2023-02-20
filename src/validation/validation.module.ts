@@ -1,12 +1,9 @@
-import { BlogsModule } from "../api/public/blogs/blogs.module";
-import { BlogIdValidation } from "./blog-id.validation";
-import { forwardRef, Module } from "@nestjs/common";
-import { PostsModule } from "../api/public/posts/posts.module";
+import { BlogsModule } from '../api/public/blogs/blogs.module';
+import { BlogIdValidation } from './blog-id.validation';
+import { Module } from '@nestjs/common';
 
 @Module({
-	imports: [
-		BlogsModule,
-	],
+	imports: [BlogsModule],
 	controllers: [],
 	providers: [BlogIdValidation],
 	exports: [BlogIdValidation],

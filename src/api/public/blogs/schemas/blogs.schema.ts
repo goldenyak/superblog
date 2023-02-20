@@ -28,6 +28,9 @@ export class Blogs {
 	@Prop()
 	createdAt: Date;
 
+	@Prop()
+	isMembership: boolean;
+
 	@Prop({ type: BloggerInfoAdvantage })
 	bloggerInfo: BloggerInfoAdvantage;
 }

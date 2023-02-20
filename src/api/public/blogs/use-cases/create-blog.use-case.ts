@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BlogsRepository } from '../blogs.repository';
 import { CreateBlogsDto } from '../dto/create-blogs.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { Blogs } from "../schemas/blogs.schema";
+import { Blogs } from '../schemas/blogs.schema';
 
 @Injectable()
 export class CreateBlogUseCase {
@@ -15,9 +15,10 @@ export class CreateBlogUseCase {
 			description: dto.description,
 			websiteUrl: dto.websiteUrl,
 			createdAt: new Date(),
+			isMembership: true,
 			bloggerInfo: {
 				id: userId,
-				login
+				login,
 			},
 		};
 		await this.blogsRepository.create(newBlog);
@@ -27,7 +28,7 @@ export class CreateBlogUseCase {
 			description: newBlog.description,
 			websiteUrl: newBlog.websiteUrl,
 			createdAt: newBlog.createdAt,
+			isMembership: newBlog.isMembership,
 		};
-
 	}
 }
