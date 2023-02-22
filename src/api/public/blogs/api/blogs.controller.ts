@@ -34,17 +34,17 @@ export class PublicBlogsController {
 		private readonly blogsService: BlogsService,
 		private readonly blogsRepository: BlogsRepository,
 		private readonly createBlogUseCase: CreateBlogUseCase,
-		private readonly getAllBlogs: GetAllBlogsUseCase,
+		// private readonly getAllBlogs: GetAllBlogsUseCase,
 		private readonly getAllPosts: GetAllPostByBlogIdUseCase,
 		private readonly createPost: CreatePostByBlogIdUseCase,
 		private readonly authService: AuthService,
 	) {}
 
-	@HttpCode(200)
-	@Get()
-	async getBlogs(@Query() queryParams: BlogsQueryParams) {
-		return await this.getAllBlogs.execute(queryParams);
-	}
+	// @HttpCode(200)
+	// @Get()
+	// async getBlogs(@Query() queryParams: BlogsQueryParams) {
+	// 	return await this.getAllBlogs.execute(queryParams);
+	// }
 
 	@HttpCode(200)
 	@Get(':blogId/posts')

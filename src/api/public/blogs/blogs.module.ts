@@ -18,10 +18,11 @@ import { GetAllPostByBlogIdUseCase } from './use-cases/get-all-posts.use-case';
 import { BlogsController } from '../../blogger/api/blogs.controller';
 import { GetAllBlogsForCurrentUserUseCase } from '../../blogger/use-cases/get-all-blogs-for-current-user.use-case';
 import { FindPostByIdUseCase } from './use-cases/find-post-by-id.use-case';
+import { CqrsModule } from "@nestjs/cqrs";
 
 const useCases = [
 	CreateBlogUseCase,
-	GetAllBlogsUseCase,
+	// GetAllBlogsUseCase,
 	GetAllBlogsForCurrentUserUseCase,
 	CreatePostByBlogIdUseCase,
 	GetAllPostByBlogIdUseCase,
@@ -30,6 +31,7 @@ const useCases = [
 
 @Module({
 	imports: [
+		CqrsModule,
 		forwardRef(() => PostsModule),
 		AuthModule,
 		UsersModule,

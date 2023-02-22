@@ -16,9 +16,9 @@ export class CreateBlogUseCase {
 			websiteUrl: dto.websiteUrl,
 			createdAt: new Date(),
 			isMembership: false,
-			bloggerInfo: {
-				id: userId,
-				login,
+			bloggerOwnerInfo: {
+				userId: userId,
+				userLogin: login
 			},
 		};
 		await this.blogsRepository.create(newBlog);

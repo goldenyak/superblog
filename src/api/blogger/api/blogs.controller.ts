@@ -79,7 +79,7 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		if (foundedBlog.bloggerOwnerInfo.userId !== req.user.id) {
 			throw new ForbiddenException();
 		}
 		await this.blogsService.updateBlogById(id, dto.name, dto.description, dto.websiteUrl);
@@ -94,7 +94,7 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		if (foundedBlog.bloggerOwnerInfo.userId !== req.user.id) {
 			throw new ForbiddenException();
 		}
 		return await this.blogsService.deleteBlogById(id);
@@ -113,7 +113,7 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		if (foundedBlog.bloggerOwnerInfo.userId !== req.user.id) {
 			throw new ForbiddenException();
 		}
 		const foundedPost = await this.findPostById.execute(postId);
@@ -138,7 +138,7 @@ export class BlogsController {
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
-		if (foundedBlog.bloggerInfo.id !== req.user.id) {
+		if (foundedBlog.bloggerOwnerInfo.userId !== req.user.id) {
 			throw new ForbiddenException();
 		}
 		const foundedPost = await this.findPostById.execute(postId);

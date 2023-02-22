@@ -30,13 +30,18 @@ export class BlogsRepository {
 			.sort({ [sortByFilter]: sortDirectionFilter })
 			.lean();
 
-		return blogs.map((blogs) => {
+		return blogs.map((blog) => {
 			return {
-				id: blogs.id,
-				name: blogs.name,
-				description: blogs.description,
-				websiteUrl: blogs.websiteUrl,
-				createdAt: blogs.createdAt,
+				id: blog.id,
+				name: blog.name,
+				description: blog.description,
+				websiteUrl: blog.websiteUrl,
+				createdAt: blog.createdAt,
+				isMembership: blog.isMembership,
+				blogOwnerInfo: {
+					userId: blog.bloggerOwnerInfo.userId,
+					userLogin: blog.bloggerOwnerInfo.userLogin
+				}
 			};
 		});
 	}

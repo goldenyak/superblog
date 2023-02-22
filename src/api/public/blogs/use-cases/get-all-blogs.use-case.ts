@@ -1,24 +1,31 @@
-import { Injectable } from '@nestjs/common';
 import { BlogsRepository } from '../blogs.repository';
 import { BlogsQueryParams } from '../dto/blogs-query.dto';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class GetAllBlogsUseCase {
-	constructor(private readonly blogsRepository: BlogsRepository) {}
+export class GetAllBlogsCommand{
+	constructor(public queryParams: BlogsQueryParams) {
+	}
+}
 
-	async execute({ searchNameTerm, pageNumber, pageSize, sortBy, sortDirection }: BlogsQueryParams) {
-		const countBlogs = await this.blogsRepository.countBlogs(searchNameTerm);
+@CommandHandler(GetAllBlogsCommand)
+export class GetAllBlogsUseCase implements ICommandHandler<GetAllBlogsCommand>{
+	constructor(private readonly blogsRepository: BlogsRepository) {
+	}
+
+	async execute(command: GetAllBlogsCommand) {
+		const { queryParams }  = command
+		const countBlogs = await this.blogsRepository.countBlogs(queryParams.searchNameTerm);
 		const allBlogs = await this.blogsRepository.getAllBlogs(
-			searchNameTerm,
-			pageNumber,
-			pageSize,
-			sortBy,
-			sortDirection,
+			queryParams.searchNameTerm,
+			queryParams.pageNumber,
+			queryParams.pageSize,
+			queryParams.sortBy,
+			queryParams.sortDirection,
 		);
 		return {
-			pagesCount: Math.ceil(countBlogs / pageSize),
-			page: pageNumber,
-			pageSize: pageSize,
+			pagesCount: Math.ceil(countBlogs / queryParams.pageSize),
+			page: queryParams.pageNumber,
+			pageSize: queryParams.pageSize,
 			totalCount: countBlogs,
 			items: allBlogs,
 		};

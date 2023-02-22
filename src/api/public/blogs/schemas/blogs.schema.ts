@@ -5,10 +5,10 @@ export type BlogsDocument = Blogs & Document;
 
 class BloggerInfoAdvantage {
 	@Prop()
-	id: string;
+	userId: string;
 
 	@Prop()
-	login: string
+	userLogin: string
 }
 
 @Schema({ versionKey: false })
@@ -32,7 +32,7 @@ export class Blogs {
 	isMembership: boolean;
 
 	@Prop({ type: BloggerInfoAdvantage })
-	bloggerInfo: BloggerInfoAdvantage;
+	bloggerOwnerInfo: BloggerInfoAdvantage;
 }
 
 export const BlogsSchema = SchemaFactory.createForClass(Blogs);

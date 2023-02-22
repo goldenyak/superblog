@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BlogsRepository } from './blogs.repository';
 import { CreateBlogsDto } from './dto/create-blogs.dto';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,7 +6,7 @@ import { CreatePostsDto } from '../posts/dto/create-post.dto';
 import { PostsService } from '../posts/posts.service';
 import { Blogs } from './schemas/blogs.schema';
 import { BlogsQueryParams } from './dto/blogs-query.dto';
-import { UpdatePostDto } from "../posts/dto/update-post.dto";
+import { UpdatePostDto } from '../posts/dto/update-post.dto';
 
 @Injectable()
 export class BlogsService {
@@ -24,16 +24,15 @@ export class BlogsService {
 				description: foundedBlog.description,
 				websiteUrl: foundedBlog.websiteUrl,
 				createdAt: foundedBlog.createdAt,
-				isMembership: foundedBlog.isMembership
-			}
+				isMembership: foundedBlog.isMembership,
+			};
 		} catch (e) {
-			throw new NotFoundException()
+			throw new NotFoundException();
 		}
 	}
 
-
 	async findBlogByIdWithBloggerInfo(id: string) {
-		return  await this.blogsRepository.findBlogById(id);
+		return await this.blogsRepository.findBlogById(id);
 	}
 
 	async deleteBlogById(id: string) {
@@ -44,7 +43,10 @@ export class BlogsService {
 		return await this.blogsRepository.updateBlogById(id, name, description, websiteUrl);
 	}
 
-	async updatePostForSpecifiedBlog(postId: string, {title, shortDescription, content}: UpdatePostDto) {
+	async updatePostForSpecifiedBlog(
+		postId: string,
+		{ title, shortDescription, content }: UpdatePostDto,
+	) {
 		return await this.postsService.updatePostById(postId, title, shortDescription, content);
 	}
 
@@ -55,5 +57,4 @@ export class BlogsService {
 	async deleteAll() {
 		return await this.blogsRepository.deleteAll();
 	}
-
 }

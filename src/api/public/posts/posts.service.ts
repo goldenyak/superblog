@@ -28,7 +28,7 @@ export class PostsService {
 			content: dto.content,
 			blogId: foundedBlog.id,
 			blogName: foundedBlog.name,
-			userId: foundedBlog.bloggerInfo.id,
+			userId: foundedBlog.bloggerOwnerInfo.userId,
 			createdAt: new Date(),
 			extendedLikesInfo: {
 				likesCount: 0,
