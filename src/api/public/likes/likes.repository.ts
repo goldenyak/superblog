@@ -28,7 +28,7 @@ export class LikesRepository {
 
 	async findNewestLikesByPostId(id: string) {
 		return this.likesModel
-			.find({parentId: id, status: 'Like'})
+			.find({parentId: id, status: 'Like', userBanStatus: false})
 			.sort({createdAt: -1})
 			.limit(3)
 	}

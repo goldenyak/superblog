@@ -77,37 +77,56 @@ export class LikesService {
 	}
 
 	async getLikesInfoForPost(post: any, userId: string) {
-		const likes = await this.getLikesCountByParentId(post.id);
-		const dislikes = await this.getDislikesCountByParentId(post.id);
-		const newestLikes = await this.getNewestLikesByPostId(post.id);
-		const currentUserStatus = await this.getLikeStatusByUserId(post.id, userId);
-		let myStatus;
-		if (!userId || !currentUserStatus) {
-			myStatus = 'None';
-		} else {
-			myStatus = currentUserStatus.status;
-		}
+		const [likes, dislikes, newestLikes, currentUserStatus] = await Promise.all([
+			this.getLikesCountByParentId(post.id),
+			this.getDislikesCountByParentId(post.id),
+			this.getNewestLikesByPostId(post.id),
+			this.getLikeStatusByUserId(post.id, userId),
+		]);
+
+		const myStatus = userId && currentUserStatus ? currentUserStatus.status : 'None';
+
 		post.extendedLikesInfo.likesCount = likes;
 		post.extendedLikesInfo.dislikesCount = dislikes;
 		post.extendedLikesInfo.myStatus = myStatus;
 		post.extendedLikesInfo.newestLikes = newestLikes;
-		// return post;
-		return {
-			id: post.id,
-			title: post.title,
-			shortDescription: post.shortDescription,
-			content: post.content,
-			blogId: post.blogId,
-			blogName: post.blogName,
-			createdAt: post.createdAt,
-			extendedLikesInfo: {
-				likesCount: likes,
-				dislikesCount: dislikes,
-				myStatus: myStatus,
-				newestLikes: newestLikes,
-			},
-		}
+
+		return post;
 	}
+
+
+	// async getLikesInfoForPost(post: any, userId: string) {
+	// 	const likes = await this.getLikesCountByParentId(post.id);
+	// 	const dislikes = await this.getDislikesCountByParentId(post.id);
+	// 	const newestLikes = await this.getNewestLikesByPostId(post.id);
+	// 	const currentUserStatus = await this.getLikeStatusByUserId(post.id, userId);
+	// 	let myStatus;
+	// 	if (!userId || !currentUserStatus) {
+	// 		myStatus = 'None';
+	// 	} else {
+	// 		myStatus = currentUserStatus.status;
+	// 	}
+	// 	post.extendedLikesInfo.likesCount = likes;
+	// 	post.extendedLikesInfo.dislikesCount = dislikes;
+	// 	post.extendedLikesInfo.myStatus = myStatus;
+	// 	post.extendedLikesInfo.newestLikes = newestLikes;
+	// 	return post;
+	// 	// return {
+	// 	// 	id: post.id,
+	// 	// 	title: post.title,
+	// 	// 	shortDescription: post.shortDescription,
+	// 	// 	content: post.content,
+	// 	// 	blogId: post.blogId,
+	// 	// 	blogName: post.blogName,
+	// 	// 	createdAt: post.createdAt,
+	// 	// 	extendedLikesInfo: {
+	// 	// 		likesCount: likes,
+	// 	// 		dislikesCount: dislikes,
+	// 	// 		myStatus: myStatus,
+	// 	// 		newestLikes: newestLikes,
+	// 	// 	},
+	// 	// }
+	// }
 
 	async getNewestLikesByPostId(postId: string) {
 		const newestLikes = await this.likesRepository.findNewestLikesByPostId(postId);

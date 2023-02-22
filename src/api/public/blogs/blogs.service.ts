@@ -23,13 +23,14 @@ export class BlogsService {
 				name: foundedBlog.name,
 				description: foundedBlog.description,
 				websiteUrl: foundedBlog.websiteUrl,
-				createdAt: foundedBlog.createdAt
+				createdAt: foundedBlog.createdAt,
+				isMembership: foundedBlog.isMembership
 			}
 		} catch (e) {
 			throw new NotFoundException()
 		}
-
 	}
+
 
 	async findBlogByIdWithBloggerInfo(id: string) {
 		return  await this.blogsRepository.findBlogById(id);
