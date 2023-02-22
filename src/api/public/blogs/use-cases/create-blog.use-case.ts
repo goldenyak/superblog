@@ -15,7 +15,7 @@ export class CreateBlogUseCase {
 			description: dto.description,
 			websiteUrl: dto.websiteUrl,
 			createdAt: new Date(),
-			isMembership: true,
+			isMembership: false,
 			bloggerInfo: {
 				id: userId,
 				login,
