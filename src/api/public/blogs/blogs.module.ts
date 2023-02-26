@@ -12,7 +12,6 @@ import { PostsModule } from '../posts/posts.module';
 import { AuthModule } from '../auth/auth.module';
 import { BlogIdValidation } from '../../../validation/blog-id.validation';
 import { CreateBlogUseCase } from './use-cases/create-blog.use-case';
-import { GetAllBlogsUseCase } from './use-cases/get-all-blogs.use-case';
 import { CreatePostByBlogIdUseCase } from './use-cases/create-post-by-blog-id.use-case';
 import { GetAllPostByBlogIdUseCase } from './use-cases/get-all-posts.use-case';
 import { BlogsController } from '../../blogger/api/blogs.controller';
@@ -22,7 +21,6 @@ import { CqrsModule } from "@nestjs/cqrs";
 
 const useCases = [
 	CreateBlogUseCase,
-	// GetAllBlogsUseCase,
 	GetAllBlogsForCurrentUserUseCase,
 	CreatePostByBlogIdUseCase,
 	GetAllPostByBlogIdUseCase,

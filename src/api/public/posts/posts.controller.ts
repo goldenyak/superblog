@@ -23,9 +23,10 @@ import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
-import { AuthService } from '../auth/auth.service';
 import { LikePostDto } from './dto/like-post.dto';
 import { PostsQueryParams } from './dto/posts-query.dto';
+import { CheckRefreshTokenCommand } from "../auth/use-cases/check-refresh-token.use-case";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Controller('posts')
 export class PostsController {
@@ -33,7 +34,7 @@ export class PostsController {
 		private readonly postsService: PostsService,
 		private readonly commentsService: CommentsService,
 		private readonly usersService: UsersService,
-		private readonly authService: AuthService,
+		private readonly commandBus: CommandBus
 	) {}
 
 	@UseGuards(BasicAuthGuard)
@@ -52,7 +53,7 @@ export class PostsController {
 		let currentUserId;
 		if (req.headers.authorization) {
 			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
+			const result = await this.commandBus.execute(new CheckRefreshTokenCommand(token))
 			if (result) {
 				currentUserId = result.id;
 			}
@@ -112,7 +113,7 @@ export class PostsController {
 		let currentUserId;
 		if (req.headers.authorization) {
 			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.authService.checkRefreshToken(token);
+			const result = await this.commandBus.execute(new CheckRefreshTokenCommand(token));
 			if (result) {
 				currentUserId = result.id;
 			}

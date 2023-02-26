@@ -28,8 +28,6 @@ import { LikesService } from '../../../public/likes/likes.service';
 import { GetAllBlogsCommand } from "../../../public/blogs/use-cases/get-all-blogs.use-case";
 import { BlogsQueryParams } from '../../../public/blogs/dto/blogs-query.dto';
 import { CommandBus } from "@nestjs/cqrs";
-import { BlogsService } from "../../../public/blogs/blogs.service";
-import { GetBlogByIdCommand } from "../../../public/blogs/use-cases/get-blog-by-id.use-case";
 
 @Controller('sa')
 export class SuperAdminController {

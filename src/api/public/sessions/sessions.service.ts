@@ -12,7 +12,7 @@ export class SessionsService {
 		private readonly sessionsRepository: SessionsRepository,
 		private readonly JwtService: JwtService,
 		private readonly configService: ConfigService,
-		private readonly usersService: UsersService,
+		//private readonly usersService: UsersService,
 	) {}
 
 	async createNewSession(

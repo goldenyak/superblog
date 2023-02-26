@@ -12,7 +12,6 @@ import { LikesModule } from '../likes/likes.module';
 import { GetAllBlogsUseCase } from '../blogs/use-cases/get-all-blogs.use-case';
 import { FindUserByIdUseCase } from './use-cases/find-user-by-id.use-case';
 import { CqrsModule } from "@nestjs/cqrs";
-import { BlogsModule } from "../blogs/blogs.module";
 
 const useCases = [FindUserByIdUseCase, GetAllBlogsUseCase];
 

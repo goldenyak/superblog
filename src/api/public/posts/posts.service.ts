@@ -53,46 +53,6 @@ export class PostsService {
 				newestLikes: [],
 			},
 		};
-		// const foundedBlog = await this.blogsService.findBlogById(dto.blogId ? dto.blogId : blogId);
-		// if (!foundedBlog) {
-		// 	throw new BadRequestException([{
-		// 		message: 'blogId',
-		// 		field: 'blogId'
-		// 	}]);
-		// } else {
-		// 	const newPost: Posts = {
-		// 		id: uuidv4(),
-		// 		title: dto.title,
-		// 		shortDescription: dto.shortDescription,
-		// 		content: dto.content,
-		// 		blogId: blogId ? blogId : foundedBlog.id,
-		// 		blogName: foundedBlog.name,
-		// 		userId: foundedBlog.bloggerInfo.id,
-		// 		createdAt: new Date(),
-		// 		extendedLikesInfo: {
-		// 			likesCount: 0,
-		// 			dislikesCount: 0,
-		// 			myStatus: 'None',
-		// 			newestLikes: [],
-		// 		},
-		// 	};
-		// 	await this.postsRepository.create(newPost);
-		// 	return {
-		// 		id: newPost.id,
-		// 		title: dto.title,
-		// 		shortDescription: dto.shortDescription,
-		// 		content: dto.content,
-		// 		blogId: newPost.blogId,
-		// 		blogName: newPost.blogName,
-		// 		createdAt: newPost.createdAt,
-		// 		extendedLikesInfo: {
-		// 			likesCount: 0,
-		// 			dislikesCount: 0,
-		// 			myStatus: 'None',
-		// 			newestLikes: [],
-		// 		},
-		// 	};
-		// }
 	}
 
 	async getAllPosts(
