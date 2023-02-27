@@ -1,6 +1,6 @@
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { FindUserByLoginCommand } from "../../users/use-cases/find-user-by-login.use-case";
 import { SendEmailCommand } from "../../../../email/use-cases/send-email.use-case";
+import { FindUserByEmailCommand } from "../../users/use-cases/find-user-by-email.use-case";
 
 export class SendConfirmEmailCommand {
 	constructor(public email: string) {}
@@ -14,7 +14,9 @@ export class SendConfirmEmailUseCase implements ICommandHandler<SendConfirmEmail
 
 	async execute(command: SendConfirmEmailCommand) {
 		const { email } = command;
-		const user = await this.commandBus.execute(new FindUserByLoginCommand(email));
+		const user = await this.commandBus.execute(new FindUserByEmailCommand(email));
+		console.log(user);
+		console.log(user.confirmationCode);
 		return this.commandBus.execute(new SendEmailCommand(email, user.confirmationCode));
 	}
 }

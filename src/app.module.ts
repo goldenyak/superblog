@@ -60,6 +60,8 @@ import { UpdateSessionAfterRefreshUseCase } from './api/public/sessions/use-case
 import { CheckUserIdByTokenUseCase } from "./api/public/auth/use-cases/check-user-by-token.use-case";
 import { GetAllPostsByBlogIdUseCase } from "./api/public/posts/use-cases/get-all-posts.use-case";
 import { EmailModule } from "./email/email.module";
+import { FindUserByEmailUseCase } from "./api/public/users/use-cases/find-user-by-email.use-case";
+import { CreateUserUseCase } from "./api/public/users/use-cases/create-user.use-case";
 
 const controllers = [
 	AppController,
@@ -93,10 +95,12 @@ const repositories = [
 
 const usersUseCases = [
 	ValidateUserUseCase,
-	FindUserByIdUseCase,
 	FindUserByConfirmationCodeUseCase,
 	FindUserByRecoveryCodeUseCase,
 	FindUserByLoginUseCase,
+	FindUserByEmailUseCase,
+	FindUserByIdUseCase,
+	CreateUserUseCase,
 ];
 
 const authUseCases = [
