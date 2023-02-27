@@ -26,10 +26,13 @@ import { BlogsQueryParams } from '../../public/blogs/dto/blogs-query.dto';
 import { GetAllBlogsForCurrentUserUseCase } from '../use-cases/get-all-blogs-for-current-user.use-case';
 import { UpdatePostDto } from '../../public/posts/dto/update-post.dto';
 import { FindPostByIdUseCase } from '../../public/blogs/use-cases/find-post-by-id.use-case';
+import { CommandBus } from "@nestjs/cqrs";
+import { GetBlogByIdWithOwnerInfoCommand } from "../../public/blogs/use-cases/get-blog-by-id-with-owner-info.use-case";
 
 @Controller('blogger/blogs')
 export class BlogsController {
 	constructor(
+		private readonly commandBus: CommandBus,
 		private readonly blogsService: BlogsService,
 		private readonly blogsRepository: BlogsRepository,
 		private readonly createBlogUseCase: CreateBlogUseCase,
@@ -87,7 +90,7 @@ export class BlogsController {
 	@HttpCode(204)
 	@Delete(':id')
 	async deleteBlogById(@Param('id') id: string, @Req() req: Request) {
-		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(id);
+		const foundedBlog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(id));
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}

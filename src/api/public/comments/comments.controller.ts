@@ -89,7 +89,7 @@ export class CommentsController {
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
 		}
-		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(id))
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id))
 		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new ForbiddenException();
 		}

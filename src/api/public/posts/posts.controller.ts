@@ -30,6 +30,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { FindUserByIdCommand } from '../users/use-cases/find-user-by-id.use-case';
 import { log } from 'util';
 import { GetBlogByIdCommand } from '../blogs/use-cases/get-blog-by-id.use-case';
+import { GetBlogByIdWithOwnerInfoCommand } from "../blogs/use-cases/get-blog-by-id-with-owner-info.use-case";
 
 @Controller('posts')
 export class PostsController {
@@ -43,7 +44,7 @@ export class PostsController {
 	@UseGuards(BasicAuthGuard)
 	@Post()
 	async create(@Body() dto: CreatePostsDto) {
-		const foundedBlog = await this.commandBus.execute(new GetBlogByIdCommand(dto.blogId));
+		const foundedBlog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(dto.blogId));
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
@@ -171,8 +172,10 @@ export class PostsController {
 	@Put(':id/like-status')
 	async addLikePostById(@Body() dto: LikePostDto, @Param('id') id: string, @Req() req: Request) {
 		const postById = await this.postsService.findPostById(id);
+		console.log('postById', postById);
 		if (!postById) {
-			throw new NotFoundException();
+			console.log('postById', postById);
+			// throw new NotFoundException();
 		}
 		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id));
 

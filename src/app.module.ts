@@ -70,6 +70,7 @@ import { SessionsController } from './api/public/sessions/sessions.controller';
 import { PublicBlogsController } from './api/public/blogs/api/blogs.controller';
 import { getJwtConfig } from "./configs/jwt.config";
 import { BlogIdValidation } from "./validation/blog-id.validation";
+import { GetBlogByIdWithOwnerInfoUseCase } from "./api/public/blogs/use-cases/get-blog-by-id-with-owner-info.use-case";
 
 const controllers = [
 	AppController,
@@ -141,6 +142,7 @@ const blogsUseCases = [
 	GetAllBlogsUseCase,
 	GetBlogByIdUseCase,
 	GetAllBlogsForCurrentUserUseCase,
+	GetBlogByIdWithOwnerInfoUseCase,
 ];
 
 const postsUseCases = [GetAllPostsByBlogIdUseCase, CreatePostByBlogIdUseCase, FindPostByIdUseCase];
