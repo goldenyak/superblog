@@ -2,16 +2,18 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { LikesRepository } from './likes.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from '../users/users.service';
+import { FindUserByIdCommand } from "../users/use-cases/find-user-by-id.use-case";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Injectable()
 export class LikesService {
 	constructor(
 		private readonly likesRepository: LikesRepository,
-		private readonly usersService: UsersService,
+		private readonly commandBus: CommandBus,
 	) {}
 
 	async createLike(parentId: string, userId: string, likeStatus: string) {
-		const user = await this.usersService.findUserById(userId);
+		const user = await this.commandBus.execute(new FindUserByIdCommand(userId));
 		if (user.banInfo.isBanned) {
 			throw new NotFoundException()
 		}

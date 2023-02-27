@@ -21,3 +21,5 @@ export const getMailConfig = async (configService: ConfigService) => {
 		},
 	};
 };
+
+

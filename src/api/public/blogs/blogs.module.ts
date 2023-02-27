@@ -13,7 +13,6 @@ import { AuthModule } from '../auth/auth.module';
 import { BlogIdValidation } from '../../../validation/blog-id.validation';
 import { CreateBlogUseCase } from './use-cases/create-blog.use-case';
 import { CreatePostByBlogIdUseCase } from './use-cases/create-post-by-blog-id.use-case';
-import { GetAllPostByBlogIdUseCase } from './use-cases/get-all-posts.use-case';
 import { BlogsController } from '../../blogger/api/blogs.controller';
 import { GetAllBlogsForCurrentUserUseCase } from '../../blogger/use-cases/get-all-blogs-for-current-user.use-case';
 import { FindPostByIdUseCase } from './use-cases/find-post-by-id.use-case';
@@ -23,7 +22,6 @@ const useCases = [
 	CreateBlogUseCase,
 	GetAllBlogsForCurrentUserUseCase,
 	CreatePostByBlogIdUseCase,
-	GetAllPostByBlogIdUseCase,
 	FindPostByIdUseCase,
 ];
 

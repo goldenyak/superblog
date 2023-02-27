@@ -1,41 +1,32 @@
 import {
-	Body,
 	Controller,
-	Delete,
 	Get,
 	Headers,
 	HttpCode,
 	NotFoundException,
 	Param,
-	Post,
-	Put,
 	Query,
 	Req,
-	UseGuards,
 } from '@nestjs/common';
-import { CreateBlogsDto } from '../dto/create-blogs.dto';
 import { BlogsService } from '../blogs.service';
-import { UpdateBlogDto } from '../dto/update-blog.dto';
-import { CreatePostsDto } from '../../posts/dto/create-post.dto';
-import { BasicAuthGuard } from '../../../../guards/basic-auth.guard';
 import { Request } from 'express';
 import { AuthService } from '../../auth/auth.service';
 import { BlogsQueryParams } from '../dto/blogs-query.dto';
 import { CreateBlogUseCase } from "../use-cases/create-blog.use-case";
-import { GetAllBlogsUseCase } from "../use-cases/get-all-blogs.use-case";
 import { CreatePostByBlogIdUseCase } from "../use-cases/create-post-by-blog-id.use-case";
 import { BlogsRepository } from "../blogs.repository";
-import { GetAllPostByBlogIdUseCase } from "../use-cases/get-all-posts.use-case";
-import { JwtAuthGuard } from "../../../../guards/jwt-auth.guard";
+import { CommandBus } from "@nestjs/cqrs";
+import { CheckUserIdByTokenCommand } from "../../auth/use-cases/check-user-by-token.use-case";
+import { GetAllPostsByBlogIdCommand } from "../../posts/use-cases/get-all-posts.use-case";
 
 @Controller('blogs')
 export class PublicBlogsController {
 	constructor(
+		private readonly commandBus: CommandBus,
 		private readonly blogsService: BlogsService,
 		private readonly blogsRepository: BlogsRepository,
 		private readonly createBlogUseCase: CreateBlogUseCase,
 		// private readonly getAllBlogs: GetAllBlogsUseCase,
-		private readonly getAllPosts: GetAllPostByBlogIdUseCase,
 		private readonly createPost: CreatePostByBlogIdUseCase,
 		private readonly authService: AuthService,
 	) {}
@@ -57,7 +48,7 @@ export class PublicBlogsController {
 		let currentUserId;
 		if (req.headers.authorization && req.headers.authorization !== 'Basic') {
 			const token = req.headers.authorization.split(' ')[1];
-			const userId = await this.authService.checkUserIdByToken(token);
+			const userId = await this.commandBus.execute(new CheckUserIdByTokenCommand(token));
 			if (userId) {
 				currentUserId = userId;
 			}
@@ -66,7 +57,7 @@ export class PublicBlogsController {
 		if (!blogById) {
 			throw new NotFoundException();
 		}
-		return await this.getAllPosts.execute(queryParams, blogId, currentUserId);
+		return await this.commandBus.execute(new GetAllPostsByBlogIdCommand(queryParams, blogId, currentUserId));
 	}
 
 	@Get(':id')

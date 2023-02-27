@@ -23,6 +23,8 @@ import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { LikeCommentDto } from './dto/like-comment.dto';
 import { AuthService } from '../auth/auth.service';
+import { FindUserByIdCommand } from "../users/use-cases/find-user-by-id.use-case";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Controller('comments')
 export class CommentsController {
@@ -30,6 +32,7 @@ export class CommentsController {
 		private readonly commentsService: CommentsService,
 		private readonly usersService: UsersService,
 		private readonly authService: AuthService,
+		private readonly commandBus: CommandBus,
 	) {}
 
 	@HttpCode(200)
@@ -86,7 +89,7 @@ export class CommentsController {
 		if (!commentById) {
 			throw new HttpException(NOT_FOUND_COMMENT_ERROR, HttpStatus.NOT_FOUND);
 		}
-		const currentUser = await this.usersService.findUserById(req.user.id);
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(id))
 		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new ForbiddenException();
 		}

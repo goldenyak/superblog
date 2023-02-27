@@ -7,12 +7,14 @@ import { CommentsService } from '../comments/comments.service';
 import { Posts } from './schemas/posts.schemas';
 import { LikesService } from '../likes/likes.service';
 import { PostsQueryParams } from './dto/posts-query.dto';
-import { FindUserByIdUseCase } from "../users/use-cases/find-user-by-id.use-case";
+import { FindUserByIdCommand, FindUserByIdUseCase } from "../users/use-cases/find-user-by-id.use-case";
 import { Blogs } from "../blogs/schemas/blogs.schema";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Injectable()
 export class PostsService {
 	constructor(
+		private readonly commandBus: CommandBus,
 		private readonly postsRepository: PostsRepository,
 		private readonly likesService: LikesService,
 		private readonly findUserById: FindUserByIdUseCase,
@@ -100,43 +102,43 @@ export class PostsService {
 		);
 	}
 
-	async getAllPostsByBlogId(
-		pageNumber: number,
-		pageSize: number,
-		sortBy: string,
-		sortDirection: string,
-		blogId: string,
-		userId: string,
-	) {
-		const countedPostsByBlogId = await this.postsRepository.countPostsByBlogId(blogId);
-		const allPostsByBlogId = await this.postsRepository.getAllPostsByBlogId(
-			pageNumber,
-			pageSize,
-			sortBy,
-			sortDirection,
-			blogId,
-		);
-		const result = [];
-		for await (let post of allPostsByBlogId) {
-			const mappedPost = await this.likesService.getLikesInfoForPost(post, userId);
-			result.push(mappedPost);
-		}
-
-		return {
-			pagesCount: Math.ceil(countedPostsByBlogId / pageSize),
-			page: pageNumber,
-			pageSize: pageSize,
-			totalCount: countedPostsByBlogId,
-			items: result,
-		};
-	}
+	// async getAllPostsByBlogId(
+	// 	pageNumber: number,
+	// 	pageSize: number,
+	// 	sortBy: string,
+	// 	sortDirection: string,
+	// 	blogId: string,
+	// 	userId: string,
+	// ) {
+	// 	const countedPostsByBlogId = await this.postsRepository.countPostsByBlogId(blogId);
+	// 	const allPostsByBlogId = await this.postsRepository.getAllPostsByBlogId(
+	// 		pageNumber,
+	// 		pageSize,
+	// 		sortBy,
+	// 		sortDirection,
+	// 		blogId,
+	// 	);
+	// 	const result = [];
+	// 	for await (let post of allPostsByBlogId) {
+	// 		const mappedPost = await this.likesService.getLikesInfoForPost(post, userId);
+	// 		result.push(mappedPost);
+	// 	}
+	//
+	// 	return {
+	// 		pagesCount: Math.ceil(countedPostsByBlogId / pageSize),
+	// 		page: pageNumber,
+	// 		pageSize: pageSize,
+	// 		totalCount: countedPostsByBlogId,
+	// 		items: result,
+	// 	};
+	// }
 
 	async findPostById(id: string) {
 		const foundedPost = await this.postsRepository.findPostById(id);
 		if (!foundedPost) {
 			throw new NotFoundException();
 		}
-		const currentUser = await this.findUserById.execute(foundedPost.userId)
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(foundedPost.userId))
 		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new NotFoundException();
 		}

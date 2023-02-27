@@ -37,12 +37,33 @@ import { FindUserByIdUseCase } from './api/public/users/use-cases/find-user-by-i
 import { CommentsService } from './api/public/comments/comments.service';
 import { CreateBlogUseCase } from './api/public/blogs/use-cases/create-blog.use-case';
 import { GetAllBlogsForCurrentUserUseCase } from './api/blogger/use-cases/get-all-blogs-for-current-user.use-case';
-import { GetAllPostByBlogIdUseCase } from "./api/public/blogs/use-cases/get-all-posts.use-case";
-import { CreatePostByBlogIdUseCase } from "./api/public/blogs/use-cases/create-post-by-blog-id.use-case";
-import { CheckRefreshTokenUseCase } from "./api/public/auth/use-cases/check-refresh-token.use-case";
+import { CreatePostByBlogIdUseCase } from './api/public/blogs/use-cases/create-post-by-blog-id.use-case';
+import { CheckRefreshTokenUseCase } from './api/public/auth/use-cases/check-refresh-token.use-case';
+import { AuthController } from './api/public/auth/auth.controller';
+import { FindUserByLoginUseCase } from './api/public/users/use-cases/find-user-by-login.use-case';
+import { SendConfirmEmailUseCase } from './api/public/auth/use-cases/send-confirm-email.use-case';
+import { LoginUseCase } from './api/public/auth/use-cases/login.use-case';
+import { CreateNewTokenUseCase } from './api/public/auth/use-cases/create-new-token.use-case';
+import { GetLastActiveDateFromRefreshTokenUseCase } from './api/public/auth/use-cases/get-last-active-date-from-refresh-token.use-case';
+import { SendNewConfirmEmailUseCase } from './api/public/auth/use-cases/send-new-confirm-email.use-case';
+import { SendRecoveryPasswordEmailUseCase } from './api/public/auth/use-cases/send-recovery-password-email.use-case';
+import { SetNewPasswordUseCase } from './api/public/auth/use-cases/set-new-password.use-case';
+import { SendEmailUseCase } from './email/use-cases/send-email.use-case';
+import { ValidateUserUseCase } from './api/public/users/use-cases/validate-user.use-case';
+import { FindUserByConfirmationCodeUseCase } from './api/public/users/use-cases/find-user-by-confirmation-code.use-case';
+import { UpdateConfirmationCodeUseCase } from './api/public/users/use-cases/update-confirmation-code.use-case';
+import { FindUserByRecoveryCodeUseCase } from './api/public/users/use-cases/find-user-by-recovery-code.use-case';
+import { CreateNewSessionUseCase } from './api/public/sessions/use-cases/create-new-session.use-case';
+import { GetLastActiveSessionUseCase } from './api/public/sessions/use-cases/get-last-active-session.use-case';
+import { DeleteSessionUseCase } from './api/public/sessions/use-cases/delete-session.use-case';
+import { UpdateSessionAfterRefreshUseCase } from './api/public/sessions/use-cases/update-session-after-refresh.use-case';
+import { CheckUserIdByTokenUseCase } from "./api/public/auth/use-cases/check-user-by-token.use-case";
+import { GetAllPostsByBlogIdUseCase } from "./api/public/posts/use-cases/get-all-posts.use-case";
+import { EmailModule } from "./email/email.module";
 
 const controllers = [
 	AppController,
+	AuthController,
 	SuperAdminController,
 	BlogsController,
 	PostsController,
@@ -57,7 +78,7 @@ const services = [
 	CommentsService,
 	SessionsService,
 	JwtService,
-	LikesService,
+	LikesService
 ];
 
 const repositories = [
@@ -70,20 +91,51 @@ const repositories = [
 	PostsRepository,
 ];
 
-const useCases = [
+const usersUseCases = [
+	ValidateUserUseCase,
+	FindUserByIdUseCase,
+	FindUserByConfirmationCodeUseCase,
+	FindUserByRecoveryCodeUseCase,
+	FindUserByLoginUseCase,
+];
+
+const authUseCases = [
+	UpdateConfirmationCodeUseCase,
+	CheckRefreshTokenUseCase,
+	CheckUserIdByTokenUseCase,
+	CreateNewTokenUseCase,
+	GetLastActiveDateFromRefreshTokenUseCase,
+	LoginUseCase,
+	SendEmailUseCase,
+	SendConfirmEmailUseCase,
+	SendNewConfirmEmailUseCase,
+	SendRecoveryPasswordEmailUseCase,
+	SetNewPasswordUseCase,
+];
+
+const sessionsUseCases = [
+	CreateNewSessionUseCase,
+	GetLastActiveSessionUseCase,
+	DeleteSessionUseCase,
+	UpdateSessionAfterRefreshUseCase,
+];
+
+const blogsUseCases = [
 	CreateBlogUseCase,
 	GetAllBlogsUseCase,
 	GetAllBlogsForCurrentUserUseCase,
-	GetAllPostByBlogIdUseCase,
+]
+
+const postsUseCases = [
+	GetAllPostsByBlogIdUseCase,
 	CreatePostByBlogIdUseCase,
 	FindPostByIdUseCase,
-	FindUserByIdUseCase,
-	CheckRefreshTokenUseCase,
 ];
 
 @Module({
 	imports: [
 		CqrsModule,
+		EmailModule,
 		ConfigModule.forRoot({ isGlobal: true }),
 		MongooseModule.forRootAsync({
 			imports: [ConfigModule],
@@ -108,17 +160,16 @@ const useCases = [
 				limit: config.get('THROTTLE_LIMIT'),
 			}),
 		}),
-		// AuthModule,
-		// BlogsModule,
-		// UsersModule,
-		// PostsModule,
-		// CommentsModule,
-		// DeleteAllModule,
-		// SessionsModule,
-		// LikesModule,
-		// EmailModule,
 	],
 	controllers: [...controllers],
-	providers: [...repositories, ...services, ...useCases],
+	providers: [
+		...repositories,
+		...services,
+		...postsUseCases,
+		...blogsUseCases,
+		...usersUseCases,
+		...authUseCases,
+		...sessionsUseCases,
+	],
 })
 export class AppModule {}

@@ -5,12 +5,13 @@ import { EmailService } from './email.service';
 import { getMailConfig } from "../configs/mail.config";
 import { EjsAdapter } from "@nestjs-modules/mailer/dist/adapters/ejs.adapter";
 
+
 @Module({
 	imports: [
 		MailerModule.forRootAsync({
 			imports: [ConfigModule],
+			useFactory: getMailConfig,
 			inject: [ConfigService],
-			useFactory: getMailConfig
 		}),
 	],
 	providers: [EmailService],

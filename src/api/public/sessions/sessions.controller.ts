@@ -13,6 +13,9 @@ import {
 import { SessionsService } from './sessions.service';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
+import { CommandBus } from "@nestjs/cqrs";
+import { FindUserByIdCommand } from "../users/use-cases/find-user-by-id.use-case";
+import { DeleteSessionCommand } from "./use-cases/delete-session.use-case";
 
 
 @Injectable()
@@ -21,6 +24,7 @@ export class SessionsController {
 	constructor(
 		private readonly sessionsService: SessionsService,
 		private readonly usersService: UsersService,
+		private readonly commandBus: CommandBus,
 	) {}
 
 	@HttpCode(200)
@@ -31,7 +35,7 @@ export class SessionsController {
 		if (!refreshToken || !tokenPayload) {
 			throw new UnauthorizedException();
 		}
-		const currentUser = await this.usersService.findUserById(tokenPayload.id);
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(tokenPayload.id));
 		if (currentUser) {
 			return await this.sessionsService.getAllSessions(tokenPayload.id);
 		}
@@ -42,7 +46,7 @@ export class SessionsController {
 	async deleteAllSessions(@Req() req: Request) {
 		const refreshToken = req.cookies.refreshToken;
 		const tokenPayload = await this.sessionsService.checkRefreshToken(refreshToken);
-		const currentUser = await this.usersService.findUserById(tokenPayload.id);
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(tokenPayload.id));
 		if (!refreshToken || !tokenPayload) {
 			throw new UnauthorizedException();
 		}
@@ -60,7 +64,7 @@ export class SessionsController {
 	async deleteSessionByDeviceId(@Param('deviceId') deviceId: string, @Req() req: Request) {
 		const refreshToken = req.cookies.refreshToken;
 		const tokenPayload = await this.sessionsService.checkRefreshToken(refreshToken);
-		const currentUser = await this.usersService.findUserById(tokenPayload.id);
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(tokenPayload.id));
 		const currentSession = await this.sessionsService.getSessionsByDeviceId(deviceId);
 		if (!refreshToken || !tokenPayload) {
 			throw new UnauthorizedException();
@@ -72,7 +76,7 @@ export class SessionsController {
 			throw new ForbiddenException();
 		}
 		if (currentSession.userId === currentUser.id) {
-			return await this.sessionsService.deleteSessionByDeviceId(deviceId);
+			return await this.commandBus.execute(new DeleteSessionCommand(deviceId));
 		}
 	}
 }

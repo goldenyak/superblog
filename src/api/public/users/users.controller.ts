@@ -20,10 +20,13 @@ import { ALREADY_REGISTERED_ERROR, NOT_FOUND_USER_ERROR } from './constants/user
 import { Request } from 'express';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { UsersQueryDto } from './dto/users-query.dto';
+import { FindUserByIdCommand } from "./use-cases/find-user-by-id.use-case";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Controller('users')
 export class UsersController {
-	constructor(private readonly usersService: UsersService) {}
+	constructor(private readonly usersService: UsersService,
+							private readonly commandBus: CommandBus) {}
 
 	// @UseGuards(BasicAuthGuard)
 	// @HttpCode(201)
@@ -46,7 +49,7 @@ export class UsersController {
 
 	@Get(':id')
 	async findUserById(@Param('id') id: string) {
-		const foundedUser = await this.usersService.findUserById(id);
+		const foundedUser = await this.commandBus.execute(new FindUserByIdCommand(id))
 		if (!foundedUser) {
 			throw new NotFoundException(NOT_FOUND_USER_ERROR);
 		}

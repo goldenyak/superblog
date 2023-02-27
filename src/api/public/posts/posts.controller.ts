@@ -27,6 +27,7 @@ import { LikePostDto } from './dto/like-post.dto';
 import { PostsQueryParams } from './dto/posts-query.dto';
 import { CheckRefreshTokenCommand } from "../auth/use-cases/check-refresh-token.use-case";
 import { CommandBus } from "@nestjs/cqrs";
+import { FindUserByIdCommand } from "../users/use-cases/find-user-by-id.use-case";
 
 @Controller('posts')
 export class PostsController {
@@ -87,7 +88,7 @@ export class PostsController {
 		@Body() dto: CreateCommentDto,
 		@Req() req: Request,
 	) {
-		const user = await this.usersService.findUserById(req.user.id);
+		const user = await this.commandBus.execute(new FindUserByIdCommand(req.user.id))
 		if (!user) {
 			throw new NotFoundException();
 		}
@@ -167,7 +168,7 @@ export class PostsController {
 		if (!postById) {
 			throw new NotFoundException();
 		}
-		const currentUser = await this.usersService.findUserById(req.user.id);
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id))
 
 		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new ForbiddenException();

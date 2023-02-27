@@ -17,7 +17,6 @@ import { Request } from 'express';
 import { BlogsService } from '../../public/blogs/blogs.service';
 import { BlogsRepository } from '../../public/blogs/blogs.repository';
 import { CreateBlogUseCase } from '../../public/blogs/use-cases/create-blog.use-case';
-import { GetAllPostByBlogIdUseCase } from '../../public/blogs/use-cases/get-all-posts.use-case';
 import { CreatePostByBlogIdUseCase } from '../../public/blogs/use-cases/create-post-by-blog-id.use-case';
 import { CreateBlogsDto } from '../../public/blogs/dto/create-blogs.dto';
 import { JwtAuthGuard } from '../../../guards/jwt-auth.guard';
@@ -35,7 +34,6 @@ export class BlogsController {
 		private readonly blogsRepository: BlogsRepository,
 		private readonly createBlogUseCase: CreateBlogUseCase,
 		private readonly getAllBlogsByUser: GetAllBlogsForCurrentUserUseCase,
-		private readonly getAllPosts: GetAllPostByBlogIdUseCase,
 		private readonly createPost: CreatePostByBlogIdUseCase,
 		private readonly findPostById: FindPostByIdUseCase,
 	) {}

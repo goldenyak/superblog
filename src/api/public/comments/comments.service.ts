@@ -7,10 +7,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '../users/schemas/user.schema';
 import { LikesService } from '../likes/likes.service';
 import { UsersService } from '../users/users.service';
+import { FindUserByIdCommand } from "../users/use-cases/find-user-by-id.use-case";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Injectable()
 export class CommentsService {
 	constructor(
+		private readonly commandBus: CommandBus,
 		private readonly commentsRepository: CommentsRepository,
 		private readonly likesService: LikesService,
 		private readonly usersService: UsersService,
@@ -88,7 +91,7 @@ export class CommentsService {
 		if (!foundedComment) {
 			throw new NotFoundException();
 		}
-		const currentUser = await this.usersService.findUserById(foundedComment.userId);
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(foundedComment.userId));
 		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new NotFoundException();
 		}

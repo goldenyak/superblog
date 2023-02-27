@@ -28,6 +28,8 @@ import { LikesService } from '../../../public/likes/likes.service';
 import { GetAllBlogsCommand } from "../../../public/blogs/use-cases/get-all-blogs.use-case";
 import { BlogsQueryParams } from '../../../public/blogs/dto/blogs-query.dto';
 import { CommandBus } from "@nestjs/cqrs";
+import { CreateUserCommand } from "../../../public/users/use-cases/create-user.use-case";
+import { FindUserByIdCommand } from "../../../public/users/use-cases/find-user-by-id.use-case";
 
 @Controller('sa')
 export class SuperAdminController {
@@ -42,7 +44,7 @@ export class SuperAdminController {
 	@HttpCode(201)
 	@Post('/users')
 	async create(@Body() dto: CreateUserDto, @Req() req: Request) {
-		return await this.usersService.create(dto);
+		return await this.commandBus.execute(new CreateUserCommand(dto));
 	}
 
 	@UseGuards(BasicAuthGuard)
@@ -63,7 +65,7 @@ export class SuperAdminController {
 	@HttpCode(204)
 	@Put('/users/:id/ban')
 	async updateBanUser(@Param('id') id: string, @Body() dto: UpdateBanUserDto) {
-		const foundedUser = await this.usersService.findUserById(id);
+		const foundedUser = await this.commandBus.execute(new FindUserByIdCommand(id))
 		if (!foundedUser) {
 			throw new NotFoundException();
 		}
