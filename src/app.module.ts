@@ -12,7 +12,7 @@ import { UsersRepository } from './api/public/users/users.repository';
 import { User, UserSchema } from './api/public/users/schemas/user.schema';
 import { SessionsService } from './api/public/sessions/sessions.service';
 import { SessionsRepository } from './api/public/sessions/sessions.repository';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Sessions, SessionsSchema } from './api/public/sessions/schemas/session.schema';
 import { Likes, LikesSchema } from './api/public/likes/schemas/likes.schema';
 import { LikesRepository } from './api/public/likes/likes.repository';
@@ -57,17 +57,18 @@ import { CreateNewSessionUseCase } from './api/public/sessions/use-cases/create-
 import { GetLastActiveSessionUseCase } from './api/public/sessions/use-cases/get-last-active-session.use-case';
 import { DeleteSessionUseCase } from './api/public/sessions/use-cases/delete-session.use-case';
 import { UpdateSessionAfterRefreshUseCase } from './api/public/sessions/use-cases/update-session-after-refresh.use-case';
-import { CheckUserIdByTokenUseCase } from "./api/public/auth/use-cases/check-user-by-token.use-case";
-import { GetAllPostsByBlogIdUseCase } from "./api/public/posts/use-cases/get-all-posts.use-case";
-import { EmailModule } from "./email/email.module";
-import { FindUserByEmailUseCase } from "./api/public/users/use-cases/find-user-by-email.use-case";
-import { CreateUserUseCase } from "./api/public/users/use-cases/create-user.use-case";
-import { GetBlogByIdUseCase } from "./api/public/blogs/use-cases/get-blog-by-id.use-case";
-import { AuthService } from "./api/public/auth/auth.service";
-import { UsersController } from "./api/public/users/users.controller";
-import { CommentsController } from "./api/public/comments/comments.controller";
-import { SessionsController } from "./api/public/sessions/sessions.controller";
-import { PublicBlogsController } from "./api/public/blogs/api/blogs.controller";
+import { CheckUserIdByTokenUseCase } from './api/public/auth/use-cases/check-user-by-token.use-case';
+import { GetAllPostsByBlogIdUseCase } from './api/public/posts/use-cases/get-all-posts.use-case';
+import { EmailModule } from './email/email.module';
+import { FindUserByEmailUseCase } from './api/public/users/use-cases/find-user-by-email.use-case';
+import { CreateUserUseCase } from './api/public/users/use-cases/create-user.use-case';
+import { GetBlogByIdUseCase } from './api/public/blogs/use-cases/get-blog-by-id.use-case';
+import { AuthService } from './api/public/auth/auth.service';
+import { UsersController } from './api/public/users/users.controller';
+import { CommentsController } from './api/public/comments/comments.controller';
+import { SessionsController } from './api/public/sessions/sessions.controller';
+import { PublicBlogsController } from './api/public/blogs/api/blogs.controller';
+import { getJwtConfig } from "./configs/jwt.config";
 
 const controllers = [
 	AppController,
@@ -90,8 +91,7 @@ const services = [
 	PostsService,
 	CommentsService,
 	SessionsService,
-	JwtService,
-	LikesService
+	LikesService,
 ];
 
 const repositories = [
@@ -140,13 +140,9 @@ const blogsUseCases = [
 	GetAllBlogsUseCase,
 	GetBlogByIdUseCase,
 	GetAllBlogsForCurrentUserUseCase,
-]
-
-const postsUseCases = [
-	GetAllPostsByBlogIdUseCase,
-	CreatePostByBlogIdUseCase,
-	FindPostByIdUseCase,
 ];
+
+const postsUseCases = [GetAllPostsByBlogIdUseCase, CreatePostByBlogIdUseCase, FindPostByIdUseCase];
 
 @Module({
 	imports: [
@@ -157,6 +153,14 @@ const postsUseCases = [
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: getMongoConfig,
+		}),
+		JwtModule.registerAsync({
+			imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+				secret: configService.get('JWT_SECRET'),
+			}),
+      // useFactory: getJwtConfig
 		}),
 		MongooseModule.forFeature([
 			{ schema: UserSchema, name: User.name },

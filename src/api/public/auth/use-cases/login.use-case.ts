@@ -8,14 +8,14 @@ export class LoginCommand {
 
 @CommandHandler(LoginCommand)
 export class LoginUseCase implements ICommandHandler<LoginCommand> {
-	constructor(private readonly JwtService: JwtService) {}
+	constructor(private readonly jwtService: JwtService) {}
 
 	async execute(command: LoginCommand) {
 		const { email, userId, login } = command;
 		const deviceId = uuidv4();
 		const payload = { email, userId, deviceId, login };
-		const accessToken = await this.JwtService.signAsync(payload, { expiresIn: '24h' });
-		const refreshToken = await this.JwtService.signAsync(payload, { expiresIn: '24h' });
+		const accessToken = await this.jwtService.signAsync(payload, { expiresIn: '24h' });
+		const refreshToken = await this.jwtService.signAsync(payload, { expiresIn: '24h' });
 		return {
 			accessToken,
 			refreshToken,
