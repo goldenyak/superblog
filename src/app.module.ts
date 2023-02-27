@@ -62,6 +62,8 @@ import { GetAllPostsByBlogIdUseCase } from "./api/public/posts/use-cases/get-all
 import { EmailModule } from "./email/email.module";
 import { FindUserByEmailUseCase } from "./api/public/users/use-cases/find-user-by-email.use-case";
 import { CreateUserUseCase } from "./api/public/users/use-cases/create-user.use-case";
+import { GetBlogByIdUseCase } from "./api/public/blogs/use-cases/get-blog-by-id.use-case";
+import { AuthService } from "./api/public/auth/auth.service";
 
 const controllers = [
 	AppController,
@@ -74,6 +76,7 @@ const controllers = [
 
 const services = [
 	AppService,
+	AuthService,
 	UsersService,
 	BlogsService,
 	PostsService,
@@ -127,6 +130,7 @@ const sessionsUseCases = [
 const blogsUseCases = [
 	CreateBlogUseCase,
 	GetAllBlogsUseCase,
+	GetBlogByIdUseCase,
 	GetAllBlogsForCurrentUserUseCase,
 ]
 

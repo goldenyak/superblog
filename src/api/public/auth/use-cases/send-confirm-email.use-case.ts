@@ -15,8 +15,6 @@ export class SendConfirmEmailUseCase implements ICommandHandler<SendConfirmEmail
 	async execute(command: SendConfirmEmailCommand) {
 		const { email } = command;
 		const user = await this.commandBus.execute(new FindUserByEmailCommand(email));
-		console.log(user);
-		console.log(user.confirmationCode);
 		return this.commandBus.execute(new SendEmailCommand(email, user.confirmationCode));
 	}
 }

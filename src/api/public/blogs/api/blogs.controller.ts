@@ -18,17 +18,12 @@ import { BlogsRepository } from "../blogs.repository";
 import { CommandBus } from "@nestjs/cqrs";
 import { CheckUserIdByTokenCommand } from "../../auth/use-cases/check-user-by-token.use-case";
 import { GetAllPostsByBlogIdCommand } from "../../posts/use-cases/get-all-posts.use-case";
+import { GetBlogByIdCommand } from "../use-cases/get-blog-by-id.use-case";
 
 @Controller('blogs')
 export class PublicBlogsController {
 	constructor(
 		private readonly commandBus: CommandBus,
-		private readonly blogsService: BlogsService,
-		private readonly blogsRepository: BlogsRepository,
-		private readonly createBlogUseCase: CreateBlogUseCase,
-		// private readonly getAllBlogs: GetAllBlogsUseCase,
-		private readonly createPost: CreatePostByBlogIdUseCase,
-		private readonly authService: AuthService,
 	) {}
 
 	// @HttpCode(200)
@@ -53,7 +48,7 @@ export class PublicBlogsController {
 				currentUserId = userId;
 			}
 		}
-		const blogById = await this.blogsRepository.findBlogById(blogId);
+		const blogById = await this.commandBus.execute(new GetBlogByIdCommand(blogId));
 		if (!blogById) {
 			throw new NotFoundException();
 		}
@@ -62,6 +57,6 @@ export class PublicBlogsController {
 
 	@Get(':id')
 	async findBlogById(@Param('id') id: string) {
-		return  await this.blogsService.findBlogById(id);
+		return  await this.commandBus.execute(new GetBlogByIdCommand(id));
 	}
 }

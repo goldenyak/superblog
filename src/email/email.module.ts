@@ -10,8 +10,9 @@ import { EjsAdapter } from "@nestjs-modules/mailer/dist/adapters/ejs.adapter";
 	imports: [
 		MailerModule.forRootAsync({
 			imports: [ConfigModule],
-			useFactory: getMailConfig,
 			inject: [ConfigService],
+			useFactory: getMailConfig,
+
 		}),
 	],
 	providers: [EmailService],

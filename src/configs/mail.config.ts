@@ -1,7 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
-import { Injectable } from "@nestjs/common";
-
 
 export const getMailConfig = async (configService: ConfigService) => {
 	const transport = configService.get('MAIL_TRANSPORT');
