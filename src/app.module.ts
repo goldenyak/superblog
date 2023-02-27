@@ -64,13 +64,21 @@ import { FindUserByEmailUseCase } from "./api/public/users/use-cases/find-user-b
 import { CreateUserUseCase } from "./api/public/users/use-cases/create-user.use-case";
 import { GetBlogByIdUseCase } from "./api/public/blogs/use-cases/get-blog-by-id.use-case";
 import { AuthService } from "./api/public/auth/auth.service";
+import { UsersController } from "./api/public/users/users.controller";
+import { CommentsController } from "./api/public/comments/comments.controller";
+import { SessionsController } from "./api/public/sessions/sessions.controller";
+import { PublicBlogsController } from "./api/public/blogs/api/blogs.controller";
 
 const controllers = [
 	AppController,
-	AuthController,
 	SuperAdminController,
 	BlogsController,
+	PublicBlogsController,
 	PostsController,
+	UsersController,
+	SessionsController,
+	CommentsController,
+	AuthController,
 	DeleteAllController,
 ];
 
