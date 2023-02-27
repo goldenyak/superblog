@@ -8,7 +8,7 @@ import { CreatePostsDto } from './dto/create-post.dto';
 export class PostsRepository {
 	constructor(@InjectModel(Posts.name) private readonly postsModel: Model<PostsDocument>) {}
 
-	async create(newPost: CreatePostsDto) {
+	async create(newPost) {
 		return this.postsModel.create(newPost);
 	}
 

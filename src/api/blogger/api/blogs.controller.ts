@@ -48,6 +48,7 @@ export class BlogsController {
 	@UseGuards(JwtAuthGuard)
 	@Post()
 	async createBlog(@Body() dto: CreateBlogsDto, @Req() req: Request) {
+		console.log(req.user);
 		const { id, login } = req.user;
 		return await this.createBlogUseCase.execute(dto, id, login);
 	}

@@ -25,9 +25,11 @@ import { UsersService } from '../users/users.service';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { LikePostDto } from './dto/like-post.dto';
 import { PostsQueryParams } from './dto/posts-query.dto';
-import { CheckRefreshTokenCommand } from "../auth/use-cases/check-refresh-token.use-case";
-import { CommandBus } from "@nestjs/cqrs";
-import { FindUserByIdCommand } from "../users/use-cases/find-user-by-id.use-case";
+import { CheckRefreshTokenCommand } from '../auth/use-cases/check-refresh-token.use-case';
+import { CommandBus } from '@nestjs/cqrs';
+import { FindUserByIdCommand } from '../users/use-cases/find-user-by-id.use-case';
+import { log } from 'util';
+import { GetBlogByIdCommand } from '../blogs/use-cases/get-blog-by-id.use-case';
 
 @Controller('posts')
 export class PostsController {
@@ -35,13 +37,17 @@ export class PostsController {
 		private readonly postsService: PostsService,
 		private readonly commentsService: CommentsService,
 		private readonly usersService: UsersService,
-		private readonly commandBus: CommandBus
+		private readonly commandBus: CommandBus,
 	) {}
 
 	@UseGuards(BasicAuthGuard)
 	@Post()
 	async create(@Body() dto: CreatePostsDto) {
-		return await this.postsService.create(dto);
+		const foundedBlog = await this.commandBus.execute(new GetBlogByIdCommand(dto.blogId));
+		if (!foundedBlog) {
+			throw new NotFoundException();
+		}
+		return await this.postsService.create(dto, foundedBlog);
 	}
 
 	@HttpCode(200)
@@ -54,7 +60,7 @@ export class PostsController {
 		let currentUserId;
 		if (req.headers.authorization) {
 			const token = req.headers.authorization.split(' ')[1];
-			const result = await this.commandBus.execute(new CheckRefreshTokenCommand(token))
+			const result = await this.commandBus.execute(new CheckRefreshTokenCommand(token));
 			if (result) {
 				currentUserId = result.id;
 			}
@@ -88,7 +94,7 @@ export class PostsController {
 		@Body() dto: CreateCommentDto,
 		@Req() req: Request,
 	) {
-		const user = await this.commandBus.execute(new FindUserByIdCommand(req.user.id))
+		const user = await this.commandBus.execute(new FindUserByIdCommand(req.user.id));
 		if (!user) {
 			throw new NotFoundException();
 		}
@@ -168,7 +174,7 @@ export class PostsController {
 		if (!postById) {
 			throw new NotFoundException();
 		}
-		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id))
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id));
 
 		if (!currentUser || currentUser.banInfo.isBanned) {
 			throw new ForbiddenException();

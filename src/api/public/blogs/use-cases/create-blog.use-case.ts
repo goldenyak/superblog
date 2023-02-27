@@ -8,7 +8,7 @@ import { Blogs } from '../schemas/blogs.schema';
 export class CreateBlogUseCase {
 	constructor(private readonly blogsRepository: BlogsRepository) {}
 
-	async execute(dto: CreateBlogsDto, userId: string, login: string) {
+	async execute(dto: CreateBlogsDto, id: string, login: string) {
 		const newBlog: Blogs = {
 			id: uuidv4(),
 			name: dto.name,
@@ -17,7 +17,7 @@ export class CreateBlogUseCase {
 			createdAt: new Date(),
 			isMembership: false,
 			bloggerOwnerInfo: {
-				userId: userId,
+				userId: id,
 				userLogin: login
 			},
 		};

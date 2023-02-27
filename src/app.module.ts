@@ -69,6 +69,7 @@ import { CommentsController } from './api/public/comments/comments.controller';
 import { SessionsController } from './api/public/sessions/sessions.controller';
 import { PublicBlogsController } from './api/public/blogs/api/blogs.controller';
 import { getJwtConfig } from "./configs/jwt.config";
+import { BlogIdValidation } from "./validation/blog-id.validation";
 
 const controllers = [
 	AppController,
@@ -160,7 +161,6 @@ const postsUseCases = [GetAllPostsByBlogIdUseCase, CreatePostByBlogIdUseCase, Fi
       useFactory: async (configService: ConfigService) => ({
 				secret: configService.get('JWT_SECRET'),
 			}),
-      // useFactory: getJwtConfig
 		}),
 		MongooseModule.forFeature([
 			{ schema: UserSchema, name: User.name },
