@@ -134,9 +134,7 @@ export class PostsService {
 	// }
 
 	async findPostById(id: string) {
-		console.log('id', id);
 		const foundedPost = await this.postsRepository.findPostById(id);
-		console.log('foundedPost', foundedPost);
 		if (!foundedPost) {
 			throw new NotFoundException();
 		}

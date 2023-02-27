@@ -109,7 +109,7 @@ export class BlogsController {
 		@Param('postId') postId: string,
 		@Req() req: Request,
 	) {
-		const foundedBlog = await this.blogsService.findBlogByIdWithBloggerInfo(blogId);
+		const foundedBlog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(blogId));
 		if (!foundedBlog) {
 			throw new NotFoundException();
 		}
