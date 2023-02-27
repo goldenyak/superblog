@@ -1,5 +1,4 @@
 import { BlogsRepository } from '../blogs.repository';
-import { BlogsQueryParams } from '../dto/blogs-query.dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 export class GetBlogByIdCommand {
@@ -12,6 +11,14 @@ export class GetBlogByIdUseCase implements ICommandHandler<GetBlogByIdCommand> {
 
 	async execute(command: GetBlogByIdCommand) {
 		const { id } = command;
-		return this.blogsRepository.findBlogById(id);
+		const foundedBlog = await this.blogsRepository.findBlogById(id);
+		return {
+			id: foundedBlog.id,
+			name: foundedBlog.name,
+			description: foundedBlog.description,
+			websiteUrl: foundedBlog.websiteUrl,
+			createdAt: foundedBlog.createdAt,
+			isMembership: foundedBlog.isMembership,
+		};
 	}
 }

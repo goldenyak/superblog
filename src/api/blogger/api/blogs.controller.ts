@@ -48,7 +48,6 @@ export class BlogsController {
 	@UseGuards(JwtAuthGuard)
 	@Post()
 	async createBlog(@Body() dto: CreateBlogsDto, @Req() req: Request) {
-		console.log(req.user);
 		const { id, login } = req.user;
 		return await this.createBlogUseCase.execute(dto, id, login);
 	}
@@ -81,8 +80,7 @@ export class BlogsController {
 		if (foundedBlog.bloggerOwnerInfo.userId !== req.user.id) {
 			throw new ForbiddenException();
 		}
-		await this.blogsService.updateBlogById(id, dto.name, dto.description, dto.websiteUrl);
-		return;
+		return  await this.blogsService.updateBlogById(id, dto.name, dto.description, dto.websiteUrl);
 	}
 
 	@UseGuards(JwtAuthGuard)

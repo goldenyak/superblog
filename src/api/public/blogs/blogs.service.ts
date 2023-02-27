@@ -40,7 +40,15 @@ export class BlogsService {
 	}
 
 	async updateBlogById(id: string, name: string, description: string, websiteUrl: string) {
-		return await this.blogsRepository.updateBlogById(id, name, description, websiteUrl);
+		const updatedBlog = await this.blogsRepository.updateBlogById(id, name, description, websiteUrl);
+		return {
+			id: updatedBlog.id,
+			name: updatedBlog.name,
+			description: updatedBlog.description,
+			websiteUrl: updatedBlog.websiteUrl,
+			createdAt: updatedBlog.createdAt,
+			isMembership: updatedBlog.isMembership,
+		};
 	}
 
 	async updatePostForSpecifiedBlog(
