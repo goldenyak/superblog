@@ -72,6 +72,7 @@ export class BlogsRepository {
 				description: blogs.description,
 				websiteUrl: blogs.websiteUrl,
 				createdAt: blogs.createdAt,
+				isMembership: blogs.isMembership
 			};
 		});
 	}
