@@ -123,9 +123,9 @@ export class BlogsRepository {
 
 	private getFilterForQueryAndCurrentUser(searchNameTerm: string | null, userId?: string) {
 		if (!searchNameTerm) {
-			return {"bloggerInfo.id": userId};
+			return {"bloggerOwnerInfo.userId": userId};
 		} else {
-			return { name: { $regex: searchNameTerm, $options: 'i' }, "bloggerInfo.id": userId };
+			return { name: { $regex: searchNameTerm, $options: 'i' }, "bloggerOwnerInfo.userId": userId };
 		}
 	}
 
