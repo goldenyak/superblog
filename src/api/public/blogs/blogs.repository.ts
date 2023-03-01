@@ -139,7 +139,7 @@ export class BlogsRepository {
 		if (!searchNameTerm) {
 			return {};
 		} else {
-			return { name: { $regex: searchNameTerm, $options: 'i' } };
+			return { name: { $regex: searchNameTerm, $options: 'i' }, 'banInfo.isBanned': false, };
 		}
 	}
 
