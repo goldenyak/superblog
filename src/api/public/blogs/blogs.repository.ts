@@ -137,7 +137,7 @@ export class BlogsRepository {
 
 	private getFilterForQuery(searchNameTerm: string | null) {
 		if (!searchNameTerm) {
-			return {};
+			return {'banInfo.isBanned': false};
 		} else {
 			return { name: { $regex: searchNameTerm, $options: 'i' }, 'banInfo.isBanned': false, };
 		}
