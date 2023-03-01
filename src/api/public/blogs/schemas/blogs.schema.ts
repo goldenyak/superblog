@@ -11,6 +11,14 @@ class BloggerInfoAdvantage {
 	userLogin: string
 }
 
+class BanInfoAdvantage {
+	@Prop()
+	isBanned: boolean
+
+	@Prop()
+	banDate: string
+}
+
 @Schema({ versionKey: false })
 export class Blogs {
 	@Prop()
@@ -33,6 +41,9 @@ export class Blogs {
 
 	@Prop({ type: BloggerInfoAdvantage })
 	bloggerOwnerInfo: BloggerInfoAdvantage;
+
+	@Prop({ type: BanInfoAdvantage })
+	banInfo: BanInfoAdvantage;
 }
 
 export const BlogsSchema = SchemaFactory.createForClass(Blogs);

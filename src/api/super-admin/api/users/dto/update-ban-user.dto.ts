@@ -15,5 +15,4 @@ export class UpdateBanUserDto {
   @IsString()
   @Length(20)
   banReason: string;
-
 }

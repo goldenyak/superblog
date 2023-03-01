@@ -20,6 +20,10 @@ export class CreateBlogUseCase {
 				userId: id,
 				userLogin: login
 			},
+			banInfo: {
+				isBanned: false,
+				banDate: null
+			}
 		};
 		await this.blogsRepository.create(newBlog);
 		return {
