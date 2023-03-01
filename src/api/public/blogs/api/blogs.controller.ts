@@ -58,10 +58,10 @@ export class PublicBlogsController {
 
 	@Get(':id')
 	async findBlogById(@Param('id') id: string) {
-		const blog = await this.commandBus.execute(new GetBlogByIdCommand(id));
-		if (!blog) {
-			throw new NotFoundException();
-		}
-		return blog;
+		return  await this.commandBus.execute(new GetBlogByIdCommand(id));
+		// if (!blog) {
+		// 	throw new NotFoundException();
+		// }
+		// return blog;
 	}
 }
