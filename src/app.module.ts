@@ -28,7 +28,7 @@ import { CommentsRepository } from './api/public/comments/comments.repository';
 import { Comments, CommentsSchema } from './api/public/comments/schemas/comments.schema';
 import { PostsRepository } from './api/public/posts/posts.repository';
 import { Posts, PostsSchema } from './api/public/posts/schemas/posts.schemas';
-import { BlogsController } from './api/blogger/api/blogs.controller';
+import { BloggersController } from './api/blogger/api/bloggersController';
 import { BlogsService } from './api/public/blogs/blogs.service';
 import { PostsService } from './api/public/posts/posts.service';
 import { PostsController } from './api/public/posts/posts.controller';
@@ -77,7 +77,7 @@ import { BanBlogUseCase } from "./api/public/blogs/use-cases/ban-blog.use-case";
 const controllers = [
 	AppController,
 	SuperAdminController,
-	BlogsController,
+	BloggersController,
 	PublicBlogsController,
 	PostsController,
 	UsersController,

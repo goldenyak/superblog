@@ -30,7 +30,7 @@ import { CommandBus } from "@nestjs/cqrs";
 import { GetBlogByIdWithOwnerInfoCommand } from "../../public/blogs/use-cases/get-blog-by-id-with-owner-info.use-case";
 
 @Controller('blogger/blogs')
-export class BlogsController {
+export class BloggersController {
 	constructor(
 		private readonly commandBus: CommandBus,
 		private readonly blogsService: BlogsService,

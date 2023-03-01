@@ -13,7 +13,7 @@ import { AuthModule } from '../auth/auth.module';
 import { BlogIdValidation } from '../../../validation/blog-id.validation';
 import { CreateBlogUseCase } from './use-cases/create-blog.use-case';
 import { CreatePostByBlogIdUseCase } from './use-cases/create-post-by-blog-id.use-case';
-import { BlogsController } from '../../blogger/api/blogs.controller';
+import { BloggersController } from '../../blogger/api/bloggersController';
 import { GetAllBlogsForCurrentUserUseCase } from '../../blogger/use-cases/get-all-blogs-for-current-user.use-case';
 import { FindPostByIdUseCase } from './use-cases/find-post-by-id.use-case';
 import { CqrsModule } from "@nestjs/cqrs";
@@ -40,7 +40,7 @@ const useCases = [
 		}),
 	],
 	providers: [BlogsService, BlogsRepository, BlogIdValidation, ...useCases],
-	controllers: [BlogsController, PublicBlogsController],
+	controllers: [BloggersController, PublicBlogsController],
 	exports: [BlogsService, BlogsRepository, BlogIdValidation],
 })
 export class BlogsModule {}

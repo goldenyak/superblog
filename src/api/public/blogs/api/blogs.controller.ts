@@ -19,16 +19,17 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CheckUserIdByTokenCommand } from '../../auth/use-cases/check-user-by-token.use-case';
 import { GetAllPostsByBlogIdCommand } from '../../posts/use-cases/get-all-posts.use-case';
 import { GetBlogByIdCommand } from '../use-cases/get-blog-by-id.use-case';
+import { GetAllBlogsCommand } from "../use-cases/get-all-blogs.use-case";
 
 @Controller('blogs')
 export class PublicBlogsController {
 	constructor(private readonly commandBus: CommandBus) {}
 
-	// @HttpCode(200)
-	// @Get()
-	// async getBlogs(@Query() queryParams: BlogsQueryParams) {
-	// 	return await this.getAllBlogs.execute(queryParams);
-	// }
+	@HttpCode(200)
+	@Get()
+	async getBlogs(@Query() queryParams: BlogsQueryParams) {
+		return await this.commandBus.execute(new GetAllBlogsCommand(queryParams));
+	}
 
 	@HttpCode(200)
 	@Get(':blogId/posts')
