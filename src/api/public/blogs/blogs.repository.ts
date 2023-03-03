@@ -44,6 +44,10 @@ export class BlogsRepository {
 					userId: blog.bloggerOwnerInfo.userId,
 					userLogin: blog.bloggerOwnerInfo.userLogin,
 				},
+				banInfo: {
+					isBanned: blog.banInfo.isBanned,
+					banDate: blog.banInfo.banDate
+				}
 			};
 		});
 	}
