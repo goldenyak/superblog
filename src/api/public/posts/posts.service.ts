@@ -1,4 +1,10 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import {
+	BadRequestException,
+	forwardRef,
+	Inject,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePostsDto } from './dto/create-post.dto';
@@ -7,9 +13,13 @@ import { CommentsService } from '../comments/comments.service';
 import { Posts } from './schemas/posts.schemas';
 import { LikesService } from '../likes/likes.service';
 import { PostsQueryParams } from './dto/posts-query.dto';
-import { FindUserByIdCommand, FindUserByIdUseCase } from "../users/use-cases/find-user-by-id.use-case";
-import { Blogs } from "../blogs/schemas/blogs.schema";
-import { CommandBus } from "@nestjs/cqrs";
+import {
+	FindUserByIdCommand,
+	FindUserByIdUseCase,
+} from '../users/use-cases/find-user-by-id.use-case';
+import { Blogs } from '../blogs/schemas/blogs.schema';
+import { CommandBus } from '@nestjs/cqrs';
+import { GetBlogByIdWithOwnerInfoCommand } from '../blogs/use-cases/get-blog-by-id-with-owner-info.use-case';
 
 @Injectable()
 export class PostsService {
@@ -138,8 +148,14 @@ export class PostsService {
 		if (!foundedPost) {
 			throw new NotFoundException();
 		}
-		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(foundedPost.userId))
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(foundedPost.userId));
 		if (!currentUser || currentUser.banInfo.isBanned) {
+			throw new NotFoundException();
+		}
+		const currentBlog = await this.commandBus.execute(
+			new GetBlogByIdWithOwnerInfoCommand(foundedPost.blogId),
+		);
+		if (currentBlog.banInfo.isBanned) {
 			throw new NotFoundException();
 		}
 		return await this.likesService.getLikesInfoForPost(foundedPost, foundedPost.userId);
