@@ -28,7 +28,11 @@ export class PublicBlogsController {
 	@HttpCode(200)
 	@Get()
 	async getBlogs(@Query() queryParams: BlogsQueryParams) {
-		return await this.commandBus.execute(new GetAllBlogsCommand(queryParams));
+		const commandOptions = {
+			...queryParams,
+			returnBanned: false
+		}
+		return await this.commandBus.execute(new GetAllBlogsCommand(commandOptions));
 	}
 
 	@HttpCode(200)

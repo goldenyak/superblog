@@ -19,8 +19,9 @@ export class BlogsRepository {
 		pageSize: number,
 		sortBy: string,
 		sortDirection: string,
+		returnBanned: boolean
 	) {
-		const filter = this.getFilterForQuery(searchNameTerm);
+		const filter = this.getFilterForQuery(searchNameTerm, returnBanned);
 		const sortByFilter = this.getFilterForSortBy(sortBy);
 		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
@@ -110,8 +111,8 @@ export class BlogsRepository {
 		return this.blogsModel.findOneAndDelete({ id: id });
 	}
 
-	async countBlogs(searchNameTerm: string | null) {
-		const filter = this.getFilterForQuery(searchNameTerm);
+	async countBlogs(searchNameTerm: string | null, returnBanned: boolean) {
+		const filter = this.getFilterForQuery(searchNameTerm, returnBanned);
 		return this.blogsModel.count(filter);
 	}
 
@@ -135,11 +136,15 @@ export class BlogsRepository {
 		}
 	}
 
-	private getFilterForQuery(searchNameTerm: string | null) {
-		if (!searchNameTerm) {
-			return {'banInfo.isBanned': false};
-		} else {
-			return { name: { $regex: searchNameTerm, $options: 'i' }, 'banInfo.isBanned': false, };
+	private getFilterForQuery(searchNameTerm: string | null, returnBanned: boolean) {
+		if (!returnBanned) {
+			if (!searchNameTerm) {
+				return {'banInfo.isBanned': returnBanned};
+			} else {
+				return { name: { $regex: searchNameTerm, $options: 'i' }, 'banInfo.isBanned': returnBanned, };
+			}
+		}else {
+			return { name: { $regex: searchNameTerm?searchNameTerm:'', $options: 'i' }, };
 		}
 	}
 

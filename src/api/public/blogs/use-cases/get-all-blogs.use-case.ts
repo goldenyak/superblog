@@ -3,7 +3,7 @@ import { BlogsQueryParams } from '../dto/blogs-query.dto';
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 export class GetAllBlogsCommand{
-	constructor(public queryParams: BlogsQueryParams) {
+	constructor(public commandOptions: any) {
 	}
 }
 
@@ -13,19 +13,20 @@ export class GetAllBlogsUseCase implements ICommandHandler<GetAllBlogsCommand>{
 	}
 
 	async execute(command: GetAllBlogsCommand) {
-		const { queryParams }  = command
-		const countBlogs = await this.blogsRepository.countBlogs(queryParams.searchNameTerm);
+		const { commandOptions }  = command
+		const countBlogs = await this.blogsRepository.countBlogs(commandOptions.searchNameTerm, commandOptions.returnBanned);
 		const allBlogs = await this.blogsRepository.getAllBlogs(
-			queryParams.searchNameTerm,
-			queryParams.pageNumber,
-			queryParams.pageSize,
-			queryParams.sortBy,
-			queryParams.sortDirection,
+			commandOptions.searchNameTerm,
+			commandOptions.pageNumber,
+			commandOptions.pageSize,
+			commandOptions.sortBy,
+			commandOptions.sortDirection,
+			commandOptions.returnBanned
 		);
 		return {
-			pagesCount: Math.ceil(countBlogs / queryParams.pageSize),
-			page: queryParams.pageNumber,
-			pageSize: queryParams.pageSize,
+			pagesCount: Math.ceil(countBlogs / commandOptions.pageSize),
+			page: commandOptions.pageNumber,
+			pageSize: commandOptions.pageSize,
 			totalCount: countBlogs,
 			items: allBlogs,
 		};

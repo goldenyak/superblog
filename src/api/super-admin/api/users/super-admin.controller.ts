@@ -58,7 +58,11 @@ export class SuperAdminController {
 	@HttpCode(200)
 	@Get('/blogs')
 	async getBlogs(@Query() queryParams: BlogsQueryParams) {
-		return this.commandBus.execute(new GetAllBlogsCommand(queryParams));
+		const commandOptions = {
+			...queryParams,
+			returnBanned: true
+		}
+		return this.commandBus.execute(new GetAllBlogsCommand(commandOptions));
 	}
 
 	@UseGuards(BasicAuthGuard)
