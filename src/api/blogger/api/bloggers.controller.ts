@@ -89,10 +89,10 @@ export class BloggersController {
 		if (!foundedUser) {
 			throw new NotFoundException();
 		}
-		// const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(dto.blogId));
-		// if (!blog || blog.bloggerOwnerInfo.userId !== id || foundedUser.banInfo.isBanned) {
-		// 	throw new ForbiddenException();
-		// }
+		const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(dto.blogId));
+		if (!blog || blog.bloggerOwnerInfo.userId !== id || foundedUser.banInfo.isBanned) {
+			throw new ForbiddenException();
+		}
 		if (!dto.isBanned) {
 			await this.commandBus.execute(new UnbanUserLikeStatusCommand(id));
 			return await this.commandBus.execute(new UnBanUserForBlogCommand(id, dto));
