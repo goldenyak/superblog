@@ -13,7 +13,7 @@ import { AuthModule } from '../auth/auth.module';
 import { BlogIdValidation } from '../../../validation/blog-id.validation';
 import { CreateBlogUseCase } from './use-cases/create-blog.use-case';
 import { CreatePostByBlogIdUseCase } from './use-cases/create-post-by-blog-id.use-case';
-import { BloggersController } from '../../blogger/api/bloggersController';
+import { BloggersController } from '../../blogger/api/bloggers.controller';
 import { GetAllBlogsForCurrentUserUseCase } from '../../blogger/use-cases/get-all-blogs-for-current-user.use-case';
 import { FindPostByIdUseCase } from './use-cases/find-post-by-id.use-case';
 import { CqrsModule } from "@nestjs/cqrs";

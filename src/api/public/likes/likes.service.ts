@@ -156,13 +156,13 @@ export class LikesService {
 		});
 	}
 
-	async banUserLikeStatus(userId: string) {
-		return await this.likesRepository.banUserLikeStatus(userId)
-	}
-
-	async unbanUserLikeStatus(userId: string) {
-		return await this.likesRepository.unbanUserLikeStatus(userId)
-	}
+	// async banUserLikeStatus(userId: string) {
+	// 	return await this.likesRepository.banUserLikeStatus(userId)
+	// }
+	//
+	// async unbanUserLikeStatus(userId: string) {
+	// 	return await this.likesRepository.unbanUserLikeStatus(userId)
+	// }
 
 	async deleteAll() {
 		return await this.likesRepository.deleteAll();

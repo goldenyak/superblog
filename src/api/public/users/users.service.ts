@@ -108,13 +108,13 @@ export class UsersService {
 		return newConfirmationCode;
 	}
 
-	async banUser(id: string, dto: UpdateBanUserDto) {
-		return this.usersRepository.banUser(id, dto);
-	}
-
-	async unbanUser(id: string, dto: UpdateBanUserDto) {
-		return await this.usersRepository.unbanUser(id, dto);
-	}
+	// async banUser(id: string, dto: UpdateBanUserDto) {
+	// 	return this.usersRepository.banUser(id, dto);
+	// }
+	//
+	// async unbanUser(id: string, dto: UpdateBanUserDto) {
+	// 	return await this.usersRepository.unbanUser(id, dto);
+	// }
 
 	async addRecoveryCode(email: string, recoveryCode: string) {
 		return await this.usersRepository.addRecoveryCode(email, recoveryCode);

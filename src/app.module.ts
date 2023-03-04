@@ -28,7 +28,7 @@ import { CommentsRepository } from './api/public/comments/comments.repository';
 import { Comments, CommentsSchema } from './api/public/comments/schemas/comments.schema';
 import { PostsRepository } from './api/public/posts/posts.repository';
 import { Posts, PostsSchema } from './api/public/posts/schemas/posts.schemas';
-import { BloggersController } from './api/blogger/api/bloggersController';
+import { BloggersController } from './api/blogger/api/bloggers.controller';
 import { BlogsService } from './api/public/blogs/blogs.service';
 import { PostsService } from './api/public/posts/posts.service';
 import { PostsController } from './api/public/posts/posts.controller';
@@ -68,11 +68,19 @@ import { UsersController } from './api/public/users/users.controller';
 import { CommentsController } from './api/public/comments/comments.controller';
 import { SessionsController } from './api/public/sessions/sessions.controller';
 import { PublicBlogsController } from './api/public/blogs/api/blogs.controller';
-import { getJwtConfig } from "./configs/jwt.config";
-import { BlogIdValidation } from "./validation/blog-id.validation";
 import { GetBlogByIdWithOwnerInfoUseCase } from "./api/public/blogs/use-cases/get-blog-by-id-with-owner-info.use-case";
 import {UnBanBlogUseCase } from "./api/public/blogs/use-cases/unBan-blog.use-case";
 import { BanBlogUseCase } from "./api/public/blogs/use-cases/ban-blog.use-case";
+import { FindAllBannedUsersUseCase } from "./api/public/users/use-cases/find-all-banned-users.use-case";
+import { UnbanUserLikeStatusUseCase } from "./api/public/likes/use-cases/unban-user-like-status.use-case";
+import { UnbanUserUseCase } from "./api/public/users/use-cases/unban-user.use-case";
+import { BanUserUseCase } from "./api/public/users/use-cases/ban-user.use-case";
+import { BanUserLikeStatusUseCase } from "./api/public/likes/use-cases/ban-user-like-status.use-case";
+import {
+	DeleteAllSessionForBanUserUseCase
+} from "./api/public/sessions/use-cases/delete-all-session-for-ban-user.use-case";
+import { BanUserForBlogUseCase } from "./api/public/users/use-cases/ban-user-for-blog.use-case";
+import { UnBanUserForBlogUseCase } from "./api/public/users/use-cases/unban-user-for-blog.use-case";
 
 const controllers = [
 	AppController,
@@ -116,6 +124,11 @@ const usersUseCases = [
 	FindUserByEmailUseCase,
 	FindUserByIdUseCase,
 	CreateUserUseCase,
+	FindAllBannedUsersUseCase,
+	UnbanUserUseCase,
+	BanUserUseCase,
+	BanUserForBlogUseCase,
+	UnBanUserForBlogUseCase,
 ];
 
 const authUseCases = [
@@ -137,6 +150,7 @@ const sessionsUseCases = [
 	GetLastActiveSessionUseCase,
 	DeleteSessionUseCase,
 	UpdateSessionAfterRefreshUseCase,
+	DeleteAllSessionForBanUserUseCase,
 ];
 
 const blogsUseCases = [
@@ -150,6 +164,11 @@ const blogsUseCases = [
 ];
 
 const postsUseCases = [GetAllPostsByBlogIdUseCase, CreatePostByBlogIdUseCase, FindPostByIdUseCase];
+
+const likesUseCases = [
+	UnbanUserLikeStatusUseCase,
+	BanUserLikeStatusUseCase,
+]
 
 @Module({
 	imports: [
@@ -196,6 +215,7 @@ const postsUseCases = [GetAllPostsByBlogIdUseCase, CreatePostByBlogIdUseCase, Fi
 		...usersUseCases,
 		...authUseCases,
 		...sessionsUseCases,
+		...likesUseCases,
 	],
 })
 export class AppModule {}

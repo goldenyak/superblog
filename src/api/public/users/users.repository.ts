@@ -50,6 +50,36 @@ export class UsersRepository {
 		});
 	}
 
+	async getAllBannedUsers(
+		searchLoginTerm: string,
+		pageNumber: number,
+		pageSize: number,
+		sortBy: string,
+		sortDirection: string,
+	) {
+		const filter = this.filterForAllBannedUsers(searchLoginTerm);
+		const sortByFilter = this.getFilterForSortBy(sortBy);
+		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
+
+		const users = await this.userModel
+			.find(filter)
+			.skip((pageNumber - 1) * pageSize)
+			.limit(pageSize)
+			.sort({ [sortByFilter]: sortDirectionFilter });
+
+		return users.map((user) => {
+			return {
+				id: user.id,
+				login: user.login,
+				banInfo: {
+					isBanned: user.banInfo.isBanned,
+					banDate: user.banInfo.banDate,
+					banReason: user.banInfo.banReason,
+				},
+			};
+		});
+	}
+
 	async findUserById(id: string) {
 		return this.userModel.findOne({ id: id }, { _id: 0 });
 	}
@@ -121,6 +151,11 @@ export class UsersRepository {
 		return this.userModel.count(filter);
 	}
 
+	async countAllBannedUsers(searchLoginTerm: string | null) {
+		const filter = this.filterForAllBannedUsers(searchLoginTerm);
+		return this.userModel.count(filter);
+	}
+
 	private getFilterForSortBy(sortBy: string | null) {
 		if (sortBy) {
 			return sortBy;
@@ -133,6 +168,14 @@ export class UsersRepository {
 		}
 		if (sortDirection === 'desc') {
 			return -1;
+		}
+	}
+
+	private filterForAllBannedUsers(searchLoginTerm: string | null) {
+		if (!searchLoginTerm) {
+			return { 'banInfo.isBanned': true };
+		} else {
+			return { name: { $regex: searchLoginTerm, $options: 'i' }, 'banInfo.isBanned': true };
 		}
 	}
 

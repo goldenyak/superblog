@@ -30,6 +30,13 @@ import { UpdateBanBlogDto } from './dto/update-ban-blog.dto';
 import { GetBlogByIdWithOwnerInfoCommand } from '../../../public/blogs/use-cases/get-blog-by-id-with-owner-info.use-case';
 import { BanBlogCommand } from '../../../public/blogs/use-cases/ban-blog.use-case';
 import { UnBanBlogCommand } from "../../../public/blogs/use-cases/unBan-blog.use-case";
+import { UnbanUserLikeStatusCommand } from "../../../public/likes/use-cases/unban-user-like-status.use-case";
+import { UnbanUserCommand } from "../../../public/users/use-cases/unban-user.use-case";
+import { BanUserCommand } from "../../../public/users/use-cases/ban-user.use-case";
+import { BanUserLikeStatusCommand } from "../../../public/likes/use-cases/ban-user-like-status.use-case";
+import {
+	DeleteAllSessionForBanUserCommand
+} from "../../../public/sessions/use-cases/delete-all-session-for-ban-user.use-case";
 
 @Controller('sa')
 export class SuperAdminController {
@@ -74,12 +81,12 @@ export class SuperAdminController {
 			throw new NotFoundException();
 		}
 		if (!dto.isBanned) {
-			await this.likesService.unbanUserLikeStatus(id);
-			return await this.usersService.unbanUser(id, dto);
+			await this.commandBus.execute(new UnbanUserLikeStatusCommand(id));
+			return await this.commandBus.execute(new UnbanUserCommand(id, dto))
 		}
-		await this.usersService.banUser(id, dto);
-		await this.likesService.banUserLikeStatus(id);
-		return await this.sessionsService.deleteAllSessionForBanUser(id);
+		await this.commandBus.execute(new BanUserCommand(id, dto));
+		await this.commandBus.execute(new BanUserLikeStatusCommand(id));
+		return await this.commandBus.execute(new DeleteAllSessionForBanUserCommand(id));
 	}
 
 	@UseGuards(BasicAuthGuard)

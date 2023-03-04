@@ -72,11 +72,11 @@ export class SessionsService {
 		}
 	}
 
+	// async deleteAllSessionForBanUser(id: string) {
+	// 	return this.sessionsRepository.deleteAllSessionForBanUser(id)
+	// }
+
 	async deleteAll() {
 		return await this.sessionsRepository.deleteAll();
-	}
-
-	async deleteAllSessionForBanUser(id: string) {
-		return this.sessionsRepository.deleteAllSessionForBanUser(id)
 	}
 }
