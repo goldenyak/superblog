@@ -62,10 +62,15 @@ export class BloggersController {
 	async getAllBannedUsersForBlog(
 		@Param('id') id: string,
 		@Query() queryParams: BannedUsersQueryDto,
+		@Req() req: Request
 	) {
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id))
 		const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(id));
 		if (!blog) {
 			throw new NotFoundException();
+		}
+		if (currentUser.id !== blog.bloggerOwnerInfo.userId || !currentUser) {
+			throw new ForbiddenException()
 		}
 		return await this.commandBus.execute(new FindAllBannedUsersCommand(queryParams));
 	}
