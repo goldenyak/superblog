@@ -14,6 +14,7 @@ export class FindUserByIdUseCase implements ICommandHandler<FindUserByIdCommand>
   async execute(command: FindUserByIdCommand) {
     const { id } = command;
     return await this.usersRepository.findUserById(id);
+
   }
 }
 

@@ -33,18 +33,16 @@ import { FindAllBannedUsersCommand } from '../../public/users/use-cases/find-all
 import { BannedUsersQueryDto } from '../../public/users/dto/banned-users-query.dto';
 import { FindUserByIdCommand } from '../../public/users/use-cases/find-user-by-id.use-case';
 import { GetBlogByIdCommand } from '../../public/blogs/use-cases/get-blog-by-id.use-case';
-import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
-import { UpdateBanUserDto } from "../../super-admin/api/users/dto/update-ban-user.dto";
-import { UnbanUserLikeStatusCommand } from "../../public/likes/use-cases/unban-user-like-status.use-case";
-import { UnbanUserCommand } from "../../public/users/use-cases/unban-user.use-case";
-import { BanUserCommand } from "../../public/users/use-cases/ban-user.use-case";
-import { BanUserLikeStatusCommand } from "../../public/likes/use-cases/ban-user-like-status.use-case";
-import {
-	DeleteAllSessionForBanUserCommand
-} from "../../public/sessions/use-cases/delete-all-session-for-ban-user.use-case";
-import { UpdateBanUserForBlogDto } from "../../super-admin/api/users/dto/update-ban-user-for-blog.dto";
-import { BanUserForBlogCommand } from "../../public/users/use-cases/ban-user-for-blog.use-case";
-import { UnBanUserForBlogCommand } from "../../public/users/use-cases/unban-user-for-blog.use-case";
+import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
+import { UpdateBanUserDto } from '../../super-admin/api/users/dto/update-ban-user.dto';
+import { UnbanUserLikeStatusCommand } from '../../public/likes/use-cases/unban-user-like-status.use-case';
+import { UnbanUserCommand } from '../../public/users/use-cases/unban-user.use-case';
+import { BanUserCommand } from '../../public/users/use-cases/ban-user.use-case';
+import { BanUserLikeStatusCommand } from '../../public/likes/use-cases/ban-user-like-status.use-case';
+import { DeleteAllSessionForBanUserCommand } from '../../public/sessions/use-cases/delete-all-session-for-ban-user.use-case';
+import { UpdateBanUserForBlogDto } from '../../super-admin/api/users/dto/update-ban-user-for-blog.dto';
+import { BanUserForBlogCommand } from '../../public/users/use-cases/ban-user-for-blog.use-case';
+import { UnBanUserForBlogCommand } from '../../public/users/use-cases/unban-user-for-blog.use-case';
 
 @Controller('blogger')
 export class BloggersController {
@@ -58,7 +56,7 @@ export class BloggersController {
 		private readonly findPostById: FindPostByIdUseCase,
 	) {}
 
-	// @UseGuards(JwtAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(200)
 	@Get('/users/blog/:id')
 	async getAllBannedUsersForBlog(
@@ -66,7 +64,9 @@ export class BloggersController {
 		@Query() queryParams: BannedUsersQueryDto,
 	) {
 		const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(id));
-		console.log(blog);
+		if (!blog) {
+			throw new NotFoundException();
+		}
 		return await this.commandBus.execute(new FindAllBannedUsersCommand(queryParams));
 	}
 
@@ -84,13 +84,13 @@ export class BloggersController {
 		if (!foundedUser) {
 			throw new NotFoundException();
 		}
-		const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(dto.blogId))
-		if (!blog || blog.bloggerOwnerInfo.userId !== id) {
-			throw new NotFoundException();
-		}
+		// const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(dto.blogId));
+		// if (!blog || blog.bloggerOwnerInfo.userId !== id) {
+		// 	throw new NotFoundException();
+		// }
 		if (!dto.isBanned) {
 			await this.commandBus.execute(new UnbanUserLikeStatusCommand(id));
-			return await this.commandBus.execute(new UnBanUserForBlogCommand(id, dto))
+			return await this.commandBus.execute(new UnBanUserForBlogCommand(id, dto));
 		}
 		await this.commandBus.execute(new BanUserForBlogCommand(id, dto));
 		await this.commandBus.execute(new BanUserLikeStatusCommand(id));
@@ -109,7 +109,7 @@ export class BloggersController {
 	async createBlog(@Body() dto: CreateBlogsDto, @Req() req: Request) {
 		const { id, login } = req.user;
 		const user = await this.commandBus.execute(new FindUserByIdCommand(id));
-		if (user.banInfo.isBanned) {
+		if (!user || user.banInfo.isBanned) {
 			throw new UnauthorizedException();
 		}
 		return await this.createBlogUseCase.execute(dto, id, login);

@@ -15,7 +15,6 @@ export class FindAllBannedUsersUseCase implements ICommandHandler<FindAllBannedU
 		const countBannedUsers = await this.usersRepository.countAllBannedUsers(
 			queryParams.searchLoginTerm,
 		);
-		console.log(countBannedUsers);
 		const allBannedUsers = await this.usersRepository.getAllBannedUsers(
 			queryParams.searchLoginTerm,
 			queryParams.pageNumber,
