@@ -62,15 +62,15 @@ export class BloggersController {
 	async getAllBannedUsersForBlog(
 		@Param('id') id: string,
 		@Query() queryParams: BannedUsersQueryDto,
-		@Req() req: Request
+		@Req() req: Request,
 	) {
-		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id))
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id));
 		const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(id));
 		if (!blog) {
 			throw new NotFoundException();
 		}
 		if (currentUser.id !== blog.bloggerOwnerInfo.userId || !currentUser) {
-			throw new ForbiddenException()
+			throw new ForbiddenException();
 		}
 		return await this.commandBus.execute(new FindAllBannedUsersCommand(queryParams));
 	}
@@ -84,15 +84,22 @@ export class BloggersController {
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(204)
 	@Put('/users/:id/ban')
-	async updateBanUserForBlog(@Param('id') id: string, @Body() dto: UpdateBanUserForBlogDto) {
+	async updateBanUserForBlog(
+		@Param('id') id: string,
+		@Body() dto: UpdateBanUserForBlogDto,
+		@Req() req: Request,
+	) {
+		const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(dto.blogId));
+		if (!blog) {
+			throw new NotFoundException();
+		}
+		if (blog.bloggerOwnerInfo.userId !== req.user.id) {
+			throw new ForbiddenException();
+		}
 		const foundedUser = await this.commandBus.execute(new FindUserByIdCommand(id));
 		if (!foundedUser) {
 			throw new NotFoundException();
 		}
-		// const blog = await this.commandBus.execute(new GetBlogByIdWithOwnerInfoCommand(dto.blogId));
-		// if (!blog || blog.bloggerOwnerInfo.userId !== id || foundedUser.banInfo.isBanned) {
-		// 	throw new ForbiddenException();
-		// }
 		if (!dto.isBanned) {
 			await this.commandBus.execute(new UnbanUserLikeStatusCommand(id));
 			return await this.commandBus.execute(new UnBanUserForBlogCommand(id, dto));
