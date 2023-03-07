@@ -75,7 +75,7 @@ export class AuthController {
 		return newUser;
 	}
 
-	@UseGuards(ThrottlerIpGuard)
+	// @UseGuards(ThrottlerIpGuard)
 	@HttpCode(200)
 	@Post('login')
 	async login(
