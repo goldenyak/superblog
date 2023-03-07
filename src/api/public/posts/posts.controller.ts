@@ -99,9 +99,9 @@ export class PostsController {
 		if (!user) {
 			throw new NotFoundException();
 		}
-		// if (user.banInfo.isBanned) {
-		// 	throw new ForbiddenException()
-		// }
+		if (user.banInfo.isBanned) {
+			throw new ForbiddenException()
+		}
 		const postById = await this.postsService.findPostById(postId);
 		if (!postById) {
 			throw new NotFoundException();
