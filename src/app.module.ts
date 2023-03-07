@@ -36,7 +36,6 @@ import { FindPostByIdUseCase } from './api/public/blogs/use-cases/find-post-by-i
 import { FindUserByIdUseCase } from './api/public/users/use-cases/find-user-by-id.use-case';
 import { CommentsService } from './api/public/comments/comments.service';
 import { CreateBlogUseCase } from './api/public/blogs/use-cases/create-blog.use-case';
-import { GetAllBlogsForCurrentUserUseCase } from './api/blogger/use-cases/get-all-blogs-for-current-user.use-case';
 import { CreatePostByBlogIdUseCase } from './api/public/blogs/use-cases/create-post-by-blog-id.use-case';
 import { CheckRefreshTokenUseCase } from './api/public/auth/use-cases/check-refresh-token.use-case';
 import { AuthController } from './api/public/auth/auth.controller';
@@ -58,7 +57,7 @@ import { GetLastActiveSessionUseCase } from './api/public/sessions/use-cases/get
 import { DeleteSessionUseCase } from './api/public/sessions/use-cases/delete-session.use-case';
 import { UpdateSessionAfterRefreshUseCase } from './api/public/sessions/use-cases/update-session-after-refresh.use-case';
 import { CheckUserIdByTokenUseCase } from './api/public/auth/use-cases/check-user-by-token.use-case';
-import { GetAllPostsByBlogIdUseCase } from './api/public/posts/use-cases/get-all-posts.use-case';
+import { GetAllPostsByBlogIdUseCase } from './api/public/posts/use-cases/get-all-posts-by-blog-id.use-case';
 import { EmailModule } from './email/email.module';
 import { FindUserByEmailUseCase } from './api/public/users/use-cases/find-user-by-email.use-case';
 import { CreateUserUseCase } from './api/public/users/use-cases/create-user.use-case';
@@ -68,19 +67,20 @@ import { UsersController } from './api/public/users/users.controller';
 import { CommentsController } from './api/public/comments/comments.controller';
 import { SessionsController } from './api/public/sessions/sessions.controller';
 import { PublicBlogsController } from './api/public/blogs/api/blogs.controller';
-import { GetBlogByIdWithOwnerInfoUseCase } from "./api/public/blogs/use-cases/get-blog-by-id-with-owner-info.use-case";
-import {UnBanBlogUseCase } from "./api/public/blogs/use-cases/unBan-blog.use-case";
-import { BanBlogUseCase } from "./api/public/blogs/use-cases/ban-blog.use-case";
-import { FindAllBannedUsersUseCase } from "./api/public/users/use-cases/find-all-banned-users.use-case";
-import { UnbanUserLikeStatusUseCase } from "./api/public/likes/use-cases/unban-user-like-status.use-case";
-import { UnbanUserUseCase } from "./api/public/users/use-cases/unban-user.use-case";
-import { BanUserUseCase } from "./api/public/users/use-cases/ban-user.use-case";
-import { BanUserLikeStatusUseCase } from "./api/public/likes/use-cases/ban-user-like-status.use-case";
-import {
-	DeleteAllSessionForBanUserUseCase
-} from "./api/public/sessions/use-cases/delete-all-session-for-ban-user.use-case";
-import { BanUserForBlogUseCase } from "./api/public/users/use-cases/ban-user-for-blog.use-case";
-import { UnBanUserForBlogUseCase } from "./api/public/users/use-cases/unban-user-for-blog.use-case";
+import { GetBlogByIdWithOwnerInfoUseCase } from './api/public/blogs/use-cases/get-blog-by-id-with-owner-info.use-case';
+import { UnBanBlogUseCase } from './api/public/blogs/use-cases/unBan-blog.use-case';
+import { BanBlogUseCase } from './api/public/blogs/use-cases/ban-blog.use-case';
+import { FindAllBannedUsersUseCase } from './api/public/users/use-cases/find-all-banned-users.use-case';
+import { UnbanUserLikeStatusUseCase } from './api/public/likes/use-cases/unban-user-like-status.use-case';
+import { UnbanUserUseCase } from './api/public/users/use-cases/unban-user.use-case';
+import { BanUserUseCase } from './api/public/users/use-cases/ban-user.use-case';
+import { BanUserLikeStatusUseCase } from './api/public/likes/use-cases/ban-user-like-status.use-case';
+import { DeleteAllSessionForBanUserUseCase } from './api/public/sessions/use-cases/delete-all-session-for-ban-user.use-case';
+import { BanUserForBlogUseCase } from './api/public/users/use-cases/ban-user-for-blog.use-case';
+import { UnBanUserForBlogUseCase } from './api/public/users/use-cases/unban-user-for-blog.use-case';
+import { GetAllBlogsForCurrentUserUseCase } from './api/blogger/use-cases/get-all-blogs-for-current-user.use-case';
+import { GetAllPostsForCurrentUserUseCase } from './api/public/posts/use-cases/get-all-posts-for-current-user.use-case';
+import { GetAllCommentsForCurrentUserUseCase } from './api/public/comments/use-cases/get-all-comments-for-current-user.use-case';
 
 const controllers = [
 	AppController,
@@ -160,15 +160,19 @@ const blogsUseCases = [
 	GetAllBlogsForCurrentUserUseCase,
 	GetBlogByIdWithOwnerInfoUseCase,
 	BanBlogUseCase,
-	UnBanBlogUseCase
+	UnBanBlogUseCase,
 ];
 
-const postsUseCases = [GetAllPostsByBlogIdUseCase, CreatePostByBlogIdUseCase, FindPostByIdUseCase];
+const postsUseCases = [
+	GetAllPostsByBlogIdUseCase,
+	GetAllPostsForCurrentUserUseCase,
+	CreatePostByBlogIdUseCase,
+	FindPostByIdUseCase,
+];
 
-const likesUseCases = [
-	UnbanUserLikeStatusUseCase,
-	BanUserLikeStatusUseCase,
-]
+const commentsUseCases = [GetAllCommentsForCurrentUserUseCase];
+
+const likesUseCases = [UnbanUserLikeStatusUseCase, BanUserLikeStatusUseCase];
 
 @Module({
 	imports: [
@@ -182,8 +186,8 @@ const likesUseCases = [
 		}),
 		JwtModule.registerAsync({
 			imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+			inject: [ConfigService],
+			useFactory: async (configService: ConfigService) => ({
 				secret: configService.get('JWT_SECRET'),
 			}),
 		}),
@@ -216,6 +220,7 @@ const likesUseCases = [
 		...authUseCases,
 		...sessionsUseCases,
 		...likesUseCases,
+		...commentsUseCases,
 	],
 })
 export class AppModule {}

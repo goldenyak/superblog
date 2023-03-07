@@ -17,7 +17,7 @@ import { CreatePostByBlogIdUseCase } from '../use-cases/create-post-by-blog-id.u
 import { BlogsRepository } from '../blogs.repository';
 import { CommandBus } from '@nestjs/cqrs';
 import { CheckUserIdByTokenCommand } from '../../auth/use-cases/check-user-by-token.use-case';
-import { GetAllPostsByBlogIdCommand } from '../../posts/use-cases/get-all-posts.use-case';
+import { GetAllPostsByBlogIdCommand } from '../../posts/use-cases/get-all-posts-by-blog-id.use-case';
 import { GetBlogByIdCommand } from '../use-cases/get-blog-by-id.use-case';
 import { GetAllBlogsCommand } from "../use-cases/get-all-blogs.use-case";
 

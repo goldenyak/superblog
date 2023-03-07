@@ -53,22 +53,21 @@ export class BlogsRepository {
 	}
 
 	async getAllBlogsForCurrentUser(
-		searchNameTerm: string,
-		pageNumber: number,
-		pageSize: number,
-		sortBy: string,
-		sortDirection: string,
+		// pageNumber: number,
+		// pageSize: number,
+		// sortBy: string,
+		// sortDirection: string,
 		userId: string,
 	) {
-		const filter = this.getFilterForQueryAndCurrentUser(searchNameTerm, userId);
-		const sortByFilter = this.getFilterForSortBy(sortBy);
-		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
+		const filter = this.getFilterForQueryAndCurrentUser(userId);
+		// const sortByFilter = this.getFilterForSortBy(sortBy);
+		// const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
 		const blogs = await this.blogsModel
 			.find(filter)
-			.skip((pageNumber - 1) * pageSize)
-			.limit(pageSize)
-			.sort({ [sortByFilter]: sortDirectionFilter })
+			// .skip((pageNumber - 1) * pageSize)
+			// .limit(pageSize)
+			// .sort({ [sortByFilter]: sortDirectionFilter })
 			.lean();
 
 		return blogs.map((blogs) => {
@@ -120,8 +119,8 @@ export class BlogsRepository {
 		return this.blogsModel.count(filter);
 	}
 
-	async countBlogsForCurrentUser(searchNameTerm: string | null, userId: string) {
-		const filter = this.getFilterForQueryAndCurrentUser(searchNameTerm, userId);
+	async countBlogsForCurrentUser(userId: string) {
+		const filter = this.getFilterForQueryAndCurrentUser(userId);
 		return this.blogsModel.countDocuments(filter);
 	}
 
@@ -152,12 +151,8 @@ export class BlogsRepository {
 		}
 	}
 
-	private getFilterForQueryAndCurrentUser(searchNameTerm: string | null, userId?: string) {
-		if (!searchNameTerm) {
-			return { 'bloggerOwnerInfo.userId': userId };
-		} else {
-			return { name: { $regex: searchNameTerm, $options: 'i' }, 'bloggerOwnerInfo.userId': userId };
-		}
+	private getFilterForQueryAndCurrentUser(userId: string) {
+		return { 'bloggerOwnerInfo.userId': userId };
 	}
 
 	async deleteAll() {

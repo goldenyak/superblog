@@ -1,28 +1,38 @@
-import { Injectable } from '@nestjs/common';
-import { BlogsRepository } from "../../public/blogs/blogs.repository";
-import { BlogsQueryParams } from "../../public/blogs/dto/blogs-query.dto";
+import { BlogsRepository } from '../../public/blogs/blogs.repository';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { AllCommentsForBlogQueryParams } from '../../public/comments/dto/all-comments-for-blog-query.dto';
 
+export class GetAllBlogsForCurrentUserCommand {
+	constructor(
+		//public queryParams?: AllCommentsForBlogQueryParams,
+		public userId: string) {}
+}
 
-@Injectable()
-export class GetAllBlogsForCurrentUserUseCase {
+@CommandHandler(GetAllBlogsForCurrentUserCommand)
+export class GetAllBlogsForCurrentUserUseCase
+	implements ICommandHandler<GetAllBlogsForCurrentUserCommand>
+{
 	constructor(private readonly blogsRepository: BlogsRepository) {}
 
-	async execute({ searchNameTerm, pageNumber, pageSize, sortBy, sortDirection }: BlogsQueryParams, userId: string) {
-		const countBlogs = await this.blogsRepository.countBlogsForCurrentUser(searchNameTerm, userId);
-		const allBlogs = await this.blogsRepository.getAllBlogsForCurrentUser(
-			searchNameTerm,
-			pageNumber,
-			pageSize,
-			sortBy,
-			sortDirection,
-			userId
+	async execute(command: GetAllBlogsForCurrentUserCommand) {
+		const {
+			//queryParams,
+			userId } = command;
+		const countBlogs = await this.blogsRepository.countBlogsForCurrentUser(userId);
+		const allBlogsForCurrentUser = await this.blogsRepository.getAllBlogsForCurrentUser(
+			// queryParams.pageNumber,
+			// queryParams.pageSize,
+			// queryParams.sortBy,
+			// queryParams.sortDirection,
+			userId,
 		);
-		return {
-			pagesCount: Math.ceil(countBlogs / pageSize),
-			page: pageNumber,
-			pageSize: pageSize,
-			totalCount: countBlogs,
-			items: allBlogs,
-		};
+		return allBlogsForCurrentUser;
+		// return {
+		// 	pagesCount: Math.ceil(countBlogs / commandOptions.pageSize),
+		// 	page: commandOptions.pageNumber,
+		// 	pageSize: commandOptions.pageSize,
+		// 	totalCount: countBlogs,
+		// 	items: allBlogs,
+		// };
 	}
 }

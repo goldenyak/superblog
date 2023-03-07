@@ -78,6 +78,31 @@ export class PostsRepository {
 		});
 	}
 
+	async getAllPostsByCurrentUser(blogId: string, currentUserId: string) {
+		const filter = this.getFilterForQueryAndCurrentUser(blogId, currentUserId);
+		// const sortByFilter = this.getFilterForSortBy(sortBy);
+		// const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
+
+		const posts = await this.postsModel
+			.find(filter)
+			// .skip((pageNumber - 1) * pageSize)
+			// .limit(pageSize)
+			// .sort({ [sortByFilter]: sortDirectionFilter })
+			.lean();
+		return posts;
+
+		// return posts.map((blogs) => {
+		// 	return {
+		// 		id: blogs.id,
+		// 		name: blogs.name,
+		// 		description: blogs.description,
+		// 		websiteUrl: blogs.websiteUrl,
+		// 		createdAt: blogs.createdAt,
+		// 		isMembership: blogs.isMembership,
+		// 	};
+		// });
+	}
+
 	async findPostById(id: string) {
 		return this.postsModel.findOne({ id: id }, { _id: 0 });
 	}
@@ -107,6 +132,15 @@ export class PostsRepository {
 	async countPostsByBlogId(blogId: string | null) {
 		const filter = this.getFilterForQuery(blogId);
 		return this.postsModel.count(filter);
+	}
+
+	async countPostsByCurrentUser(blogId: string, currentUserId: string) {
+		const filter = this.getFilterForQueryAndCurrentUser(blogId, currentUserId);
+		return this.postsModel.countDocuments(filter);
+	}
+
+	private getFilterForQueryAndCurrentUser(blogId: string, currentUserId: string) {
+		return { blogId: blogId, userId: currentUserId };
 	}
 
 	private getFilterForQuery(blogId: string | null) {
