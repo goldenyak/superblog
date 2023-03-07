@@ -19,7 +19,7 @@ export class BlogsRepository {
 		pageSize: number,
 		sortBy: string,
 		sortDirection: string,
-		returnBanned: boolean
+		returnBanned: boolean,
 	) {
 		const filter = this.getFilterForQuery(searchNameTerm, returnBanned);
 		const sortByFilter = this.getFilterForSortBy(sortBy);
@@ -46,30 +46,53 @@ export class BlogsRepository {
 				},
 				banInfo: {
 					isBanned: blog.banInfo.isBanned,
-					banDate: blog.banInfo.banDate
-				}
+					banDate: blog.banInfo.banDate,
+				},
 			};
 		});
 	}
 
-	async getAllBlogsForCurrentUser(
-		// pageNumber: number,
-		// pageSize: number,
-		// sortBy: string,
-		// sortDirection: string,
-		userId: string,
+	async getAllBlogsForOwner(
+		searchNameTerm: string,
+		pageNumber: number,
+		pageSize: number,
+		sortBy: string,
+		sortDirection: string,
 	) {
-		const filter = this.getFilterForQueryAndCurrentUser(userId);
-		// const sortByFilter = this.getFilterForSortBy(sortBy);
-		// const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
+		const filter = this.getFilterForQueryForOwner(searchNameTerm);
+		const sortByFilter = this.getFilterForSortBy(sortBy);
+		const sortDirectionFilter = this.getFilterForSortDirection(sortDirection);
 
 		const blogs = await this.blogsModel
 			.find(filter)
-			// .skip((pageNumber - 1) * pageSize)
-			// .limit(pageSize)
-			// .sort({ [sortByFilter]: sortDirectionFilter })
+			.skip((pageNumber - 1) * pageSize)
+			.limit(pageSize)
+			.sort({ [sortByFilter]: sortDirectionFilter })
 			.lean();
 
+		return blogs.map((blog) => {
+			return {
+				id: blog.id,
+				name: blog.name,
+				description: blog.description,
+				websiteUrl: blog.websiteUrl,
+				createdAt: blog.createdAt,
+				isMembership: blog.isMembership,
+				blogOwnerInfo: {
+					userId: blog.bloggerOwnerInfo.userId,
+					userLogin: blog.bloggerOwnerInfo.userLogin,
+				},
+				banInfo: {
+					isBanned: blog.banInfo.isBanned,
+					banDate: blog.banInfo.banDate,
+				},
+			};
+		});
+	}
+
+	async getAllBlogsForCurrentUser(userId: string) {
+		const filter = this.getFilterForQueryAndCurrentUser(userId);
+		const blogs = await this.blogsModel.find(filter).lean();
 		return blogs.map((blogs) => {
 			return {
 				id: blogs.id,
@@ -119,6 +142,11 @@ export class BlogsRepository {
 		return this.blogsModel.count(filter);
 	}
 
+	async countBlogsForOwner(userId: string) {
+		const filter = this.getFilterForQueryAndCurrentUser(userId);
+		return this.blogsModel.countDocuments(filter);
+	}
+
 	async countBlogsForCurrentUser(userId: string) {
 		const filter = this.getFilterForQueryAndCurrentUser(userId);
 		return this.blogsModel.countDocuments(filter);
@@ -142,13 +170,20 @@ export class BlogsRepository {
 	private getFilterForQuery(searchNameTerm: string | null, returnBanned: boolean) {
 		if (!returnBanned) {
 			if (!searchNameTerm) {
-				return {'banInfo.isBanned': returnBanned};
+				return { 'banInfo.isBanned': returnBanned };
 			} else {
-				return { name: { $regex: searchNameTerm, $options: 'i' }, 'banInfo.isBanned': returnBanned, };
+				return {
+					name: { $regex: searchNameTerm, $options: 'i' },
+					'banInfo.isBanned': returnBanned,
+				};
 			}
-		}else {
-			return { name: { $regex: searchNameTerm?searchNameTerm:'', $options: 'i' }, };
+		} else {
+			return { name: { $regex: searchNameTerm ? searchNameTerm : '', $options: 'i' } };
 		}
+	}
+
+	private getFilterForQueryForOwner(searchNameTerm: string | null) {
+		return { name: { $regex: searchNameTerm ? searchNameTerm : '', $options: 'i' } };
 	}
 
 	private getFilterForQueryAndCurrentUser(userId: string) {

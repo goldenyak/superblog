@@ -81,6 +81,7 @@ import { UnBanUserForBlogUseCase } from './api/public/users/use-cases/unban-user
 import { GetAllBlogsForCurrentUserUseCase } from './api/blogger/use-cases/get-all-blogs-for-current-user.use-case';
 import { GetAllPostsForCurrentUserUseCase } from './api/public/posts/use-cases/get-all-posts-for-current-user.use-case';
 import { GetAllCommentsForCurrentUserUseCase } from './api/public/comments/use-cases/get-all-comments-for-current-user.use-case';
+import { GetAllBlogsForOwnerUseCase } from "./api/blogger/use-cases/get-all-blogs-for-owner.use-case";
 
 const controllers = [
 	AppController,
@@ -159,6 +160,7 @@ const blogsUseCases = [
 	GetBlogByIdUseCase,
 	GetAllBlogsForCurrentUserUseCase,
 	GetBlogByIdWithOwnerInfoUseCase,
+	GetAllBlogsForOwnerUseCase,
 	BanBlogUseCase,
 	UnBanBlogUseCase,
 ];
