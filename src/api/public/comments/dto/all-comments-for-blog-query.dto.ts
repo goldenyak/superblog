@@ -6,12 +6,12 @@ export class AllCommentsForBlogQueryParams {
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  public pageNumber;
+  public pageNumber = 1;
 
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  public pageSize;
+  public pageSize = 10;
 
   @Transform(({ value }) => transformSortByFilter(value))
   @IsOptional()
