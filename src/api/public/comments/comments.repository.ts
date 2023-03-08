@@ -49,18 +49,11 @@ export class CommentsRepository {
 	}
 
 	async getAllCommentsByCurrentUser(
-		//queryParams: AllCommentsForBlogQueryParams,
 		postId: string,
-		currentUserId: string,
 	) {
-		// const sortByFilter = this.getFilterForSortBy(queryParams.sortBy);
-		// const sortDirectionFilter = this.getFilterForSortDirection(queryParams.sortDirection);
 
 		return this.commentsModel
-			.find({ postId: postId, userId: currentUserId })
-			// .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
-			// .limit(queryParams.pageSize)
-			// .sort({ [sortByFilter]: sortDirectionFilter })
+			.find({ postId: postId})
 			.lean();
 	}
 
@@ -88,10 +81,9 @@ export class CommentsRepository {
 		return this.commentsModel.count(filter);
 	}
 
-	async countAllCommentsForCurrentUser(postId: string, userId) {
+	async countAllCommentsForCurrentUser(postId: string) {
 		return this.commentsModel.count({
 			postId: { $regex: postId, $options: 'i' },
-			userId: { $regex: userId, $options: 'i' },
 		});
 	}
 

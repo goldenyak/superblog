@@ -248,14 +248,14 @@ export class BloggersController {
 		);
 		const posts = await Promise.all(
 			blogs.map((blog) =>
-				this.commandBus.execute(new GetAllPostsForCurrentUserCommand(blog.id, currentUser.id)),
+				this.commandBus.execute(new GetAllPostsForCurrentUserCommand(blog.id)),
 			),
 		);
 		const comments = await Promise.all(
 			posts
 				.flat()
 				.map((post) =>
-					this.commandBus.execute(new GetAllCommentsForCurrentUserCommand(post.id, currentUser.id)),
+					this.commandBus.execute(new GetAllCommentsForCurrentUserCommand(post.id)),
 				),
 		);
 
@@ -267,6 +267,7 @@ export class BloggersController {
 		}));
 
 		const allComments = comments.flat();
+		console.log(allComments);
 		const sortedComments = allComments.sort((a, b) => {
 			if (sortDirection === 'asc') {
 				return a[sortBy] > b[sortBy] ? 1 : -1;

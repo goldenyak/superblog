@@ -4,9 +4,8 @@ import { AllCommentsForBlogQueryParams } from '../dto/all-comments-for-blog-quer
 
 export class GetAllCommentsForCurrentUserCommand {
 	constructor(
-		//public queryParams: AllCommentsForBlogQueryParams,
-		public postId?: string,
-		public currentUserId?: string,
+		public postId: string,
+		//public currentUserId: string,
 	) {}
 }
 
@@ -17,23 +16,14 @@ export class GetAllCommentsForCurrentUserUseCase
 	constructor(private readonly commentsRepository: CommentsRepository) {}
 
 	async execute(command: GetAllCommentsForCurrentUserCommand) {
-		const {
-			//queryParams,
-			postId, currentUserId } = command;
+		const { postId,
+		//	currentUserId
+		} = command;
 		const countedAllCommentsByCurrentUser =
-			await this.commentsRepository.countAllCommentsForCurrentUser(postId, currentUserId);
+			await this.commentsRepository.countAllCommentsForCurrentUser(postId);
 		const allCommentsByCurrentUser = await this.commentsRepository.getAllCommentsByCurrentUser(
-			//queryParams,
 			postId,
-			currentUserId,
 		);
-		return allCommentsByCurrentUser
-		// return {
-		// 	pagesCount: Math.ceil(countedAllCommentsByCurrentUser / queryParams.pageSize),
-		// 	page: queryParams.pageNumber,
-		// 	pageSize: queryParams.pageSize,
-		// 	totalCount: countedAllCommentsByCurrentUser,
-		// 	items: allCommentsByCurrentUser,
-		// };
+		return allCommentsByCurrentUser;
 	}
 }
