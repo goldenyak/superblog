@@ -231,7 +231,7 @@ export class BloggersController {
 		return await this.blogsService.deletePostForSpecifiedBlog(postId);
 	}
 
-	// @UseGuards(JwtAuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(200)
 	@Get('/blogs/comments')
 	async getAllCommentsForAllPosts(
@@ -242,7 +242,7 @@ export class BloggersController {
 		@Query() queryParams: AllCommentsForBlogQueryParams,
 		@Req() req: Request,
 	) {
-		const currentUser = await this.commandBus.execute(new FindUserByIdCommand('97eaa7b3-1c75-42f3-8e98-29d9805f2cff'));
+		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id));
 		if (!currentUser) {
 			throw new NotFoundException();
 		}
