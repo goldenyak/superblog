@@ -260,7 +260,7 @@ export class BloggersController {
 
 		const allComments = comments.flat();
 		const sortedComments = allComments.sort((a, b) => {
-			if (sortDirection === 'desc') {
+			if (sortDirection === 'asc') {
 				return a[queryParams.sortBy] > b[queryParams.sortBy] ? 1 : -1;
 			} else {
 				return a[queryParams.sortBy] < b[queryParams.sortBy] ? 1 : -1;
