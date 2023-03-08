@@ -313,10 +313,10 @@ export class BloggersController {
           myStatus: 'None',
         },
 				postInfo: {
+          blogId: post.blogId,
+          blogName: post.blogName,
+          title: post.title,
 					id: post.id,
-					title: post.title,
-					blogId: post.blogId,
-					blogName: post.blogName,
 				},
 			};
 		});
