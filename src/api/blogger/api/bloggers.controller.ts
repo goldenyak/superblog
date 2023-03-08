@@ -235,10 +235,11 @@ export class BloggersController {
 	@HttpCode(200)
 	@Get('/blogs/comments')
 	async getAllCommentsForAllPosts(
-		@Query('pageNumber') pageNumber = 1,
-		@Query('pageSize') pageSize = 10,
-		@Query('sortBy') sortBy = 'createdAt',
-		@Query('sortDirection') sortDirection = 'desc',
+		// @Query('pageNumber') pageNumber = 1,
+		// @Query('pageSize') pageSize = 10,
+		// @Query('sortBy') sortBy = 'createdAt',
+		// @Query('sortDirection') sortDirection = 'desc',
+    queryParams: AllCommentsForBlogQueryParams,
 		@Req() req: Request,
 	) {
 		const currentUser = await this.commandBus.execute(new FindUserByIdCommand(req.user.id));
@@ -259,42 +260,19 @@ export class BloggersController {
 
 		const allComments = comments.flat();
 		const sortedComments = allComments.sort((a, b) => {
-			if (sortDirection === 'asc') {
-				return a[sortBy] > b[sortBy] ? 1 : -1;
+			if (queryParams.sortDirection === 'asc') {
+				return a[queryParams.sortBy] > b[queryParams.sortBy] ? 1 : -1;
 			} else {
-				return a[sortBy] < b[sortBy] ? 1 : -1;
+				return a[queryParams.sortBy] < b[queryParams.sortBy] ? 1 : -1;
 			}
 		});
-		const startIndex = (pageNumber - 1) * pageSize;
-		const endIndex = startIndex + pageSize;
+		const startIndex = (queryParams.pageNumber - 1) * queryParams.pageSize;
+		const endIndex = startIndex + queryParams.pageSize;
 		const pageComments = sortedComments.slice(startIndex, endIndex);
 
 		const totalCount = allComments.length;
-		const pagesCount = Math.ceil(totalCount / pageSize);
-		const page = pageNumber;
-
-		const postInfo = posts.flat().map((post) => ({
-			id: post.id,
-			title: post.title,
-			blogId: post.blogId,
-			blogName: post.blogName,
-		}));
-
-		// const items = pageComments.map((comment) => ({
-		// 	id: comment.id,
-		// 	content: comment.content,
-		// 	commentatorInfo: {
-		// 		userId: comment.userId,
-		// 		userLogin: comment.userLogin,
-		// 	},
-		// 	likesInfo: {
-		// 		likesCount: 0,
-		// 		dislikesCount: 0,
-		// 		myStatus: 'None',
-		// 	},
-		// 	createdAt: comment.createdAt.toISOString(),
-		// 	postInfo,
-		// }));
+		const pagesCount = Math.ceil(totalCount / queryParams.pageSize);
+		const page = queryParams.pageNumber;
 
 		const items = pageComments.map((comment) => {
 			const post = posts.flat().find((p) => p.id === comment.postId);
@@ -324,7 +302,7 @@ export class BloggersController {
 		return {
 			pagesCount: pagesCount,
 			page: page,
-			pageSize: pageSize,
+			pageSize: queryParams.pageSize,
 			totalCount: totalCount,
 			items: items,
 		};
