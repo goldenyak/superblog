@@ -18,8 +18,8 @@ export class AllCommentsForBlogQueryParams {
   @IsString()
   public sortBy;
 
-  @Transform(({ value }) => transformSortDirectionFilter(value))
-  @IsOptional()
-  @IsString()
-  public sortDirection;
+  // @Transform(({ value }) => transformSortDirectionFilter(value))
+  // @IsOptional()
+  // @IsString()
+  // public sortDirection;
 }

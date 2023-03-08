@@ -238,7 +238,7 @@ export class BloggersController {
 		// @Query('pageNumber') pageNumber = 1,
 		// @Query('pageSize') pageSize = 10,
 		// @Query('sortBy') sortBy = 'createdAt',
-		// @Query('sortDirection') sortDirection = 'desc',
+		@Query('sortDirection') sortDirection = 'desc',
 		@Query() queryParams: AllCommentsForBlogQueryParams,
 		@Req() req: Request,
 	) {
@@ -260,7 +260,7 @@ export class BloggersController {
 
 		const allComments = comments.flat();
 		const sortedComments = allComments.sort((a, b) => {
-			if (queryParams.sortDirection === 'desc') {
+			if (sortDirection === 'asc') {
 				return a[queryParams.sortBy] > b[queryParams.sortBy] ? 1 : -1;
 			} else {
 				return a[queryParams.sortBy] < b[queryParams.sortBy] ? 1 : -1;
