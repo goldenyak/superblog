@@ -6,20 +6,20 @@ export class AllCommentsForBlogQueryParams {
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  public pageNumber = 1;
+  public pageNumber;
 
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  public pageSize = 10;
+  public pageSize;
 
   @Transform(({ value }) => transformSortByFilter(value))
   @IsOptional()
   @IsString()
-  public sortBy = 'createdAt';
+  public sortBy;
 
   @Transform(({ value }) => transformSortDirectionFilter(value))
   @IsOptional()
   @IsString()
-  public sortDirection = 'desc';
+  public sortDirection;
 }
