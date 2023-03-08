@@ -66,7 +66,9 @@ export class BloggersController {
 		if (!currentUser) {
 			throw new UnauthorizedException();
 		}
-		return await this.commandBus.execute(new GetAllBlogsForOwnerCommand(queryParams, currentUser.id));
+		return await this.commandBus.execute(
+			new GetAllBlogsForOwnerCommand(queryParams, currentUser.id),
+		);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -247,27 +249,15 @@ export class BloggersController {
 			new GetAllBlogsForCurrentUserCommand(currentUser.id),
 		);
 		const posts = await Promise.all(
-			blogs.map((blog) =>
-				this.commandBus.execute(new GetAllPostsForCurrentUserCommand(blog.id)),
-			),
+			blogs.map((blog) => this.commandBus.execute(new GetAllPostsForCurrentUserCommand(blog.id))),
 		);
 		const comments = await Promise.all(
 			posts
 				.flat()
-				.map((post) =>
-					this.commandBus.execute(new GetAllCommentsForCurrentUserCommand(post.id)),
-				),
+				.map((post) => this.commandBus.execute(new GetAllCommentsForCurrentUserCommand(post.id))),
 		);
 
-		const postInfo = posts.flat().map((post) => ({
-			id: post.id,
-			title: post.title,
-			blogId: post.blogId,
-			blogName: post.blogName,
-		}));
-
 		const allComments = comments.flat();
-		console.log(allComments);
 		const sortedComments = allComments.sort((a, b) => {
 			if (sortDirection === 'asc') {
 				return a[sortBy] > b[sortBy] ? 1 : -1;
@@ -282,21 +272,55 @@ export class BloggersController {
 		const totalCount = allComments.length;
 		const pagesCount = Math.ceil(totalCount / pageSize);
 		const page = pageNumber;
-		const items = pageComments.map((comment) => ({
-			id: comment.id,
-			content: comment.content,
-			commentatorInfo: {
-				userId: comment.userId,
-				userLogin: comment.userLogin,
-			},
-			likesInfo: {
-				likesCount: 0,
-				dislikesCount: 0,
-				myStatus: "None"
-			},
-			createdAt: comment.createdAt.toISOString(),
-			postInfo,
+
+		const postInfo = posts.flat().map((post) => ({
+			id: post.id,
+			title: post.title,
+			blogId: post.blogId,
+			blogName: post.blogName,
 		}));
+
+		// const items = pageComments.map((comment) => ({
+		// 	id: comment.id,
+		// 	content: comment.content,
+		// 	commentatorInfo: {
+		// 		userId: comment.userId,
+		// 		userLogin: comment.userLogin,
+		// 	},
+		// 	likesInfo: {
+		// 		likesCount: 0,
+		// 		dislikesCount: 0,
+		// 		myStatus: 'None',
+		// 	},
+		// 	createdAt: comment.createdAt.toISOString(),
+		// 	postInfo,
+		// }));
+
+		const items = pageComments.map((comment) => {
+			const post = posts.flat().find((p) => p.id === comment.postId);
+
+			return {
+				id: comment.id,
+				content: comment.content,
+				commentatorInfo: {
+					userId: comment.userId,
+					userLogin: comment.userLogin,
+				},
+				likesInfo: {
+					likesCount: 0,
+					dislikesCount: 0,
+					myStatus: 'None',
+				},
+				createdAt: comment.createdAt.toISOString(),
+				postInfo: {
+					id: post.id,
+					title: post.title,
+					blogId: post.blogId,
+					blogName: post.blogName,
+				},
+			};
+		});
+
 		return {
 			pagesCount: pagesCount,
 			page: page,
