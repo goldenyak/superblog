@@ -13,10 +13,10 @@ export class AllCommentsForBlogQueryParams {
   @IsOptional()
   public pageSize = 10;
 
-  @Transform(({ value }) => transformSortByFilter(value))
-  @IsOptional()
-  @IsString()
-  public sortBy;
+  // @Transform(({ value }) => transformSortByFilter(value))
+  // @IsOptional()
+  // @IsString()
+  // public sortBy;
 
   // @Transform(({ value }) => transformSortDirectionFilter(value))
   // @IsOptional()
