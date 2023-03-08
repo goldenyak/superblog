@@ -289,13 +289,12 @@ export class BloggersController {
 				userId: comment.userId,
 				userLogin: comment.userLogin,
 			},
+			likesInfo: {
+				likesCount: 0,
+				dislikesCount: 0,
+				myStatus: "None"
+			},
 			createdAt: comment.createdAt.toISOString(),
-			// postInfo: {
-			//   id: comment.postId,
-			//   title: comment.post.title,
-			//   blogId: comment.post,
-			//   blogName: "string",
-			// }
 			postInfo,
 		}));
 		return {
