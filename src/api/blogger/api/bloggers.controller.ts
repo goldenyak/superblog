@@ -302,16 +302,16 @@ export class BloggersController {
 			return {
 				id: comment.id,
 				content: comment.content,
-				commentatorInfo: {
-					userId: comment.userId,
-					userLogin: comment.userLogin,
-				},
-				likesInfo: {
-					likesCount: 0,
-					dislikesCount: 0,
-					myStatus: 'None',
-				},
-				createdAt: comment.createdAt.toISOString(),
+        createdAt: comment.createdAt.toISOString(),
+        commentatorInfo: {
+          userId: comment.userId,
+          userLogin: comment.userLogin,
+        },
+        likesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+        },
 				postInfo: {
 					id: post.id,
 					title: post.title,
